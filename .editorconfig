@@ -443,6 +443,8 @@ dotnet_diagnostic.CA1307.severity = warning
 dotnet_diagnostic.CA1861.severity = warning
 dotnet_diagnostic.CA2227.severity = warning
 dotnet_diagnostic.CA2234.severity = warning
+dotnet_diagnostic.CA1849.severity = warning
+dotnet_diagnostic.CA1056.severity = warning
 
 # Deliberately not applicable in this ASP.NET Core host (see specs/CSHARP_AUDIT_LATEST.md).
 dotnet_diagnostic.CA2007.severity = none   # no ConfigureAwait in ASP.NET Core
@@ -460,6 +462,8 @@ dotnet_diagnostic.CA1307.severity = warning
 dotnet_diagnostic.CA1861.severity = warning
 dotnet_diagnostic.CA2227.severity = warning
 dotnet_diagnostic.CA2234.severity = warning
+dotnet_diagnostic.CA1849.severity = warning
+dotnet_diagnostic.CA1056.severity = warning
 dotnet_diagnostic.CA2007.severity = none   # no ConfigureAwait in ASP.NET Core
 dotnet_diagnostic.CA1515.severity = none   # public contract types by design
 
@@ -471,5 +475,7 @@ dotnet_diagnostic.CA1307.severity = warning
 dotnet_diagnostic.CA1861.severity = warning
 dotnet_diagnostic.CA2227.severity = warning
 dotnet_diagnostic.CA2234.severity = warning
+dotnet_diagnostic.CA1849.severity = warning
+dotnet_diagnostic.CA1056.severity = warning
 dotnet_diagnostic.CA2007.severity = none   # no ConfigureAwait in ASP.NET Core
 dotnet_diagnostic.CA1515.severity = none   # public contract types by design

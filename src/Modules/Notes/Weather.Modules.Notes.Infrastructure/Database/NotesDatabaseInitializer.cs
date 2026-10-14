@@ -7,12 +7,14 @@ namespace Weather.Modules.Notes.Infrastructure.Database;
 /// <summary>Applies the Notes migrations when the host starts.</summary>
 internal sealed class NotesDatabaseInitializer(IServiceScopeFactory scopeFactory) : IHostedService
 {
-    public Task StartAsync(CancellationToken cancellationToken)
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
         using IServiceScope scope = scopeFactory.CreateScope();
-        scope.ServiceProvider.GetRequiredService<NotesContext>().Database.Migrate();
 
-        return Task.CompletedTask;
+        await scope.ServiceProvider
+            .GetRequiredService<NotesContext>()
+            .Database
+            .MigrateAsync(cancellationToken);
     }
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;

@@ -13,7 +13,7 @@ public sealed class OpenWeatherApiKeyHandlerTests
     private const string ApiKey = "SECRET-KEY";
 
     private static OpenWeatherApiKeyHandler CreateHandler(HttpMessageHandler innerHandler) => new(
-        Options.Create(new OpenWeatherOptions { BaseUrl = "https://api.openweathermap.org/", ApiKey = ApiKey }))
+        Options.Create(new OpenWeatherOptions { BaseUrl = new Uri("https://api.openweathermap.org/"), ApiKey = ApiKey }))
     {
         InnerHandler = innerHandler,
     };

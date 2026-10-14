@@ -7,12 +7,14 @@ namespace Weather.Modules.Geography.Infrastructure.Database;
 /// <summary>Applies the Geography migrations (schema + seed) when the host starts.</summary>
 internal sealed class GeographyDatabaseInitializer(IServiceScopeFactory scopeFactory) : IHostedService
 {
-    public Task StartAsync(CancellationToken cancellationToken)
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
         using IServiceScope scope = scopeFactory.CreateScope();
-        scope.ServiceProvider.GetRequiredService<GeographyContext>().Database.Migrate();
 
-        return Task.CompletedTask;
+        await scope.ServiceProvider
+            .GetRequiredService<GeographyContext>()
+            .Database
+            .MigrateAsync(cancellationToken);
     }
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;

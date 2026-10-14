@@ -116,13 +116,26 @@ The scoped sections originally used `[path/**/*.cs]`, which — per editorconfig
 matched. Changed all scoped sections to `[path/**.cs]`, which matches zero or more segments. **Proven**
 with root-level and subfolder probes (`IDE0130` for modules, `IDE1006` for WebUI).
 
-## Backlog — reported, not gated (pre-existing; `AnalysisMode=All`-only)
+## Backlog reduction (this change)
 
-`CA1032` (~50 exception constructors across the domain/application exceptions), `CA1849` (sync
-`Database.Migrate()` in the three DB initializers), `CA1848`/`CA1873` (logging), `CA1056`
-(`OpenWeatherOptions.BaseUrl` string), `CA1040`/`CA1711` (integration-event interfaces), `CA2000`
-(disposal, mostly tests), `CA1707` (test-method underscores). None of these are enabled at
-`AnalysisLevel=latest`; they are not currently gating and are not fixed in this change.
+Two backlog items were fixed and the corresponding rules added to the scoped gates:
+
+| Finding | Fix | Gate |
+|---|---|---|
+| `CA1849` | The three database initializers `await …MigrateAsync(cancellationToken)` instead of blocking on `Database.Migrate()` (standard §6) | `dotnet_diagnostic.CA1849 = warning` |
+| `CA1056` | `OpenWeatherOptions.BaseUrl` is a `Uri`; the typed client assigns it directly. Configuration binding of a string to `Uri` is covered by the existing wiring tests. | `dotnet_diagnostic.CA1056 = warning` |
+
+## Remaining backlog — reported, deliberately not fixed (`AnalysisMode=All`-only)
+
+| Rule | Why it is not fixed |
+|---|---|
+| `CA1032` (~50) | Domain/application exceptions carry domain data (e.g. `CountryCode`). The parameterless and `(string)` constructors CA1032 wants would allow invalid instances; a parameterized constructor is the correct design (§5). |
+| `CA1848`/`CA1873` | Logging volume is tiny; source-generated `LoggerMessage`/`[LoggerMessage]` is a performance optimization, not a standard requirement (§10 asks for `ILogger<T>` + structured properties, which is already met). |
+| `CA1040`/`CA1711` | `IIntegrationEvent` is an intentional marker interface; `IIntegrationEventHandler` is the clear, conventional name. Both are deliberate design choices. |
+| `CA2000` | Occurs in **test** projects (disposal in test helpers); the production assemblies are clean. |
+| `CA1707` | Test-method names intentionally use underscores for readability (Arrange/Act/Assert-style names); test projects are out of scope. |
+
+None of these are enabled at `AnalysisLevel=latest`; they are recorded here as a known, accepted backlog.
 
 ## Evidence
 

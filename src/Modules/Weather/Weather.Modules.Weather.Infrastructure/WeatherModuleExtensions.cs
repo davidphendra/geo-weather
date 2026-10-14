@@ -32,7 +32,7 @@ public static class WeatherModuleExtensions
         services.AddHttpClient<IWeatherProvider, OpenWeatherMapService>((serviceProvider, httpClient) =>
             {
                 OpenWeatherOptions options = serviceProvider.GetRequiredService<IOptions<OpenWeatherOptions>>().Value;
-                httpClient.BaseAddress = new Uri(options.BaseUrl, UriKind.Absolute);
+                httpClient.BaseAddress = options.BaseUrl;
             })
             .AddHttpMessageHandler<OpenWeatherApiKeyHandler>()
             .AddStandardResilienceHandler();
