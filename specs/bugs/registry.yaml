@@ -1,3 +1,30 @@
 # Defect registry. One entry per discovered defect.
 # status: open | fixed | deferred | wontfix
-bugs: []
+bugs:
+  - id: BUG-001
+    title: Unknown UI routes return an empty 404 body instead of the not-found page
+    status: open
+    severity: low
+    discovered: 2026-10-14
+    discovered_during: e06s03
+    area: Weather.WebUI host (middleware pipeline)
+    symptom: >
+      GET /nope returns 404 with Content-Length 0 and no body, instead of the styled
+      NotFound page. GET /not-found directly returns 200 with the page.
+    reproduction: >
+      Run the host and curl an unknown non-API path, e.g. `curl -i http://localhost:PORT/nope`.
+      Observe `HTTP/1.1 404 Not Found` and `Content-Length: 0`.
+    root_cause: >
+      The status-code-pages middleware is registered inside `app.UseWhen(predicate, ui =>
+      ui.UseStatusCodePagesWithReExecute("/not-found"))`. UseWhen forks the pipeline; the
+      re-executed /not-found request therefore does not reach the endpoints mapped after it, so
+      nothing renders.
+    proposed_fix: >
+      Make the branch rejoin the main pipeline (e.g. an inline middleware that calls the next
+      delegate again with Request.Path set to /not-found after the status is observed), while
+      continuing to skip /api and /_csp so their 404s stay JSON/empty.
+    evidence: >
+      Live run 2026-10-14: `/not-found` -> 200 (6,849 B, styled); `/nope` -> 404 size 0.
+      No existing test covers the UI 404 body (SingleHostTests only asserts API 404s are not HTML).
+    pre_existing: true
+    introduced_by: e10s01 (status-code-pages scoping)

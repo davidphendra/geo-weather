@@ -26,7 +26,7 @@ stories:
   - id: e06s03
     title: Weather Explorer page
     bcps: 7
-    status: todo
+    status: done
     spec: e06s03-weather-explorer.md
     tasks: e06s03-tasks.yaml
     delta: ADDED
