@@ -19,7 +19,7 @@ stories:
   - id: e06s02
     title: WeatherApiClient + country→city cascade
     bcps: 5
-    status: todo
+    status: done
     spec: e06s02-api-client-cascade.md
     tasks: e06s02-tasks.yaml
     delta: ADDED

@@ -1,37 +1,39 @@
 story_id: e06s02
 title: WeatherApiClient + country→city cascade
-status: failing
+status: passing
 bcps: 5
 standards: docs/engineering/csharp-standards.md
 prerequisites: [e06s01, e02s01, e02s02, e03s03, e04s01]
 tasks:
   - id: 1
-    description: "Add client DTO mirrors (CountryModel, CityModel, WeatherReportModel, LocationModel, TemperatureModel, WindModel, FavoriteCityModel, AddFavoriteModel, AddNoteModel, ApiProblem)."
+    description: "Add client DTO mirrors (CountryModel, CityModel, WeatherReportModel + Location/Temperature/Wind, FavoriteCityModel, WeatherNoteModel, AddFavoriteModel, AddNoteModel, ApiProblem, ApiResult, WeatherApiException)."
     verify: "dotnet build src/Weather.WebUI/Weather.WebUI.csproj --warnaserror"
     risk: P1
-    status: failing
+    status: passing
     allure: { severity: high, categories: ["WebUI", "unit"] }
   - id: 2
     description: "Add WeatherApiClient with absolute URIs built from NavigationManager.BaseUri and ProblemDetails-aware failures (WeatherApiException)."
     verify: "dotnet test src/Tests/Weather.WebUI.UnitTests --filter Category=WeatherApiClient"
     risk: P1
-    status: failing
+    status: passing
     allure: { severity: high, categories: ["WebUI", "unit"] }
   - id: 3
     description: "Register AddHttpClient<WeatherApiClient>() with no Api:BaseAddress configuration (same-origin, D7)."
     verify: "! grep -rn 'Api:BaseAddress' src/Weather.WebUI"
     risk: P1
-    status: failing
+    status: passing
     allure: { severity: high, categories: ["WebUI", "integration"] }
   - id: 4
     description: "Add the WeatherExplorerModel cascade/loading/error state (country → cities → weather) as testable state."
     verify: "dotnet test src/Tests/Weather.WebUI.UnitTests --filter Category=WeatherExplorerModel"
     risk: P1
-    status: failing
+    status: passing
     allure: { severity: high, categories: ["WebUI", "unit"] }
   - id: 5
     description: "Add WeatherApiClient tests with a stubbed HttpMessageHandler covering success, 404 and 502."
     verify: "dotnet test src/Tests/Weather.WebUI.UnitTests --filter Category=WeatherApiClient"
     risk: P1
-    status: failing
+    status: passing
     allure: { severity: high, categories: ["WebUI", "unit"] }
+notes: >
+  No test performs I/O (StubHttpMessageHandler). Evidence: specs/verifications/e06s02.md.
