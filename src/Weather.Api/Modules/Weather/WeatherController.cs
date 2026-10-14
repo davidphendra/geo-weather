@@ -13,7 +13,6 @@ public sealed class WeatherController(IWeatherService weatherService) : ApiContr
     /// <summary>Returns the current weather for a city.</summary>
     [HttpGet("{cityName}")]
     [ProducesResponseType(typeof(WeatherReportDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]

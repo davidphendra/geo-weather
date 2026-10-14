@@ -14,7 +14,6 @@ public sealed class GeographyController(IGeographyService geographyService) : Ap
     /// <summary>Returns the country catalog, optionally filtered by name.</summary>
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<CountryDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IReadOnlyList<CountryDto>>> GetCountries(
         [FromQuery] string? search,
@@ -28,7 +27,6 @@ public sealed class GeographyController(IGeographyService geographyService) : Ap
     /// <summary>Returns the cities of one country.</summary>
     [HttpGet("{countryCode}/cities")]
     [ProducesResponseType(typeof(IReadOnlyList<CityDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
