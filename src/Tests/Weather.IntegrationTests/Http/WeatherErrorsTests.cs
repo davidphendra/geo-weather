@@ -24,12 +24,13 @@ public sealed class WeatherErrorsTests(WeatherHostFactory factory) : IClassFixtu
     }
 
     [Fact]
-    public async Task InvalidInput_Returns400()
+    public async Task InvalidInput_Returns422()
     {
         string oversizedCity = new('x', 101);
 
-        HttpResponseMessage response = await factory.CreateClient().GetAsync($"/api/weather/{oversizedCity}?countryCode=GB");
+        HttpResponseMessage response = await factory.CreateClient()
+            .GetAsync($"/api/weather/{oversizedCity}?countryCode=GB");
 
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
     }
 }

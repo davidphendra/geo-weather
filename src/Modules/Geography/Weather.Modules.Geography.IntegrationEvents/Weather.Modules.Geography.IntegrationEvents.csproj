@@ -10,4 +10,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\BuildingBlocks\Weather.BuildingBlocks.Application\Weather.BuildingBlocks.Application.csproj" />
+  </ItemGroup>
 </Project>

@@ -26,26 +26,22 @@ public sealed class GetCurrentWeatherQueryHandlerTests
         service.GetCurrentWeatherAsync("London", "GB", Arg.Any<CancellationToken>()).Returns(Report());
         var handler = new GetCurrentWeatherQueryHandler(service);
 
-        WeatherReportDto? dto = await handler.Handle(
+        WeatherReportDto dto = await handler.Handle(
             new GetCurrentWeatherQuery("London", "GB"),
             CancellationToken.None);
 
-        Assert.NotNull(dto);
-        Assert.Equal("London", dto!.Location.City);
+        Assert.Equal("London", dto.Location.City);
     }
 
     [Fact]
-    public async Task ReturnsNullWhenServiceFindsNothing()
+    public async Task ThrowsWhenServiceFindsNothing()
     {
         IWeatherProvider service = Substitute.For<IWeatherProvider>();
         service.GetCurrentWeatherAsync("Nowhere", "GB", Arg.Any<CancellationToken>())
             .Returns((WeatherReport?)null);
         var handler = new GetCurrentWeatherQueryHandler(service);
 
-        WeatherReportDto? dto = await handler.Handle(
-            new GetCurrentWeatherQuery("Nowhere", "GB"),
-            CancellationToken.None);
-
-        Assert.Null(dto);
+        await Assert.ThrowsAsync<WeatherNotFoundException>(
+            () => handler.Handle(new GetCurrentWeatherQuery("Nowhere", "GB"), CancellationToken.None));
     }
 }

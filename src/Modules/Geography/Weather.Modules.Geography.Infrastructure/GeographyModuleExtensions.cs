@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Weather.Modules.Geography.Application.Abstractions;
 using Weather.Modules.Geography.Application.Configuration;
 using Weather.Modules.Geography.Application.Contracts;
+using Weather.Modules.Geography.Infrastructure.Database;
+using Weather.Modules.Geography.Infrastructure.Events;
 using Weather.Modules.Geography.Infrastructure.Repositories;
 
 namespace Weather.Modules.Geography.Infrastructure;
@@ -31,6 +33,9 @@ public static class GeographyModuleExtensions
         services.AddValidatorsFromAssembly(typeof(IGeographyService).Assembly, includeInternalTypes: true);
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         services.AddScoped<IGeographyService, GeographyService>();
+
+        services.AddHostedService<GeographyDatabaseInitializer>();
+        services.AddHostedService<CityCatalogEventPublisher>();
 
         return services;
     }

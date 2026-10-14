@@ -7,7 +7,7 @@ namespace Weather.Modules.Weather.Infrastructure;
 
 internal sealed class WeatherService(ISender sender) : IWeatherService
 {
-    public Task<WeatherReportDto?> GetCurrentWeatherAsync(
+    public Task<WeatherReportDto> GetCurrentWeatherAsync(
         string cityName,
         string? countryCode,
         CancellationToken cancellationToken)

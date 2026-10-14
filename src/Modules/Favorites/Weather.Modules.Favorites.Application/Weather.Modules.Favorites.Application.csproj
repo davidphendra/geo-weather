@@ -12,4 +12,16 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Geography\Weather.Modules.Geography.IntegrationEvents\Weather.Modules.Geography.IntegrationEvents.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Weather.BuildingBlocks.Application\Weather.BuildingBlocks.Application.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MediatR" />
+    <PackageReference Include="FluentValidation" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Weather.Modules.Favorites.Infrastructure" />
+    <InternalsVisibleTo Include="Weather.Modules.Favorites.Tests" />
+  </ItemGroup>
 </Project>

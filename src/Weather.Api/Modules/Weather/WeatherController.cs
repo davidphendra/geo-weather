@@ -13,18 +13,14 @@ public sealed class WeatherController(IWeatherService weatherService) : ApiContr
     /// <summary>Returns the current weather for a city.</summary>
     [HttpGet("{cityName}")]
     [ProducesResponseType(typeof(WeatherReportDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status502BadGateway)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status502BadGateway)]
     public async Task<ActionResult<WeatherReportDto>> GetCurrentWeather(
         [FromRoute] string cityName,
         [FromQuery] string? countryCode,
         CancellationToken cancellationToken)
-    {
-        WeatherReportDto? report = await weatherService.GetCurrentWeatherAsync(
-            cityName,
-            countryCode,
-            cancellationToken);
-
-        return report is null ? NotFound() : Ok(report);
-    }
+        => Ok(await weatherService.GetCurrentWeatherAsync(cityName, countryCode, cancellationToken));
 }

@@ -14,7 +14,8 @@ public sealed class WeatherHostFactory : WebApplicationFactory<Program>
     {
         builder.UseEnvironment("Development");
 
-        string databasePath = Path.Combine(Path.GetTempPath(), $"geography-{Guid.NewGuid():N}.db");
+        string geographyDatabase = Path.Combine(Path.GetTempPath(), $"geography-{Guid.NewGuid():N}.db");
+        string favoritesDatabase = Path.Combine(Path.GetTempPath(), $"favorites-{Guid.NewGuid():N}.db");
 
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
             new Dictionary<string, string?>
@@ -22,14 +23,14 @@ public sealed class WeatherHostFactory : WebApplicationFactory<Program>
                 ["OpenWeather:BaseUrl"] = "https://api.openweathermap.org/",
                 ["OpenWeather:ApiKey"] = "test-key",
                 ["Logging:LogLevel:System.Net.Http.HttpClient.Weather"] = "Warning",
-                ["ConnectionStrings:Geography"] = $"Data Source={databasePath}",
+                ["ConnectionStrings:Geography"] = $"Data Source={geographyDatabase}",
+                ["ConnectionStrings:Favorites"] = $"Data Source={favoritesDatabase}",
             }));
 
         builder.ConfigureServices(services =>
         {
             services.RemoveAll<IWeatherProvider>();
             services.AddSingleton<IWeatherProvider, StubWeatherProvider>();
-            services.AddHostedService<GeographyMigrationHostedService>();
         });
     }
 }

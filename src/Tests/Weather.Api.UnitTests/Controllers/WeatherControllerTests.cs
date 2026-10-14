@@ -35,15 +35,4 @@ public sealed class WeatherControllerTests
         Assert.Equal(Report(), ok.Value);
     }
 
-    [Fact]
-    public async Task GetCurrentWeather_ReturnsNotFoundWhenMissing()
-    {
-        IWeatherService service = Substitute.For<IWeatherService>();
-        service.GetCurrentWeatherAsync("Nowhere", "GB", Arg.Any<CancellationToken>()).Returns((WeatherReportDto?)null);
-        var controller = new WeatherController(service);
-
-        ActionResult<WeatherReportDto> result = await controller.GetCurrentWeather("Nowhere", "GB", CancellationToken.None);
-
-        Assert.IsType<NotFoundResult>(result.Result);
-    }
 }
