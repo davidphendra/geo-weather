@@ -1,0 +1,28 @@
+name: Tailwind CSS drift
+
+# The compiled stylesheet is committed so `dotnet build` needs no Node (ADR / e06s01).
+# This guard fails when src/Weather.WebUI/wwwroot/app.css no longer matches the Tailwind config.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  drift:
+    name: Compiled CSS matches the Tailwind config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: src/Weather.WebUI/package-lock.json
+
+      - name: Check for Tailwind CSS drift
+        run: bash scripts/check-tailwind-css.sh
