@@ -73,7 +73,8 @@ internal sealed class GlobalExceptionHandler(
                 .Select(failure => new FieldError(failure.PropertyName, failure.ErrorCode, failure.ErrorMessage))
                 .ToArray()),
 
-        CountryNotFoundException or WeatherNotFoundException or CityNotFoundException => new Problem(
+        CountryNotFoundException or WeatherNotFoundException or CityNotFoundException
+            or global::Weather.Modules.Notes.Application.Abstractions.CityNotFoundException => new Problem(
             StatusCodes.Status404NotFound,
             ApiErrorCodes.ResourceNotFound,
             ApiProblemTypes.ResourceNotFound,

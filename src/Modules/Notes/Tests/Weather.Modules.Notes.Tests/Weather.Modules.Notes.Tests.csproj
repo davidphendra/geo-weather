@@ -25,4 +25,9 @@
     <ProjectReference Include="..\..\Weather.Modules.Notes.IntegrationEvents\Weather.Modules.Notes.IntegrationEvents.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="NSubstitute" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+  </ItemGroup>
+
 </Project>

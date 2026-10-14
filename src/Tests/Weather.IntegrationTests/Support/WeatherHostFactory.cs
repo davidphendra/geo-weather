@@ -16,6 +16,7 @@ public sealed class WeatherHostFactory : WebApplicationFactory<Program>
 
         string geographyDatabase = Path.Combine(Path.GetTempPath(), $"geography-{Guid.NewGuid():N}.db");
         string favoritesDatabase = Path.Combine(Path.GetTempPath(), $"favorites-{Guid.NewGuid():N}.db");
+        string notesDatabase = Path.Combine(Path.GetTempPath(), $"notes-{Guid.NewGuid():N}.db");
 
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
             new Dictionary<string, string?>
@@ -25,6 +26,7 @@ public sealed class WeatherHostFactory : WebApplicationFactory<Program>
                 ["Logging:LogLevel:System.Net.Http.HttpClient.Weather"] = "Warning",
                 ["ConnectionStrings:Geography"] = $"Data Source={geographyDatabase}",
                 ["ConnectionStrings:Favorites"] = $"Data Source={favoritesDatabase}",
+                ["ConnectionStrings:Notes"] = $"Data Source={notesDatabase}",
             }));
 
         builder.ConfigureServices(services =>

@@ -12,4 +12,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="MediatR" />
+    <PackageReference Include="FluentValidation" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Weather.Modules.Notes.Infrastructure" />
+    <InternalsVisibleTo Include="Weather.Modules.Notes.Tests" />
+  </ItemGroup>
+
 </Project>
