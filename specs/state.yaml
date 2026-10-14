@@ -7,9 +7,9 @@ project_cycle:
   completed_phases: [1, 2]
   mode: standard
 
-active_epic: e09
+active_epic: e05
 active_story: null
-active_flow: api_response_contract
+active_flow: null
 
 epic_cycle:
   step: null
@@ -18,15 +18,12 @@ epic_cycle:
   fast_mode: false
 
 handoff:
-  next_skill: build-epic
+  next_skill: verify-work
   context: >
-    IMMEDIATE WORK: e09 API Response Contract (ADR-0011) — RFC 9457 Problem Details with code + traceId +
-    errors, validation 422, create 201+Location; retrofit Weather/Geography.
-    THEN e04 Favorites (ADR-0010). PREREQUISITES for e04: e09 (response contract), e01s01 + e01s02
-    (BuildingBlocks + shared Outbox/In-memory Events Bus), e02s03 (Geography publishes CityAddedIntegrationEvent).
-    Then e04s01 (FavoriteCity + AddFavoriteCity + GET + FavoritesController) and e04s02 (consume the event).
-    Decisions: CityId key (unique), GET list included, duplicate -> 409, favorites are global (no user).
-    Do NOT implement until the user says go; no git operations.
+    COMPLETED: e05 Notes module (M4) — WeatherNote + AddWeatherNote + POST /api/weather/notes (ADR-0011 contract),
+    local City projection from CityAddedIntegrationEvent, minimal (CityId/CountryCode/Name). Pure consumer (no Outbox).
+    All verify filters green; preflight green (build/format/test). Not committed (per user instruction).
+    PRIOR CONTEXT: e09 API Response Contract (ADR-0011); e04 Favorites done.
 
 architecture:
   style: "Modular monolith (bounded contexts) + CQRS + Onion-per-module"

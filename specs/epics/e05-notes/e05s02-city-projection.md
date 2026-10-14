@@ -4,7 +4,7 @@
 |-------|-------|
 | ID | e05s02 |
 | Epic | e05 Notes Module (M4) |
-| Status | todo |
+| Status | done |
 | BCPs | 4 |
 | Risk | P0 |
 | Type | feat |
@@ -42,7 +42,7 @@ Other events.
 | Notes.IntegrationEvents | references `Geography.IntegrationEvents` (allowed) |
 
 ## 9. API contract
-None (async). Effect: unknown cities → `400`.
+None (async). Effect: unknown cities → `404`.
 
 ## 10. Dependencies
 e02s03, e05s01.

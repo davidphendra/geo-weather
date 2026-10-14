@@ -73,19 +73,18 @@ public interface INotesModule {
 ### M4 Notes
 - Domain: `Notes.WeatherNote` (aggregate), `Cities.City` (local projection).
 - Application: `Notes/AddWeatherNote`, `Cities/CityAddedIntegrationEventHandler`, `Contracts/INotesModule`, `Configuration`.
-- Infrastructure: `NotesContext` (`notes.db`, tables `WeatherNotes`, `CityProjections`), `NotesModule`, `Outbox`.
-- Endpoint: `POST /api/weather/notes` → `201` + id; `400` validation / unknown city.
+- Infrastructure: `NotesContext` (`notes.db`, tables `WeatherNotes`, `CityProjections`), `NotesModule`. Pure consumer — no Outbox, publishes nothing.
+- Endpoint: `POST /api/weather/notes` → `201` + `Location` + resource; `422` validation; `404` unknown city.
 
 ## Cross-module flow (write side)
 
 ```
 POST /api/weather/notes
   API host ──INotesModule.AddNoteAsync──► Notes module
-      Application: AddWeatherNoteCommand → validate note; resolve city from local CityProjections
-      Domain: WeatherNote.Add(...)  raises WeatherNoteAddedDomainEvent
-      Infrastructure: NotesContext.SaveChanges → DomainEventsDispatcher → Outbox
-  ── background ── Outbox → EventsBus → (no subscribers) 
-  ◄── 201 Created { id }
+      Application: AddWeatherNoteCommand → validate note (422); resolve city from local CityProjections (404)
+      Domain: WeatherNote.Create(...)
+      Infrastructure: NotesContext.SaveChanges
+  ◄── 201 Created + Location + WeatherNoteDto
 ```
 
 ```

@@ -4,7 +4,7 @@
 |-------|-------|
 | ID | e05s01 |
 | Epic | e05 Notes Module (M4) |
-| Status | todo |
+| Status | done |
 | BCPs | 4 |
 | Risk | P0 |
 | Type | feat |
@@ -44,7 +44,7 @@ Listing/editing/deleting notes.
 | Weather.Api | Notes area |
 
 ## 9. API contract
-`POST /api/weather/notes { "cityName": "London", "countryCode": "GB", "note": "Chilly", "temperatureCelsius": 12.5 }` → `201` + `Location` + `{ "id": "..." }`; `400` invalid/unknown city.
+`POST /api/weather/notes { "cityName": "London", "countryCode": "GB", "note": "Chilly", "temperatureCelsius": 12.5 }` → `201` + `Location` + the created `WeatherNoteDto`; `422` validation failure; `404` unknown city.
 
 ## 10. Dependencies
 e01s02; city validation via projection (e05s02).
@@ -66,7 +66,7 @@ e01s02; city validation via projection (e05s02).
 
 ## 13. Test plan
 - Unit: handler adds a row (EF InMemory) and returns a Guid; validator rejects empty/oversized.
-- Integration (SQLite `:memory:`): 201 + id; row exists in NotesContext; invalid → 400, no row.
+- Integration (SQLite `:memory:`): 201 + id; row exists in NotesContext; invalid → 422, no row.
 
 ## 14. Acceptance criteria (Gherkin)
 ```gherkin
@@ -78,11 +78,11 @@ Scenario: Save a note
 
 Scenario: Reject an empty note
   Given an empty note
-  Then 400 and no NotesContext row was created
+  Then 422 and no NotesContext row was created
 ```
 
 ## 15. Definition of done
-Tasks green; 201 + persistence + 400 covered.
+Tasks green; 201 + persistence + 422 covered.
 
 ## 16. Verification script
 1. `curl -X POST localhost:5000/api/weather/notes -d '{...}'`.

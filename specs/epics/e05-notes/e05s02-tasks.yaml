@@ -1,6 +1,6 @@
 story_id: e05s02
 title: Notes — consume CityAddedIntegrationEvent into a local City projection
-status: failing
+status: passing
 bcps: 4
 module: M4
 tasks:
@@ -8,29 +8,29 @@ tasks:
     description: "Add Cities/City projection entity + CityProjectionConfiguration to NotesContext"
     verify: "dotnet test src/Modules/Notes/Tests --filter Category=CityProjectionConfig"
     risk: P1
-    status: failing
+    status: passing
     allure: { severity: high, categories: ["Notes", "integration"] }
   - id: 2
     description: "Add CityAddedIntegrationEventHandler with idempotent upsert"
     verify: "dotnet test src/Modules/Notes/Tests --filter Category=CityAddedHandler"
     risk: P0
-    status: failing
+    status: passing
     allure: { severity: critical, categories: ["Notes", "ModularMonolith", "integration"] }
   - id: 3
     description: "Reference Geography.IntegrationEvents only; assert no other Geography reference"
-    verify: "dotnet test src/Tests/ArchTests --filter Category=ModuleIsolation"
+    verify: "dotnet test src/Tests/Weather.ArchTests --filter Category=ModuleIsolation"
     risk: P0
-    status: failing
+    status: passing
     allure: { severity: critical, categories: ["Architecture", "ModularMonolith"] }
   - id: 4
-    description: "Use the local projection in AddWeatherNoteValidator to reject unknown cities"
+    description: "Use the local projection in AddWeatherNoteCommandHandler to reject unknown cities (404)"
     verify: "dotnet test src/Modules/Notes/Tests --filter Category=UnknownCity"
     risk: P1
-    status: failing
+    status: passing
     allure: { severity: high, categories: ["Notes", "unit"] }
   - id: 5
     description: "Integration: one CityAdded event updates both Favorites and Notes projections"
-    verify: "dotnet test src/Tests/IntegrationTests --filter Category=MultiSubscriber"
+    verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=MultiSubscriber"
     risk: P0
-    status: failing
+    status: passing
     allure: { severity: critical, categories: ["ModularMonolith", "integration"] }
