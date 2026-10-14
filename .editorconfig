@@ -422,3 +422,9 @@ dotnet_sort_system_directives_first = true
 csharp_using_directive_placement = outside_namespace:warning
 csharp_prefer_braces = true:warning
 csharp_style_var_when_type_is_apparent = true:suggestion
+
+# EF Core generated migrations (generated code). Excluded from style/analyzer rules.
+[**/Migrations/*.cs]
+generated_code = true
+dotnet_analyzer_diagnostic.severity = none
+csharp_style_namespace_declarations = block_scoped

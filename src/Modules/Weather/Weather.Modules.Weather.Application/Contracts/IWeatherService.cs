@@ -3,7 +3,7 @@ using global::Weather.Modules.Weather.Application.WeatherReports.GetCurrentWeath
 namespace Weather.Modules.Weather.Application.Contracts;
 
 /// <summary>The Weather module's public API. Only the host may call this.</summary>
-public interface IWeatherModule
+public interface IWeatherService
 {
     Task<WeatherReportDto?> GetCurrentWeatherAsync(
         string cityName,

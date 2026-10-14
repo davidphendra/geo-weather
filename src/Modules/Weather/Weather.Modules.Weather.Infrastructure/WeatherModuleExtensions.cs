@@ -29,7 +29,7 @@ public static class WeatherModuleExtensions
 
         services.AddTransient<OpenWeatherApiKeyHandler>();
 
-        services.AddHttpClient<IWeatherService, OpenWeatherMapService>((serviceProvider, httpClient) =>
+        services.AddHttpClient<IWeatherProvider, OpenWeatherMapService>((serviceProvider, httpClient) =>
             {
                 OpenWeatherOptions options = serviceProvider.GetRequiredService<IOptions<OpenWeatherOptions>>().Value;
                 httpClient.BaseAddress = new Uri(options.BaseUrl, UriKind.Absolute);
@@ -37,10 +37,10 @@ public static class WeatherModuleExtensions
             .AddHttpMessageHandler<OpenWeatherApiKeyHandler>()
             .AddStandardResilienceHandler();
 
-        services.AddMediatR(configuration => configuration.RegisterServicesFromAssembly(typeof(IWeatherService).Assembly));
-        services.AddValidatorsFromAssembly(typeof(IWeatherService).Assembly, includeInternalTypes: true);
+        services.AddMediatR(configuration => configuration.RegisterServicesFromAssembly(typeof(IWeatherProvider).Assembly));
+        services.AddValidatorsFromAssembly(typeof(IWeatherProvider).Assembly, includeInternalTypes: true);
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-        services.AddScoped<IWeatherModule, WeatherModule>();
+        services.AddScoped<IWeatherService, WeatherService>();
 
         return services;
     }

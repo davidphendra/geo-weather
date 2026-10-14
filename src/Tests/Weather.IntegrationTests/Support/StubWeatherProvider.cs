@@ -4,7 +4,7 @@ using global::Weather.Modules.Weather.Domain.WeatherReports;
 namespace Weather.IntegrationTests.Support;
 
 /// <summary>Deterministic in-memory replacement for the OpenWeatherMap adapter. No network.</summary>
-internal sealed class StubWeatherService : IWeatherService
+internal sealed class StubWeatherProvider : IWeatherProvider
 {
     public Task<WeatherReport?> GetCurrentWeatherAsync(
         string cityName,

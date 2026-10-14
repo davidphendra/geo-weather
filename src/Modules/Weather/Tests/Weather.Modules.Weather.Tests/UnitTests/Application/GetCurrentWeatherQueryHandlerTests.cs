@@ -22,7 +22,7 @@ public sealed class GetCurrentWeatherQueryHandlerTests
     [Fact]
     public async Task ReturnsMappedDto()
     {
-        IWeatherService service = Substitute.For<IWeatherService>();
+        IWeatherProvider service = Substitute.For<IWeatherProvider>();
         service.GetCurrentWeatherAsync("London", "GB", Arg.Any<CancellationToken>()).Returns(Report());
         var handler = new GetCurrentWeatherQueryHandler(service);
 
@@ -37,7 +37,7 @@ public sealed class GetCurrentWeatherQueryHandlerTests
     [Fact]
     public async Task ReturnsNullWhenServiceFindsNothing()
     {
-        IWeatherService service = Substitute.For<IWeatherService>();
+        IWeatherProvider service = Substitute.For<IWeatherProvider>();
         service.GetCurrentWeatherAsync("Nowhere", "GB", Arg.Any<CancellationToken>())
             .Returns((WeatherReport?)null);
         var handler = new GetCurrentWeatherQueryHandler(service);

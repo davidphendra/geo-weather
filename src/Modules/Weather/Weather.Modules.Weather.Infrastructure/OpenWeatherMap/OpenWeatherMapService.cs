@@ -10,7 +10,7 @@ namespace Weather.Modules.Weather.Infrastructure.OpenWeatherMap;
 
 internal sealed class OpenWeatherMapService(
     HttpClient httpClient,
-    ILogger<OpenWeatherMapService> logger) : IWeatherService
+    ILogger<OpenWeatherMapService> logger) : IWeatherProvider
 {
     public async Task<WeatherReport?> GetCurrentWeatherAsync(
         string cityName,

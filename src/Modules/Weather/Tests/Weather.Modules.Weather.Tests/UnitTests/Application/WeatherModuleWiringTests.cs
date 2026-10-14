@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Weather.Modules.Weather.Tests.UnitTests.Application;
 
-[Trait("Category", "WeatherModuleWiring")]
+[Trait("Category", "WeatherServiceWiring")]
 public sealed class WeatherModuleWiringTests
 {
     [Fact]
@@ -29,7 +29,7 @@ public sealed class WeatherModuleWiringTests
 
         using ServiceProvider provider = services.BuildServiceProvider();
 
-        IWeatherService service = provider.GetRequiredService<IWeatherService>();
+        IWeatherProvider service = provider.GetRequiredService<IWeatherProvider>();
 
         Assert.Equal("OpenWeatherMapService", service.GetType().Name);
     }

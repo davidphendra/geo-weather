@@ -25,4 +25,10 @@
     <ProjectReference Include="..\..\Weather.Modules.Geography.IntegrationEvents\Weather.Modules.Geography.IntegrationEvents.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="NSubstitute" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+  </ItemGroup>
 </Project>

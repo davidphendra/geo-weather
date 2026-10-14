@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Weather.Modules.Weather.Application.WeatherReports.GetCurrentWeather;
 
-internal sealed class GetCurrentWeatherQueryHandler(IWeatherService weatherService)
+internal sealed class GetCurrentWeatherQueryHandler(IWeatherProvider weatherService)
     : IRequestHandler<GetCurrentWeatherQuery, WeatherReportDto?>
 {
     public async Task<WeatherReportDto?> Handle(

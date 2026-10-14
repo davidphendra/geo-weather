@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Weather.Modules.Weather.Infrastructure;
 
-internal sealed class WeatherModule(ISender sender) : IWeatherModule
+internal sealed class WeatherService(ISender sender) : IWeatherService
 {
     public Task<WeatherReportDto?> GetCurrentWeatherAsync(
         string cityName,

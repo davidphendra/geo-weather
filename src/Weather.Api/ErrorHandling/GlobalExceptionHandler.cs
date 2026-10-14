@@ -1,5 +1,6 @@
 using FluentValidation;
 
+using global::Weather.Modules.Geography.Application.Abstractions;
 using global::Weather.Modules.Weather.Application.Abstractions;
 
 using Microsoft.AspNetCore.Diagnostics;
@@ -20,6 +21,7 @@ internal sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> log
         (int statusCode, string title) = exception switch
         {
             ValidationException => (StatusCodes.Status400BadRequest, "Validation failed"),
+            CountryNotFoundException => (StatusCodes.Status404NotFound, "Country not found"),
             WeatherProviderException => (StatusCodes.Status502BadGateway, "Weather provider unavailable"),
             _ => (StatusCodes.Status500InternalServerError, "An unexpected error occurred"),
         };
