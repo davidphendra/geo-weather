@@ -11,19 +11,25 @@ public static class CspPolicy
 
         string styleSources = string.Join(' ', new[] { "'self'" }.Concat(options.StyleOrigins));
         string fontSources = string.Join(' ', options.FontOrigins);
+        string scriptSources = $"'self' 'nonce-{nonce}'";
 
         return string.Join("; ", new[]
         {
             "base-uri 'self'",
             "default-src 'self'",
             "object-src 'none'",
-            $"script-src 'self' 'nonce-{nonce}' 'strict-dynamic'",
-            $"script-src-elem 'self' 'nonce-{nonce}' 'strict-dynamic'",
+
+            // 'strict-dynamic' is deliberately NOT used: Blazor emits colocated .razor.js module
+            // scripts as <script src> without a nonce, which 'strict-dynamic' would block.
+            $"script-src {scriptSources}",
+            $"script-src-elem {scriptSources}",
             "script-src-attr 'none'",
+
             $"style-src {styleSources}",
             $"style-src-elem {styleSources}",
             "style-src-attr 'none'",
             $"font-src {fontSources}",
+
             "img-src 'self' data:",
             "connect-src 'self' ws: wss:",
             "form-action 'self'",

@@ -26,12 +26,14 @@ public sealed class CspPolicyTests
     public void Emits_directive(string directive) => Assert.Contains(directive, Policy());
 
     [Fact]
-    public void Emits_the_nonce_and_strict_dynamic()
+    public void Emits_the_nonce_but_not_strict_dynamic()
     {
         string policy = Policy();
 
         Assert.Contains("'nonce-NONCE'", policy);
-        Assert.Contains("'strict-dynamic'", policy);
+        Assert.Contains("script-src 'self' 'nonce-NONCE'", policy);
+        // Colocated .razor.js module scripts have no nonce, so 'strict-dynamic' must not be set.
+        Assert.DoesNotContain("'strict-dynamic'", policy);
     }
 
     [Fact]

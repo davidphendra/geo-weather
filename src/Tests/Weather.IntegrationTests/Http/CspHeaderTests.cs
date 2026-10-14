@@ -19,7 +19,7 @@ public sealed class CspHeaderTests(WeatherHostFactory factory) : IClassFixture<W
         // Blazor adds its own frame-ancestors header; browsers enforce the intersection.
         string policy = string.Join("; ", values ?? []);
         Assert.Contains("frame-ancestors 'none'", policy);
-        Assert.Contains("'strict-dynamic'", policy);
+        Assert.Contains("script-src 'self' 'nonce-", policy);
         Assert.Contains("default-src 'self'", policy);
     }
 
