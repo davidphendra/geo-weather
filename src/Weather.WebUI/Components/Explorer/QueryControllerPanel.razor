@@ -1,0 +1,97 @@
+<section class="bg-surface-container-lowest shadow-sm rounded-xl p-space-lg md:p-space-xl flex flex-col gap-space-lg">
+    <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-space-md">
+        <div class="flex items-center gap-space-md flex-wrap">
+            <div class="flex items-center gap-space-xs px-2.5 py-1 rounded bg-secondary-fixed/20 text-on-secondary-fixed font-code-sm text-code-sm">
+                <span class="w-2 h-2 rounded-full bg-secondary"></span>
+                <span class="font-bold">CQRS QUERY PIPELINE</span>
+            </div>
+            <span class="font-code-sm text-code-sm text-on-surface-variant">GET /api/countries</span>
+            <span class="font-code-sm text-code-sm text-on-surface-variant">GET /api/countries/{countryCode}/cities</span>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-space-md items-end">
+        <div class="md:col-span-5 flex flex-col gap-space-xs">
+            <label class="font-label-md text-label-md text-on-surface uppercase tracking-wider font-semibold" for="country-selector">
+                Target Jurisdiction (Country)
+            </label>
+            <div class="relative">
+                <select id="country-selector"
+                        class="w-full h-10 px-3 bg-surface-container-low text-on-surface font-body-md text-body-md rounded-lg appearance-none cursor-pointer focus:outline-none focus:bg-surface-container transition-all"
+                        value="@SelectedCountry?.Code" @onchange="CountryChangedAsync">
+                    @foreach (CountryModel country in Countries)
+                    {
+                        <option value="@country.Code">@country.Name</option>
+                    }
+                </select>
+                <span class="material-symbols-outlined absolute right-3 top-2.5 pointer-events-none text-on-surface-variant text-[20px]">expand_more</span>
+            </div>
+        </div>
+
+        <div class="md:col-span-5 flex flex-col gap-space-xs">
+            <label class="font-label-md text-label-md text-on-surface uppercase tracking-wider font-semibold" for="city-selector">
+                Dependent Region (City)
+            </label>
+            <div class="relative">
+                <select id="city-selector"
+                        class="w-full h-10 px-3 bg-surface-container-low text-on-surface font-body-md text-body-md rounded-lg appearance-none cursor-pointer focus:outline-none focus:bg-surface-container transition-all"
+                        value="@SelectedCity?.Id" @onchange="CityChangedAsync">
+                    @foreach (CityModel city in Cities)
+                    {
+                        <option value="@city.Id">@city.Name</option>
+                    }
+                </select>
+                <span class="material-symbols-outlined absolute right-3 top-2.5 pointer-events-none text-on-surface-variant text-[20px]">expand_more</span>
+            </div>
+        </div>
+
+        <div class="md:col-span-2">
+            <button type="button"
+                    class="w-full h-10 flex items-center justify-center gap-2 bg-primary text-on-primary font-body-sm text-body-sm rounded-lg hover:bg-surface-container-highest hover:text-on-surface transition-all active:scale-[0.98] disabled:opacity-50"
+                    @onclick="FetchAsync" disabled="@Loading">
+                <span class="material-symbols-outlined text-[18px]">sync</span>
+                <span>Fetch Query</span>
+            </button>
+        </div>
+    </div>
+</section>
+
+@code {
+    [Parameter] public IReadOnlyList<CountryModel> Countries { get; set; } = [];
+
+    [Parameter] public IReadOnlyList<CityModel> Cities { get; set; } = [];
+
+    [Parameter] public CountryModel? SelectedCountry { get; set; }
+
+    [Parameter] public CityModel? SelectedCity { get; set; }
+
+    [Parameter] public bool Loading { get; set; }
+
+    [Parameter] public EventCallback<CountryModel> OnCountryChanged { get; set; }
+
+    [Parameter] public EventCallback<CityModel> OnCityChanged { get; set; }
+
+    [Parameter] public EventCallback OnFetch { get; set; }
+
+    private async Task CountryChangedAsync(ChangeEventArgs args)
+    {
+        string? code = args.Value?.ToString();
+        CountryModel? country = Countries.FirstOrDefault(candidate => candidate.Code == code);
+        if (country is not null)
+        {
+            await OnCountryChanged.InvokeAsync(country);
+        }
+    }
+
+    private async Task CityChangedAsync(ChangeEventArgs args)
+    {
+        string? id = args.Value?.ToString();
+        CityModel? city = Cities.FirstOrDefault(candidate => candidate.Id == id);
+        if (city is not null)
+        {
+            await OnCityChanged.InvokeAsync(city);
+        }
+    }
+
+    private Task FetchAsync() => OnFetch.InvokeAsync();
+}

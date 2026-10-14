@@ -1,0 +1,19 @@
+<div class="p-space-sm bg-primary-container text-on-primary font-code-sm text-code-sm rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs">
+    <div class="flex items-center gap-2 overflow-x-auto whitespace-nowrap">
+        <span class="px-1.5 py-0.5 rounded bg-secondary text-on-secondary font-bold text-[10px]">C# MEDIATR</span>
+        <span class="text-tertiary-fixed-dim">@Expression</span>
+    </div>
+    <div class="flex items-center gap-space-md text-on-primary-container shrink-0">
+        <span>GET /api/weather/{cityName}</span>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string? City { get; set; }
+
+    [Parameter] public string? Country { get; set; }
+
+    private string Expression => City is null
+        ? "Mediator.Send(new GetCityWeatherQuery(<cityName>, Units.Metric))"
+        : $"Mediator.Send(new GetCityWeatherQuery(\"{City}\", \"{Country}\"))";
+}

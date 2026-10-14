@@ -4,7 +4,12 @@ namespace Weather.WebUI.Services;
 public sealed class WeatherApiException : Exception
 {
     public WeatherApiException(ApiProblem problem)
-        : base(problem?.Detail ?? problem?.Title ?? "The weather API call failed.")
+        : this(problem, null)
+    {
+    }
+
+    public WeatherApiException(ApiProblem problem, Exception? innerException)
+        : base(problem?.Detail ?? problem?.Title ?? "The weather API call failed.", innerException)
     {
         ArgumentNullException.ThrowIfNull(problem);
         Problem = problem;

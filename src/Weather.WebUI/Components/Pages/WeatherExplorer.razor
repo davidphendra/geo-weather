@@ -1,0 +1,49 @@
+@page "/"
+@rendermode InteractiveServer
+@inject WeatherExplorerModel Model
+
+<PageTitle>Weather Explorer</PageTitle>
+
+<div class="w-full px-gutter md:px-margin-desktop py-space-xl space-y-space-xl max-w-[1600px] mx-auto">
+    <QueryControllerPanel Countries="Model.Countries"
+                          Cities="Model.Cities"
+                          SelectedCountry="Model.Country"
+                          SelectedCity="Model.City"
+                          Loading="Model.Loading"
+                          OnCountryChanged="OnCountryChangedAsync"
+                          OnCityChanged="OnCityChangedAsync"
+                          OnFetch="OnFetchAsync"/>
+
+    <MediatRExpressionBar City="Model.City?.Name" Country="Model.City?.CountryCode"/>
+
+    <ProblemBanner Problem="Model.Error"/>
+
+    @if (Model.Report is not null && Model.City is not null)
+    {
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
+            <div class="lg:col-span-7 flex flex-col gap-space-xl">
+                <StationHeroCard Report="Model.Report" City="Model.City"/>
+                <ForecastStrip/>
+            </div>
+            <div class="lg:col-span-5 flex flex-col gap-space-xl">
+                <CommandDispatchForm City="Model.City" TemperatureCelsius="Model.Report.Temperature.Celsius"/>
+                <ChangeTrackerResponseWell/>
+            </div>
+        </div>
+
+        <ArchitectureDeepDive/>
+    }
+</div>
+
+@code {
+    protected override Task OnInitializedAsync() => Model.InitializeAsync(CancellationToken.None);
+
+    private Task OnCountryChangedAsync(CountryModel country) =>
+        Model.SelectCountryAsync(country, CancellationToken.None);
+
+    private Task OnCityChangedAsync(CityModel city) =>
+        Model.SelectCityAsync(city, CancellationToken.None);
+
+    private Task OnFetchAsync() =>
+        Model.City is null ? Task.CompletedTask : Model.SelectCityAsync(Model.City, CancellationToken.None);
+}

@@ -1,0 +1,18 @@
+@* One diagnostic metric in the station grid. *@
+<div class="p-space-md rounded-lg bg-surface-container flex flex-col gap-1">
+    <span class="font-code-sm text-code-sm text-on-surface-variant flex items-center gap-1">
+        <span class="material-symbols-outlined text-[15px] text-secondary">@Icon</span>@Label
+    </span>
+    <span class="font-headline-sm text-headline-sm text-on-surface font-bold">@Value</span>
+    @if (!string.IsNullOrWhiteSpace(Detail))
+    {
+        <span class="font-code-sm text-code-sm text-on-surface-variant">@Detail</span>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Label { get; set; } = string.Empty;
+    [Parameter, EditorRequired] public string Icon { get; set; } = string.Empty;
+    [Parameter, EditorRequired] public string Value { get; set; } = string.Empty;
+    [Parameter] public string? Detail { get; set; }
+}

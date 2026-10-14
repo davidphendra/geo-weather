@@ -1,0 +1,71 @@
+<section class="bg-surface-container-lowest shadow-sm rounded-xl p-space-lg md:p-space-xl flex flex-col gap-space-md">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
+        <div>
+            <span class="font-label-sm text-label-sm text-secondary uppercase font-semibold">Under the Hood Architecture</span>
+            <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">REST API &amp; MediatR CQRS Execution Map</h3>
+        </div>
+        <div class="flex items-center gap-space-xs">
+            <button type="button" class="@TabClass(true)" @onclick="() => _showCurl = true">cURL Command</button>
+            <button type="button" class="@TabClass(false)" @onclick="() => _showCurl = false">C# Handler &amp; Minimal API</button>
+        </div>
+    </div>
+
+    @if (_showCurl)
+    {
+        <div class="p-space-md rounded-lg bg-primary-container text-on-primary font-code-sm text-code-sm">
+            <pre class="overflow-x-auto text-secondary-fixed pt-1">curl -X POST "https://localhost/api/cities/favorites" \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "cityName": "London",
+    "countryCode": "GB"
+  }'</pre>
+        </div>
+    }
+    else
+    {
+        <div class="p-space-md rounded-lg bg-primary-container text-on-primary font-code-sm text-code-sm">
+            <pre class="overflow-x-auto text-tertiary-fixed-dim">app.MapPost("/api/cities/favorites", async (
+    [FromBody] AddFavoriteRequest request,
+    IFavoritesService favorites,
+    CancellationToken ct) =&gt;
+{
+    var favorite = await favorites.AddFavoriteAsync(
+        request.CityName, request.CountryCode, ct);
+    return Results.Created($"/api/cities/favorites/{favorite.Id}", favorite);
+});</pre>
+        </div>
+    }
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-space-sm pt-space-xs">
+        <div class="p-space-sm bg-surface-container rounded-lg flex items-center gap-2">
+            <span class="material-symbols-outlined text-secondary text-[20px]">layers</span>
+            <div class="flex flex-col">
+                <span class="font-code-sm text-code-sm text-on-surface font-semibold">Strict CQRS Separation</span>
+                <span class="font-body-sm text-body-sm text-on-surface-variant">Reads isolated from state mutators</span>
+            </div>
+        </div>
+        <div class="p-space-sm bg-surface-container rounded-lg flex items-center gap-2">
+            <span class="material-symbols-outlined text-secondary text-[20px]">cached</span>
+            <div class="flex flex-col">
+                <span class="font-code-sm text-code-sm text-on-surface font-semibold">Per-module Data Isolation</span>
+                <span class="font-body-sm text-body-sm text-on-surface-variant">One SQLite file per module</span>
+            </div>
+        </div>
+        <div class="p-space-sm bg-surface-container rounded-lg flex items-center gap-2">
+            <span class="material-symbols-outlined text-secondary text-[20px]">database</span>
+            <div class="flex flex-col">
+                <span class="font-code-sm text-code-sm text-on-surface font-semibold">RFC 9457 Errors</span>
+                <span class="font-body-sm text-body-sm text-on-surface-variant">Problem Details with a stable code</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+    private bool _showCurl = true;
+
+    private string TabClass(bool isCurl) => isCurl == _showCurl
+        ? "px-3 py-1.5 rounded font-code-sm text-code-sm bg-surface-container text-on-surface font-semibold"
+        : "px-3 py-1.5 rounded font-code-sm text-code-sm bg-transparent text-on-surface-variant hover:text-on-surface";
+}

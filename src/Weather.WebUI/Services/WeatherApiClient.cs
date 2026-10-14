@@ -57,9 +57,28 @@ public sealed class WeatherApiClient(HttpClient http, NavigationManager navigati
 
     private Uri Endpoint(string relative) => new(new Uri(navigation.BaseUri, UriKind.Absolute), relative);
 
+    private static ApiProblem DependencyUnavailable() => new(
+        null,
+        "Dependency unavailable",
+        StatusCodes.Status502BadGateway,
+        "The weather API could not be reached.",
+        "DEPENDENCY_UNAVAILABLE");
+
+    private static async Task<HttpResponseMessage> SendAsync(Func<Task<HttpResponseMessage>> send)
+    {
+        try
+        {
+            return await send();
+        }
+        catch (HttpRequestException exception)
+        {
+            throw new WeatherApiException(DependencyUnavailable(), exception);
+        }
+    }
+
     private async Task<T> GetAsync<T>(string relative, CancellationToken cancellationToken)
     {
-        using HttpResponseMessage response = await http.GetAsync(Endpoint(relative), cancellationToken);
+        using HttpResponseMessage response = await SendAsync(() => http.GetAsync(Endpoint(relative), cancellationToken));
 
         if (!response.IsSuccessStatusCode)
         {
@@ -73,7 +92,8 @@ public sealed class WeatherApiClient(HttpClient http, NavigationManager navigati
 
     private async Task<ApiResult<T>> PostAsync<T>(string relative, object body, CancellationToken cancellationToken)
     {
-        using HttpResponseMessage response = await http.PostAsJsonAsync(Endpoint(relative), body, cancellationToken);
+        using HttpResponseMessage response = await SendAsync(
+            () => http.PostAsJsonAsync(Endpoint(relative), body, cancellationToken));
         string json = await response.Content.ReadAsStringAsync(cancellationToken);
 
         T? value = response.IsSuccessStatusCode

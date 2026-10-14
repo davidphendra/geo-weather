@@ -1,0 +1,83 @@
+@inject CommandDispatchModel Dispatch
+@*
+    One form, two intents (Favorite default): the "Mutation Intent" toggle chooses which endpoint
+    is called, matching the design's intent concept (Q4).
+*@
+<section class="bg-surface-container-lowest shadow-sm rounded-xl p-space-lg md:p-space-xl flex flex-col gap-space-lg">
+    <div class="flex flex-col gap-1">
+        <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded bg-secondary-fixed/30 text-secondary font-code-sm text-code-sm font-bold">CQRS COMMAND</span>
+            <span class="font-code-sm text-code-sm text-on-surface-variant">@EndpointLabel</span>
+        </div>
+        <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold mt-1">Dispatch Command</h3>
+        <p class="font-body-sm text-body-sm text-on-surface-variant">
+            Persist a favorite city or a weather note for the selected telemetry target.
+        </p>
+    </div>
+
+    <form class="space-y-space-md" @onsubmit="SubmitAsync" @onsubmit:preventDefault>
+        <div class="flex flex-col gap-space-xs">
+            <span class="font-label-md text-label-md text-on-surface font-semibold uppercase">Mutation Intent</span>
+            <div class="flex items-center gap-2">
+                <button type="button" class="@IntentClass(MutationIntent.Favorite)"
+                        @onclick="() => Dispatch.Intent = MutationIntent.Favorite">
+                    <span class="material-symbols-outlined text-[18px]">bookmark</span>
+                    <span>Save Favorite</span>
+                </button>
+                <button type="button" class="@IntentClass(MutationIntent.Note)"
+                        @onclick="() => Dispatch.Intent = MutationIntent.Note">
+                    <span class="material-symbols-outlined text-[18px]">description</span>
+                    <span>Save Note</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-space-xs">
+            <label class="font-label-md text-label-md text-on-surface font-semibold uppercase" for="command-title">Target City Context (Readonly)</label>
+            <div class="flex items-center justify-between px-3 h-10 bg-surface-container-low rounded-lg text-on-surface font-code-sm text-code-sm">
+                <span>@(City is null ? "No city selected" : $"{City.Name} ({City.CountryCode})")</span>
+                <span class="material-symbols-outlined text-[18px] text-secondary">lock</span>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-space-xs">
+            <label class="font-label-md text-label-md text-on-surface font-semibold uppercase" for="command-title-input">
+                @(Dispatch.Intent == MutationIntent.Favorite ? "Favorite Alias / Label" : "Weather Observation Note")
+            </label>
+            <input id="command-title-input" type="text"
+                   class="w-full h-10 px-3 bg-surface-container-low text-on-surface font-body-md text-body-md rounded-lg focus:outline-none focus:bg-surface-container transition-all"
+                   placeholder="@(Dispatch.Intent == MutationIntent.Favorite ? "e.g. Puget Sound Monitoring Node" : "e.g. Approaching cold front from the estuary")"
+                   @bind="Dispatch.Text" @bind:event="oninput"/>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Dispatch.ValidationError))
+        {
+            <p class="font-code-sm text-code-sm text-error" role="alert">@Dispatch.ValidationError</p>
+        }
+
+        <button type="submit"
+                class="w-full h-11 bg-primary text-on-primary font-body-md text-body-md font-medium rounded-lg flex items-center justify-center gap-2 hover:bg-surface-container-highest hover:text-on-surface transition-all active:scale-[0.99] shadow-sm disabled:opacity-50"
+                disabled="@Dispatch.Posting">
+            <span class="material-symbols-outlined text-[20px]">bookmark_add</span>
+            <span>@(Dispatch.Posting ? "Dispatching…" : "Dispatch Command")</span>
+        </button>
+    </form>
+</section>
+
+@code {
+    [Parameter] public CityModel? City { get; set; }
+
+    [Parameter] public decimal? TemperatureCelsius { get; set; }
+
+    private string EndpointLabel => Dispatch.Intent == MutationIntent.Favorite
+        ? "POST /api/cities/favorites"
+        : "POST /api/weather/notes";
+
+    protected override void OnParametersSet() => Dispatch.Bind(City, TemperatureCelsius);
+
+    private string IntentClass(MutationIntent intent) => intent == Dispatch.Intent
+        ? "flex items-center gap-1.5 px-3 py-2 rounded-lg bg-primary text-on-primary font-body-sm text-body-sm font-medium"
+        : "flex items-center gap-1.5 px-3 py-2 rounded-lg bg-surface-container text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm";
+
+    private Task SubmitAsync() => Dispatch.SubmitAsync(CancellationToken.None);
+}

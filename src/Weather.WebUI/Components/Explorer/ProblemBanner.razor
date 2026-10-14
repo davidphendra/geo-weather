@@ -1,0 +1,13 @@
+@if (Problem is not null)
+{
+    <div class="p-space-md rounded-lg bg-error-container text-on-error-container flex flex-col gap-1" role="alert">
+        <span class="font-code-sm text-code-sm font-semibold uppercase tracking-wider">
+            @(Problem.Code ?? "ERROR") · HTTP @Problem.Status
+        </span>
+        <span class="font-body-md text-body-md">@(Problem.Detail ?? Problem.Title ?? "The request failed.")</span>
+    </div>
+}
+
+@code {
+    [Parameter] public ApiProblem? Problem { get; set; }
+}

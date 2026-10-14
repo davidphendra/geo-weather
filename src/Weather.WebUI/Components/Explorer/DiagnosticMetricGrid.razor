@@ -1,0 +1,26 @@
+@using System.Globalization
+@*
+    Diagnostic quad-grid. Where the API has no field, the design slot shows the nearest real metric
+    (visibility replaces UV/solar; cardinal replaces gusts; observed-at replaces the pressure trend) - D3.
+*@
+@if (Report is not null)
+{
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-space-md">
+        <DiagnosticCell Label="Humidity" Icon="water_drop"
+                        Value="@($"{Report.RelativeHumidityPercent}%")"
+                        Detail="@($"Dew Pt: {Report.DewPoint.Celsius.ToString("0.0", CultureInfo.InvariantCulture)}°C")"/>
+        <DiagnosticCell Label="Wind Vector" Icon="air"
+                        Value="@($"{Report.Wind.SpeedMetersPerSecond.ToString("0.0", CultureInfo.InvariantCulture)} m/s")"
+                        Detail="@Report.Wind.Cardinal"/>
+        <DiagnosticCell Label="Pressure" Icon="compress"
+                        Value="@($"{Report.PressureHectopascals.ToString("0", CultureInfo.InvariantCulture)} hPa")"
+                        Detail="@($"Observed {Report.ObservedAtUtc.ToUniversalTime().ToString("HH:mm", CultureInfo.InvariantCulture)}Z")"/>
+        <DiagnosticCell Label="Visibility" Icon="visibility"
+                        Value="@($"{(Report.VisibilityMeters / 1000m).ToString("0.#", CultureInfo.InvariantCulture)} km")"
+                        Detail="Observed"/>
+    </div>
+}
+
+@code {
+    [Parameter] public WeatherReportModel? Report { get; set; }
+}

@@ -1,0 +1,21 @@
+@inject CommandDispatchModel Dispatch
+@if (Dispatch.LastResult is not null || Dispatch.Error is not null)
+{
+    <section class="bg-surface-container-lowest shadow-sm rounded-xl p-space-lg md:p-space-xl flex flex-col gap-space-md">
+        <div class="flex items-center justify-between">
+            <span class="font-label-sm text-label-sm text-on-surface-variant uppercase font-semibold">Command Response</span>
+            <span class="font-code-sm text-code-sm font-bold @(Dispatch.LastResult?.IsSuccess == true ? "text-secondary" : "text-error")">
+                HTTP @(Dispatch.LastResult?.Status ?? Dispatch.Error?.Status)
+            </span>
+        </div>
+
+        @if (Dispatch.Error is not null)
+        {
+            <ProblemBanner Problem="Dispatch.Error"/>
+        }
+        else
+        {
+            <pre class="p-space-md rounded-lg bg-primary-container text-secondary-fixed font-code-sm text-code-sm overflow-x-auto leading-relaxed">@Dispatch.LastResult?.RawJson</pre>
+        }
+    </section>
+}

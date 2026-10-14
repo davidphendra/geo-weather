@@ -1,0 +1,53 @@
+@using System.Globalization
+@if (Report is not null && City is not null)
+{
+    <section class="bg-surface-container-lowest shadow-sm rounded-xl p-space-lg md:p-space-xl relative overflow-hidden">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md mb-space-lg">
+            <div>
+                <div class="flex items-center gap-space-xs mb-1">
+                    <span class="material-symbols-outlined text-secondary text-[22px]">radar</span>
+                    <span class="font-label-sm text-label-sm text-secondary uppercase font-semibold tracking-wider">Live Surface Observation Station</span>
+                </div>
+                <h2 class="font-headline-lg text-headline-lg text-on-surface font-semibold">@Report.Location.City, @Report.Location.Country</h2>
+                <p class="font-code-sm text-code-sm text-on-surface-variant flex items-center gap-2 mt-1 flex-wrap">
+                    <span>Lat: @City.Latitude.ToString("0.0000", CultureInfo.InvariantCulture)</span>
+                    <span>•</span>
+                    <span>Lon: @City.Longitude.ToString("0.0000", CultureInfo.InvariantCulture)</span>
+                    <span>•</span>
+                    <span class="text-secondary font-bold">Observed @Report.ObservedAtUtc.ToUniversalTime().ToString("u", CultureInfo.InvariantCulture)</span>
+                </p>
+            </div>
+            <span class="px-2.5 py-1 rounded-full bg-secondary-fixed/20 text-secondary font-code-sm text-code-sm font-semibold flex items-center gap-1.5 shrink-0">
+                <span class="w-2 h-2 rounded-full bg-secondary animate-ping"></span>
+                <span>LIVE TELEMETRY</span>
+            </span>
+        </div>
+
+        <div class="p-space-lg rounded-xl bg-surface-container-low flex flex-col md:flex-row items-center justify-between gap-space-lg mb-space-lg">
+            <div class="flex items-center gap-space-lg">
+                <div class="w-16 h-16 rounded-2xl bg-secondary text-on-secondary flex items-center justify-center shadow-md shrink-0">
+                    <span class="material-symbols-outlined text-[36px]">partly_cloudy_day</span>
+                </div>
+                <div>
+                    <div class="flex items-baseline gap-2">
+                        <span class="font-headline-xl text-headline-xl text-on-surface font-bold tracking-tight">
+                            @Report.Temperature.Celsius.ToString("0", CultureInfo.InvariantCulture)°C
+                        </span>
+                        <span class="font-headline-md text-headline-md text-on-surface-variant font-normal">
+                            / @Report.Temperature.Fahrenheit.ToString("0", CultureInfo.InvariantCulture)°F
+                        </span>
+                    </div>
+                    <p class="font-body-md text-body-md text-on-surface font-medium capitalize">@Report.SkyCondition</p>
+                </div>
+            </div>
+        </div>
+
+        <DiagnosticMetricGrid Report="Report"/>
+    </section>
+}
+
+@code {
+    [Parameter] public WeatherReportModel? Report { get; set; }
+
+    [Parameter] public CityModel? City { get; set; }
+}
