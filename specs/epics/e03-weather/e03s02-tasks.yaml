@@ -1,5 +1,5 @@
 story_id: e03s02
-title: IWeatherService port + OpenWeatherMap adapter
+title: IWeatherProvider port + OpenWeatherMap adapter
 status: done
 bcps: 4
 module: M2
@@ -17,7 +17,7 @@ tasks:
     allure: { severity: high, categories: ["Weather", "WeatherProvider", "Standards"] }
   - id: 2
     description: >
-      Add IWeatherService port (Task<WeatherReport?>, null = not found) and sealed WeatherProviderException
+      Add IWeatherProvider port (Task<WeatherReport?>, null = not found) and sealed WeatherProviderException
       (message + optional inner) in Application.Abstractions, with XML docs.
     verify: "dotnet build src/Modules/Weather/Weather.Modules.Weather.Application/Weather.Modules.Weather.Application.csproj --warnaserror"
     risk: P1
@@ -56,7 +56,7 @@ tasks:
       Add AddWeatherModule composition root: options Bind + ValidateDataAnnotations + ValidateOnStart;
       AddHttpClient typed client + OpenWeatherApiKeyHandler + AddStandardResilienceHandler; MediatR;
       FluentValidation; ValidationBehavior pipeline. Tests assert the graph resolves and the real HttpClient is configured.
-    verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=WeatherModuleWiring"
+    verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=WeatherServiceWiring"
     risk: P1
     status: passing
     allure: { severity: high, categories: ["Weather", "WeatherProvider", "unit"] }

@@ -56,7 +56,7 @@ product questions.
 |---|------------|----------|
 | DD1 | Removed `<LangVersion>latest</LangVersion>`; added `AnalysisLevel=latest` + `EnforceCodeStyleInBuild=true`; naming rules in `.editorconfig` | §2, §17 |
 | DD2 | `ObservedAtUtc` is `DateTimeOffset` (an instant), not `DateTime` | §15 |
-| DD3 | "City not found" is an **expected outcome** → `IWeatherService`/`IWeatherModule` return `WeatherReport?` / `WeatherReportDto?`; the endpoint maps `null` → 404. Provider failure stays exceptional (`WeatherProviderException`) | §5 |
+| DD3 | "City not found" is an **expected outcome** → `IWeatherProvider`/`IWeatherService` return `WeatherReport?` / `WeatherReportDto?`; the endpoint maps `null` → 404. Provider failure stays exceptional (`WeatherProviderException`) | §5 |
 | DD4 | Resilience via `Microsoft.Extensions.Http.Resilience` (timeout + bounded transient retry with jitter) instead of a bare `http.Timeout` | §10 |
 | DD5 | Boundary guards use framework helpers (`ArgumentException.ThrowIfNullOrWhiteSpace`, `ArgumentOutOfRangeException.ThrowIfNegative`); domain invariant violations use `WeatherDomainException` | §5 |
 | DD6 | `ILogger<T>` structured logging in the provider adapter; never log the URL, query string, or `appid` | §10 |
@@ -65,12 +65,12 @@ product questions.
 
 ### Revised signatures
 ```csharp
-public interface IWeatherService
+public interface IWeatherProvider
 {
     Task<WeatherReport?> GetCurrentWeatherAsync(string cityName, string? countryCode, CancellationToken cancellationToken);
 }
 
-public interface IWeatherModule
+public interface IWeatherService
 {
     Task<WeatherReportDto?> GetCurrentWeatherAsync(string cityName, string? countryCode, CancellationToken cancellationToken);
 }

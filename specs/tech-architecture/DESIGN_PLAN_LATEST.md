@@ -34,11 +34,11 @@ Async edges only:  M1 → M3, M1 → M4   (via Events Bus + Outbox). No direct c
 ## Module APIs (used only by the API host)
 
 ```csharp
-public interface IGeographyModule {
+public interface IGeographyService {
     Task<List<CountryDto>> GetCountriesAsync(CancellationToken ct);
     Task<List<CityDto>> GetCitiesAsync(string countryCode, CancellationToken ct);
 }
-public interface IWeatherModule {
+public interface IWeatherService {
     Task<WeatherReportDto> GetCurrentWeatherAsync(string cityName, string? countryCode, CancellationToken ct);
 }
 public interface IFavoritesModule {
@@ -53,15 +53,15 @@ public interface INotesModule {
 
 ### M1 Geography
 - Domain: `Countries.Country` (Code, Name), `Cities.City` (CityId, CountryCode, Name, GeoCoordinate). Module `SharedKernel`.
-- Application: `Countries/GetCountries`, `Cities/GetCitiesByCountry`, `Contracts/IGeographyModule`, `Configuration`.
-- Infrastructure: `GeographyContext` (`geography.db`), `GeographyModule`, `Outbox`, background publisher.
+- Application: `Countries/GetCountries`, `Cities/GetCitiesByCountry`, `Contracts/IGeographyService`, `Configuration`.
+- Infrastructure: `GeographyContext` (`geography.db`), `GeographyService`, `Outbox`, background publisher.
 - Publishes `CityAddedIntegrationEvent(CityId, CountryCode, Name, Latitude, Longitude)`.
 - Endpoints: `GET /api/countries`, `GET /api/countries/{countryCode}/cities`.
 
 ### M2 Weather (core)
 - Domain: `WeatherReports` aggregate `WeatherReport` + VOs `Temperature`, `DewPoint`, `RelativeHumidity`, `WindInfo`, `SkyCondition`, `Visibility`, `Pressure`, `Location`.
-- Application: `WeatherReports/GetCurrentWeather` (query + handler + validator), `Contracts/IWeatherModule`, `Abstractions/IWeatherService`, `Configuration`.
-- Infrastructure: `OpenWeatherMapService` (typed client), `WeatherModule`. No DbContext.
+- Application: `WeatherReports/GetCurrentWeather` (query + handler + validator), `Contracts/IWeatherService`, `Abstractions/IWeatherProvider`, `Configuration`.
+- Infrastructure: `OpenWeatherMapService` (typed client), `WeatherService`. No DbContext.
 - Endpoint: `GET /api/weather/{cityName}?countryCode=` → full metric payload; `404` unknown city; `502` provider down.
 
 ### M3 Favorites

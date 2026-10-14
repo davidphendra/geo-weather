@@ -1,31 +1,45 @@
 id: e02
-title: Geography Module
+title: Geography Module (read side)
 wsjf: 7.5
-total_bcps: 11
-status: todo
+total_bcps: 14
+status: done
 module: M1
+kind: supporting
+owns_data: true
+persistence:
+  provider: EF Core SQLite
+  database: geography.db
+  context: GeographyContext
+  schema: EF Core migrations
+  seed: EF Core migration scripts (SQL)
 note: >
-  Bounded context owning the country/city catalog in its own schema (geography.db) and its own
-  composition root. Publishes CityAddedIntegrationEvent through its Outbox for Favorites and Notes.
+  Geography is built self-contained (no BuildingBlocks), consistent with the Weather module: plain sealed
+  domain types, MediatR IRequest, a module-local ValidationBehavior, and EF Core in the module's own
+  Infrastructure. Read side only — countries and cities (AsNoTracking, SQL-filtered). The catalog is the full
+  ISO-3166 country list plus a handful of major cities each, seeded by EF Core migration scripts (C1-C4).
+  The host exposes it via controller-based APIs (ADR-0009), with OpenAPI enabled. The
+  CityAddedIntegrationEvent (e02s03) is DEFERRED: it needs the shared Outbox + In-memory Events Bus.
 stories:
   - id: e02s01
-    title: Geography — Country aggregate + GetCountries (AsNoTracking)
-    bcps: 3
-    status: todo
+    title: Geography — Country catalog + EF migrations + GeographyController + OpenAPI + Weather naming
+    bcps: 6
+    status: done
     spec: e02s01-countries.md
     tasks: e02s01-tasks.yaml
     delta: ADDED
   - id: e02s02
-    title: Geography — City aggregate + GetCitiesByCountry (AsNoTracking)
+    title: Geography — City catalog + EF migrations + cities action
     bcps: 3
-    status: todo
+    status: done
     spec: e02s02-cities.md
     tasks: e02s02-tasks.yaml
     delta: ADDED
   - id: e02s03
-    title: Geography — publish CityAddedIntegrationEvent via the Outbox
+    title: Geography — publish CityAddedIntegrationEvent (DEFERRED)
     bcps: 5
-    status: todo
+    status: deferred
+    deferred: true
+    reason: Needs the shared Outbox + In-memory Events Bus; belongs with the write-side modules that consume it.
     spec: e02s03-city-added-event.md
     tasks: e02s03-tasks.yaml
     delta: ADDED

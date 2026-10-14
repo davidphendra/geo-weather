@@ -25,14 +25,14 @@ stories:
     tasks: e03s01-tasks.yaml
     delta: ADDED
   - id: e03s02
-    title: IWeatherService port + OpenWeatherMap adapter
+    title: IWeatherProvider port + OpenWeatherMap adapter
     bcps: 4
     status: done
     spec: e03s02-provider.md
     tasks: e03s02-tasks.yaml
     delta: ADDED
   - id: e03s03
-    title: GetCurrentWeather query + IWeatherModule + GET /api/weather/{cityName}
+    title: GetCurrentWeather query + IWeatherService + GET /api/weather/{cityName}
     bcps: 4
     status: done
     spec: e03s03-query.md

@@ -1,5 +1,5 @@
 story_id: e03s03
-title: GetCurrentWeather query + IWeatherModule + GET /api/weather/{cityName}
+title: GetCurrentWeather query + IWeatherService + GET /api/weather/{cityName}
 status: done
 bcps: 4
 module: M2
@@ -9,7 +9,7 @@ tasks:
     description: >
       Add sealed record GetCurrentWeatherQuery (IRequest<WeatherReportDto?>) + internal
       GetCurrentWeatherQueryValidator (FluentValidation: city non-empty/max 100; country code length 2 when present)
-      + internal GetCurrentWeatherQueryHandler (nullable passthrough to IWeatherService).
+      + internal GetCurrentWeatherQueryHandler (nullable passthrough to IWeatherProvider).
     verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=GetCurrentWeather"
     risk: P0
     status: passing
@@ -32,7 +32,7 @@ tasks:
     allure: { severity: high, categories: ["Weather", "WeatherQuery", "unit"] }
   - id: 4
     description: >
-      Add public IWeatherModule contract (Task<WeatherReportDto?>) and internal WeatherModule implementation
+      Add public IWeatherService contract (Task<WeatherReportDto?>) and internal WeatherService implementation
       (ISender.Send of GetCurrentWeatherQuery).
     verify: "dotnet build src/Modules/Weather/Weather.Modules.Weather.Infrastructure/Weather.Modules.Weather.Infrastructure.csproj --warnaserror"
     risk: P0
@@ -49,7 +49,7 @@ tasks:
     allure: { severity: critical, categories: ["Weather", "WeatherQuery", "integration"] }
   - id: 6
     description: >
-      Integration (offline, WebApplicationFactory + stub IWeatherService): assert payload completeness and
+      Integration (offline, WebApplicationFactory + stub IWeatherProvider): assert payload completeness and
       error mapping - 200 with all required fields, 404 unknown city, 502 provider failure, 400 invalid input.
     verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=WeatherErrors"
     risk: P0

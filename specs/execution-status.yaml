@@ -1,11 +1,11 @@
-# Flat story status store. Statuses: todo | in_progress | done | blocked
+# Flat story status store. Statuses: todo | in_progress | done | blocked | deferred
 stories:
   e00s01: { status: done }
   e01s01: { status: todo }
   e01s02: { status: todo }
-  e02s01: { status: todo }
-  e02s02: { status: todo }
-  e02s03: { status: todo }
+  e02s01: { status: done }
+  e02s02: { status: done }
+  e02s03: { status: deferred }
   e03s01: { status: done }
   e03s02: { status: done }
   e03s03: { status: done }

@@ -40,13 +40,13 @@ BuildingBlocks/
 Modules/
   Weather.Modules.Geography/
     Weather.Modules.Geography.Domain/          Countries/, Cities/, SharedKernel/
-    Weather.Modules.Geography.Application/     Contracts/IGeographyModule, Countries/, Cities/, Configuration/
-    Weather.Modules.Geography.Infrastructure/  GeographyContext, GeographyModule, Outbox/, Configuration/
+    Weather.Modules.Geography.Application/     Contracts/IGeographyService, Countries/, Cities/, Configuration/
+    Weather.Modules.Geography.Infrastructure/  GeographyContext, GeographyService, Outbox/, Configuration/
     Weather.Modules.Geography.IntegrationEvents/ CityAddedIntegrationEvent
   Weather.Modules.Weather/
     ...Domain/        WeatherReports/ (WeatherReport, Temperature, DewPoint, WindInfo, ...)
-    ...Application/   Contracts/IWeatherModule, WeatherReports/GetCurrentWeather, Abstractions/IWeatherService
-    ...Infrastructure/ OpenWeatherMapService, WeatherModule
+    ...Application/   Contracts/IWeatherService, WeatherReports/GetCurrentWeather, Abstractions/IWeatherProvider
+    ...Infrastructure/ OpenWeatherMapService, WeatherService
     ...IntegrationEvents/
   Weather.Modules.Favorites/
     ...Domain/        FavoriteCities/ (FavoriteCity), Cities/ (local City projection)
@@ -75,7 +75,7 @@ Tests (7 projects — LOCKED):
 ```
 <Module>/
   Domain/            aggregates, value objects, domain events, business rules   (no framework deps)
-  Application/       Contracts/I<Module>Module, feature folders (commands/queries), validators, Configuration
+  Application/       Contracts/I<Module>Service, feature folders (commands/queries), validators, Configuration
   Infrastructure/    <Module>Context (DbContext), <Module>Module (composition root), Outbox, Configuration
   IntegrationEvents/ the ONLY assembly other modules may reference
 ```
@@ -83,8 +83,8 @@ Tests (7 projects — LOCKED):
 ### Module API surfaces
 | Module | Interface | Members |
 |--------|-----------|---------|
-| Geography | `IGeographyModule` | `GetCountriesAsync`, `GetCitiesAsync` |
-| Weather | `IWeatherModule` | `GetCurrentWeatherAsync(cityName, countryCode, ct)` |
+| Geography | `IGeographyService` | `GetCountriesAsync`, `GetCitiesAsync` |
+| Weather | `IWeatherService` | `GetCurrentWeatherAsync(cityName, countryCode, ct)` |
 | Favorites | `IFavoritesModule` | `AddFavoriteAsync(cityName, countryCode, ct)` |
 | Notes | `INotesModule` | `AddNoteAsync(cityName, countryCode, note, temperatureCelsius, ct)` |
 
@@ -104,7 +104,7 @@ Geography ──CityAddedIntegrationEvent──► InMemoryEventsBus ──► F
 |---------|--------|-------|
 | Language | C# 14 | `nullable enable`, `ImplicitUsings enable` |
 | Runtime | .NET 10 (SDK 10.0.401) | present |
-| API | ASP.NET Core Minimal APIs (thin host) | per-module endpoint areas |
+| API | ASP.NET Core MVC controllers (`ControllerBase`, `[ApiController]`) | thin, per-module controllers; `ActionResult<T>` (ADR-0009) |
 | Front-end | Blazor Web App | existing `Weather.WebUI`, reshaped |
 | CQRS | MediatR 12.x | pinned — ADR-0004 |
 | Validation | FluentValidation | pipeline behavior per module |

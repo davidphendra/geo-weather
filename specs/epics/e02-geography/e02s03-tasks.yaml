@@ -1,8 +1,10 @@
 story_id: e02s03
-title: Geography — publish CityAddedIntegrationEvent via the Outbox
-status: failing
+title: Geography — publish CityAddedIntegrationEvent via the Outbox (DEFERRED)
+status: deferred
 bcps: 5
 module: M1
+deferred: true
+reason: Needs the shared Outbox + In-memory Events Bus; belongs with the write-side modules.
 tasks:
   - id: 1
     description: "Add CityAddedIntegrationEvent (CityId, CountryCode, Name, Latitude, Longitude) to Geography.IntegrationEvents"

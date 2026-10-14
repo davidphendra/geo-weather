@@ -63,7 +63,7 @@ Each API endpoint area (`Weather.Api.Modules.<Module>`) must not depend on any o
 | SC-e06s01-P1-01 | Country selection loads its cities | P1 |
 
 ## Offline strategy
-- `IWeatherService` is a port; tests inject a stub. The concrete `OpenWeatherMapService` is tested with a canned
+- `IWeatherProvider` is a port; tests inject a stub. The concrete `OpenWeatherMapService` is tested with a canned
   `HttpMessageHandler` returning JSON fixtures — no sockets.
 - The Events Bus is in-memory and synchronous in tests; the background outbox processor runs inline.
 - End-to-end tests replace real DI with per-module SQLite `:memory:` and the stub provider.
@@ -71,7 +71,7 @@ Each API endpoint area (`Weather.Api.Modules.<Module>`) must not depend on any o
 
 ## Fixtures
 - `WeatherHostFactory` — boots the host with stub provider + per-module `:memory:` contexts.
-- `StubWeatherService`; `CannedOpenWeatherHandler`; `TestEventsBus`.
+- `StubWeatherProvider`; `CannedOpenWeatherHandler`; `TestEventsBus`.
 - Seed data: Countries GB/US/JP/AU/DE; 3–5 cities each.
 
 ## Definition of done (test)

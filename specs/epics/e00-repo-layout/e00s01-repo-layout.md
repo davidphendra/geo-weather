@@ -46,7 +46,7 @@ De-risks every later story: boundaries are physical (assembly-per-module) and th
 
 ## 6. Out of scope (must NOT be created here)
 - Any BuildingBlocks type (Entity, AggregateRoot, ICommand, EventsBus, Outbox…).
-- Any module contract (`I<Module>Module`), DbContext, aggregate, handler, validator, or endpoint.
+- Any module contract (`I<Module>Service`), DbContext, aggregate, handler, validator, or endpoint.
 - Any `appsettings` content beyond the WebUI defaults.
 - Tests that assert behaviour.
 - Git operations (no init, no commit).

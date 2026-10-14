@@ -84,7 +84,7 @@ Boundary rules — a violation is a build-breaking defect:
 | `Weather.WebUI` | HTTP contract of Api only | any server project |
 
 - Dependencies point inward within a module. Domain has zero external framework dependencies.
-- The API host is thin: bind → `I<Module>Module` → map result. No application logic in endpoints.
+- The API host is thin: bind → `I<Module>Service` → map result. No application logic in endpoints.
 
 ## CQRS Patterns
 
@@ -94,14 +94,14 @@ Boundary rules — a violation is a build-breaking defect:
 - Commands return the created resource identifier (`Guid`).
 - Cross-cutting concerns live in MediatR `IPipelineBehavior` (validation, logging), not in handlers.
 - Validation lives in FluentValidation `AbstractValidator<TRequest>` next to the request.
-- Each module exposes exactly one `I<Module>Module` interface with `ExecuteCommandAsync` / `ExecuteQueryAsync`.
+- Each module exposes exactly one `I<Module>Service` public contract (typed methods), e.g. `IGeographyService`.
 
 ## Naming Conventions
 
 - Projects: `Weather.BuildingBlocks.<Layer>`, `Weather.Modules.<Module>.<Layer>`, `Weather.Api`, `Weather.WebUI`.
 - Modules: `Geography`, `Weather`, `Favorites`, `Notes` (bounded-context names, never technical names).
 - Folders mirror layers/features; files are one-type-per-file.
-- Interfaces: `IWeatherService`, `ICityRepository`, `IDateTimeProvider`.
+- Interfaces: `IWeatherProvider`, `ICityRepository`, `IDateTimeProvider`.
 - Async methods end in `Async`; take a `CancellationToken`.
 - Private fields `_camelCase`; constants `PascalCase`.
 
@@ -120,7 +120,7 @@ Boundary rules — a violation is a build-breaking defect:
 - **F**ast, **I**solated, **R**epeatable, **S**elf-validating, **T**imely.
 - Unit tests mock dependencies (`NSubstitute`); no I/O, no network.
 - Command handler tests assert on EF Core InMemory state changes.
-- Integration tests use `WebApplicationFactory` with a stub `IWeatherService`; zero live network calls.
+- Integration tests use `WebApplicationFactory` with a stub `IWeatherProvider`; zero live network calls.
 - Architecture tests verify both layer direction and module boundaries (acyclicity + contract-only access).
 - At least one happy path and one edge case per story.
 

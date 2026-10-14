@@ -12,7 +12,7 @@ summary: >
   Onion-layered and uses CQRS via MediatR. Modules communicate only asynchronously through an
   in-memory Events Bus using integration events; a module may reference another module only
   through its IntegrationEvents assembly. Weather is proxied from OpenWeatherMap behind an
-  IWeatherService abstraction, with Fahrenheit-to-Celsius conversion and dew-point derivation
+  IWeatherProvider abstraction, with Fahrenheit-to-Celsius conversion and dew-point derivation
   owned by the Weather domain. All automated tests run offline with zero live network calls. The
   repository also ships an AI instructions file and a README explaining architecture and decisions.
 
@@ -27,7 +27,7 @@ in_scope:
     description: Geography module — countries and cities catalog, its own schema, publishes CityAddedIntegrationEvent.
     maps_to: e02
   - id: S3
-    description: Weather module — weather domain (F->C conversion, dew point), OpenWeatherMap IWeatherService, GET /api/weather/{cityName}.
+    description: Weather module — weather domain (F->C conversion, dew point), OpenWeatherMap IWeatherProvider, GET /api/weather/{cityName}.
     maps_to: e03
   - id: S4
     description: Favorites module — save favorite cities, own schema, consumes CityAddedIntegrationEvent into a local City projection.

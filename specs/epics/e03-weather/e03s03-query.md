@@ -1,4 +1,4 @@
-# Story e03s03 — GetCurrentWeather query + IWeatherModule + GET /api/weather/{cityName}
+# Story e03s03 — GetCurrentWeather query + IWeatherService + GET /api/weather/{cityName}
 
 | Field | Value |
 |-------|-------|
@@ -11,11 +11,11 @@
 
 ## 1. Summary
 Expose `GET /api/weather/{cityName}?countryCode=` by sending a `GetCurrentWeatherQuery` into the Weather module
-through `IWeatherModule`, mapping the domain report to `WeatherReportDto`, and mapping failures to ProblemDetails.
+through `IWeatherService`, mapping the domain report to `WeatherReportDto`, and mapping failures to ProblemDetails.
 
 ## 2. Context
 The primary user-facing read and the reason the app exists. Weather stays independent: the provider geocodes the
-city name. The API host stays thin — it only calls `IWeatherModule`.
+city name. The API host stays thin — it only calls `IWeatherService`.
 
 ## 3. User story
 As a user, I want current weather for a city, so I can see its metrics.
@@ -27,7 +27,7 @@ Core feature; the end-to-end vertical slice of the Weather module.
 - `GetCurrentWeatherQuery` + `GetCurrentWeatherQueryValidator` + `GetCurrentWeatherQueryHandler`.
 - Module-local `ValidationBehavior<TRequest,TResponse>`.
 - `WeatherReportDto` (+ `LocationDto`, `TemperatureDto`, `WindDto`) and `WeatherReportDtoMapper`.
-- `IWeatherModule` contract + `WeatherModule` implementation (`ISender`).
+- `IWeatherService` contract + `WeatherService` implementation (`ISender`).
 - `Weather.Api/Modules/Weather/WeatherEndpoints.cs` + `Program.cs` wiring.
 - Error mapping: `null` (city not found) → 404, `WeatherProviderException` → 502, `ValidationException` → 400.
 - Endpoint tests in `src/Tests/Weather.IntegrationTests` (offline).
@@ -41,8 +41,8 @@ Caching; forecast; localization; favorite/notes modules.
 ## 8. Layer touchpoints
 | Assembly | Change |
 |----------|--------|
-| `Weather.Modules.Weather.Application` | `WeatherReports/GetCurrentWeather/`, `Contracts/IWeatherModule`, `Configuration/ValidationBehavior` |
-| `Weather.Modules.Weather.Infrastructure` | `WeatherModule` (implements `IWeatherModule`) |
+| `Weather.Modules.Weather.Application` | `WeatherReports/GetCurrentWeather/`, `Contracts/IWeatherService`, `Configuration/ValidationBehavior` |
+| `Weather.Modules.Weather.Infrastructure` | `WeatherService` (implements `IWeatherService`) |
 | `Weather.Api` | `Modules/Weather/WeatherEndpoints`, `Program` wiring + exception handler |
 
 ## 9. API contract
@@ -71,13 +71,13 @@ e03s01, e03s02.
 |------|-----------|
 | Provider errors surface as 500 | Map `WeatherProviderException` → 502 |
 | Missing metrics in payload | DTO non-nullable; absence throws + tested |
-| Logic creeping into the endpoint | Endpoint only calls `IWeatherModule` and maps results |
+| Logic creeping into the endpoint | Endpoint only calls `IWeatherService` and maps results |
 
 ## 12. Implementation steps
 1. Add `GetCurrentWeatherQuery` + validator + handler → verify: `dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=GetCurrentWeather`
 2. Add module-local `ValidationBehavior` → verify: `dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=ValidationBehavior`
 3. Add `WeatherReportDto` + `WeatherReportDtoMapper` → verify: `dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=WeatherReportDto`
-4. Add `IWeatherModule` + `WeatherModule` impl → verify: `dotnet build src/Modules/Weather/Weather.Modules.Weather.Infrastructure/Weather.Modules.Weather.Infrastructure.csproj --warnaserror`
+4. Add `IWeatherService` + `WeatherService` impl → verify: `dotnet build src/Modules/Weather/Weather.Modules.Weather.Infrastructure/Weather.Modules.Weather.Infrastructure.csproj --warnaserror`
 5. Add endpoint + `Program.cs` wiring + exception handler → verify: `dotnet test src/Tests/Weather.IntegrationTests --filter Category=WeatherEndpoint`
 6. Assert payload completeness + error mapping (404/502/400) → verify: `dotnet test src/Tests/Weather.IntegrationTests --filter Category=WeatherErrors`
 
@@ -111,7 +111,7 @@ Scenario: Invalid input
 ```
 
 ## 15. Definition of done
-Tasks green; payload + errors covered; the endpoint contains no logic beyond calling `IWeatherModule`.
+Tasks green; payload + errors covered; the endpoint contains no logic beyond calling `IWeatherService`.
 
 ## 16. Verification script
 1. `dotnet run --project src/Weather.Api` (key set) → `curl -s localhost:5000/api/weather/London | jq`.

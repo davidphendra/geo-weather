@@ -1,13 +1,13 @@
 # Weather App — Implementation Plan (Modular Monolith · CQRS · Onion-per-module)
 
-Status: **PLANNING COMPLETE — immediate work is the e03 Weather module only (self-contained).**
+Status: **PLANNING COMPLETE — immediate work is the e02 Geography module read side (self-contained).**
 Model: `kgrzybek/modular-monolith-with-ddd` — a module = a bounded context = its own assembly set + own
 composition root + own schema; modules integrate **only** asynchronously via integration events.
 
 ## How the reference divides modules (the method)
 MyMeetings modules are bounded contexts: **UserAccess, Registrations, Meetings, Administration, Payments**. Each
 has `Domain / Application / Infrastructure / IntegrationEvents` assemblies, its own DbContext/schema, its own
-composition root, and one `I<Module>Module` interface used by the API host. Cross-module rules (verbatim from
+composition root, and one `I<Module>Service` interface used by the API host. Cross-module rules (verbatim from
 its README and `ModuleTests.cs`):
 - API has no application logic; it sends commands/queries to exactly one module.
 - **Modules communicate only asynchronously via the Events Bus — direct calls are not allowed.**
@@ -112,15 +112,15 @@ e00s01 (layout) → e01s01 → e01s02 → e02s01 → e02s02 → e02s03 → e03s0
 e05s01 → e05s02 → e06s01 → e06s02 → e07s01 → e07s02 → e08s01.
 Per story: `develop-tdd` → `verify-work` → `audit-code` → `commit-message` → `release-branch`.
 
-## Immediate scope — e03 Weather module only
-Build the Weather module (M2) end-to-end and nothing else. It is a read-only, self-contained bounded context:
-no DbContext, no migrations, no IntegrationEvents, no cross-module reference, **no BuildingBlocks dependency**
-(ADR-0007). Domain value objects are `sealed record`s; `WeatherReport` is an immutable record with a `Create`
-factory (not an aggregate root); CQRS uses MediatR directly with a module-local `ValidationBehavior`.
+## Immediate scope — e02 Geography module (read side)
+Build the Geography module (M1) read side and nothing else. It is self-contained per ADR-0008 — no
+BuildingBlocks; plain sealed domain types; MediatR `IRequest<T>`; a module-local `ValidationBehavior`; EF Core
+in the module's own Infrastructure with `geography.db`. Scope: `e02s01` (Country + `GET /api/countries`) and
+`e02s02` (City + `GET /api/countries/{countryCode}/cities`), both `AsNoTracking()`.
 
-The provider geocodes `q={city},{country}`, so Weather needs no other module. Fahrenheit → Celsius and dew
-point live in the domain. Stories: `e03s01` domain, `e03s02` provider port/adapter, `e03s03` query + endpoint.
-See `specs/epics/e03-weather/`. BuildingBlocks (e01) and the other modules are deferred and MUST NOT be started.
+The **`CityAddedIntegrationEvent` (e02s03) is deferred** — it needs the shared Outbox + In-memory Events Bus,
+which belongs with the write-side modules (Favorites/Notes). No cross-module reference is introduced.
+BuildingBlocks (e01) and every other module remain out of scope.
 
 ## Requirement coverage map
 
@@ -131,7 +131,7 @@ See `specs/epics/e03-weather/`. BuildingBlocks (e01) and the other modules are d
 | CQRS via MediatR | each module's `Application` |
 | Read endpoints + AsNoTracking | e02, e03 |
 | POST + ET persistence + id return | e04, e05 (own schemas) |
-| OpenWeatherMap via IWeatherService | e03s02 |
+| OpenWeatherMap via IWeatherProvider | e03s02 |
 | F→C conversion | e03s01 |
 | Full payload (wind/visibility/pressure/sky/dew point/humidity) | e03s03 |
 | Front-end workflow | e06 |

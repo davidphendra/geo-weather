@@ -7,7 +7,7 @@ release:
   type: greenfield
   style: "Modular Monolith (bounded contexts) + CQRS + Onion-per-module"
   reference: "https://github.com/kgrzybek/modular-monolith-with-ddd"
-  immediate_epic: e03          # Weather module only — self-contained, no BuildingBlocks prerequisite
+  immediate_epic: e02          # Geography read side only — self-contained, no BuildingBlocks, event deferred
 
 modules:
   - { id: M1, name: Geography, kind: supporting, owns_data: true,  db: geography.db, publishes: [CityAddedIntegrationEvent] }
@@ -38,11 +38,11 @@ epics:
     capsule_dir: epics/e03-weather
     note: Highest business value; independent of other modules.
   - id: e02
-    title: Geography Module
+    title: Geography Module (read side)
     wsjf: 7.5
-    bcps: 11
+    bcps: 14
     capsule_dir: epics/e02-geography
-    note: Foundation module; publishes CityAddedIntegrationEvent.
+    note: Self-contained read side (full ISO-3166 catalog). Schema + seed via EF Core migrations. Controller-based API + OpenAPI. Weather naming aligned to I<Module>Service. CityAddedIntegrationEvent (e02s03) deferred.
   - id: e06
     title: WebUI Front-End
     wsjf: 6.5

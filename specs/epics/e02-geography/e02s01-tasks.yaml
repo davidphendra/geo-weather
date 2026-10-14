@@ -1,36 +1,108 @@
 story_id: e02s01
-title: Geography — Country aggregate + GetCountries (AsNoTracking)
-status: failing
-bcps: 3
+title: Geography — Country catalog + EF migrations + GeographyController + OpenAPI + Weather naming
+status: done
+bcps: 6
 module: M1
+standards: docs/engineering/csharp-standards.md
 tasks:
   - id: 1
-    description: "Add Country aggregate (Code, Name) to Geography.Domain/Countries"
-    verify: "dotnet test src/Modules/Geography/Tests --filter Category=Country"
+    description: >
+      Add package versions centrally (EF Core Sqlite, Microsoft.EntityFrameworkCore.Design, MediatR,
+      FluentValidation) and reference them from Geography.Application / Geography.Infrastructure. No BuildingBlocks.
+    verify: "dotnet restore Weather.sln && dotnet build src/Modules/Geography/Weather.Modules.Geography.Application/Weather.Modules.Geography.Application.csproj --warnaserror"
     risk: P1
-    status: failing
-    allure: { severity: high, categories: ["Geography", "unit"] }
+    status: passing
+    allure: { severity: high, categories: ["Geography", "Standards"] }
   - id: 2
-    description: "Add CountryConfiguration + seed to GeographyContext (geography.db)"
-    verify: "dotnet test src/Modules/Geography/Tests --filter Category=CountryConfig"
+    description: >
+      Add CountryCode value object (2-letter, upper-case normalize, guard) and Country domain type with a Create
+      factory (BCL only, sealed).
+    verify: "dotnet test src/Modules/Geography/Tests/Weather.Modules.Geography.Tests --filter Category=CountryDomain"
     risk: P1
-    status: failing
-    allure: { severity: high, categories: ["Geography", "integration"] }
-  - id: 3
-    description: "Add Countries/GetCountries query + handler using .AsNoTracking()"
-    verify: "dotnet test src/Modules/Geography/Tests --filter Category=GetCountries"
-    risk: P1
-    status: failing
+    status: passing
     allure: { severity: high, categories: ["Geography", "unit"] }
-  - id: 4
-    description: "Expose IGeographyModule.GetCountriesAsync and implement it in GeographyModule"
-    verify: "dotnet test src/Modules/Geography/Tests --filter Category=GeographyModule"
-    risk: P0
-    status: failing
-    allure: { severity: critical, categories: ["Geography", "ModularMonolith"] }
-  - id: 5
-    description: "Add GET /api/countries in the host Geography area"
-    verify: "dotnet test src/Tests/IntegrationTests --filter Category=Countries"
+  - id: 3
+    description: >
+      Add GeographyContext (SQLite, geography.db), CountryEntityTypeConfiguration, a design-time
+      IDesignTimeDbContextFactory, and register the context in AddGeographyModule.
+    verify: "dotnet build src/Modules/Geography/Weather.Modules.Geography.Infrastructure/Weather.Modules.Geography.Infrastructure.csproj --warnaserror"
     risk: P1
-    status: failing
+    status: passing
     allure: { severity: high, categories: ["Geography", "integration"] }
+  - id: 4
+    description: >
+      Add the CreateGeographySchema migration (Countries) and a SeedCountries migration applying the full
+      ISO-3166 catalog via migrationBuilder.Sql(...) from an embedded .sql resource; Down deletes the seeded rows.
+    verify: "dotnet test src/Modules/Geography/Tests/Weather.Modules.Geography.Tests --filter Category=GeographyMigrations"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["Geography", "integration"] }
+  - id: 5
+    description: >
+      Add CountryQuery (string? SearchTerm), ICountryReadRepository with SQL-filtered GetAsync(CountryQuery) and
+      ExistsAsync(CountryCode) — NO GetAllAsync — plus GetCountriesQuery + handler applying AsNoTracking,
+      EF.Functions.Like, and OrderBy on IQueryable so they run in SQL.
+    verify: "dotnet test src/Modules/Geography/Tests/Weather.Modules.Geography.Tests --filter Category=GetCountries"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Geography", "unit"] }
+  - id: 6
+    description: "Add CountryDto and CountryDtoMapper."
+    verify: "dotnet test src/Modules/Geography/Tests/Weather.Modules.Geography.Tests --filter Category=CountryDto"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["Geography", "unit"] }
+  - id: 7
+    description: >
+      Add IGeographyService contract (GetCountriesAsync(string? search, ct)) + GeographyService implementation
+      (ISender) + AddGeographyModule composition root (DbContext, MediatR, FluentValidation, ValidationBehavior).
+    verify: "dotnet build src/Modules/Geography/Weather.Modules.Geography.Infrastructure/Weather.Modules.Geography.Infrastructure.csproj --warnaserror"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["Geography", "ModularMonolith"] }
+  - id: 8
+    description: >
+      Add Weather.Api/Common/ApiControllerBase.cs and Weather.Api/Modules/Geography/GeographyController.cs with the
+      GET /api/countries action (ActionResult<IReadOnlyList<CountryDto>>, [FromQuery] search, [ProducesResponseType]);
+      wire AddControllers()/MapControllers() in Program.
+    verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=GeographyEndpoint"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Geography", "WebApi", "integration"] }
+  - id: 9
+    description: "Add OpenAPI: builder.Services.AddOpenApi() + app.MapOpenApi() (Swagger UI in Development)."
+    verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=OpenApi"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["WebApi", "integration"] }
+  - id: 10
+    description: >
+      Align Weather naming with the I<Module>Service convention: rename the provider port IWeatherService ->
+      IWeatherProvider (OpenWeatherMapService + handler + DI + tests) and the module API IWeatherModule ->
+      IWeatherService (impl WeatherModule -> WeatherService, WeatherController). AddWeatherModule stays.
+    verify: "dotnet test Weather.sln"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Weather", "ModularMonolith", "unit"] }
+  - id: 11
+    description: >
+      Migrate Weather.Api/Modules/Weather to a controller: delete WeatherEndpoints, add WeatherController :
+      ApiControllerBase with the same route (GET /api/weather/{cityName}), update Program. Existing Weather tests pass.
+    verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=WeatherEndpoint"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Weather", "WebApi", "integration"] }
+  - id: 12
+    description: >
+      Add src/Tests/Weather.Api.UnitTests and controller unit tests for GeographyController (and WeatherController)
+      using a stubbed IGeographyService / IWeatherService (NSubstitute), asserting Ok/NotFound result types.
+    verify: "dotnet test src/Tests/Weather.Api.UnitTests"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["WebApi", "unit"] }
+  - id: 13
+    description: "Standards gate: Geography Application/Infrastructure compile under analyzers and pass formatting."
+    verify: "dotnet format src/Modules/Geography/Weather.Modules.Geography.Infrastructure/Weather.Modules.Geography.Infrastructure.csproj --verify-no-changes"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Geography", "Standards"] }

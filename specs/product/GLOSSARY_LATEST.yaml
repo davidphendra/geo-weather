@@ -8,7 +8,7 @@ terms:
   - term: Composition root
     definition: The per-module place where that module's services are registered and initialized (Add<Module>Module/Initialize).
   - term: Module API
-    definition: The single I<Module>Module interface the API host uses to send commands and queries into a module.
+    definition: The single I<Module>Service interface the API host uses to send commands and queries into a module.
   - term: IntegrationEvent
     definition: A published contract another module may subscribe to. The only assembly of a module that other modules may reference.
   - term: Events Bus
@@ -48,4 +48,4 @@ terms:
   - term: Command
     definition: A write-side MediatR request that mutates state and returns a created resource identifier.
   - term: Port
-    definition: An interface declared in a module's Application layer and implemented in its Infrastructure (e.g. IWeatherService).
+    definition: An interface declared in a module's Application layer and implemented in its Infrastructure (e.g. IWeatherProvider).

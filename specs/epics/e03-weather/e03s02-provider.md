@@ -1,4 +1,4 @@
-# Story e03s02 — IWeatherService port + OpenWeatherMap adapter
+# Story e03s02 — IWeatherProvider port + OpenWeatherMap adapter
 
 | Field | Value |
 |-------|-------|
@@ -10,7 +10,7 @@
 | Type | feat |
 
 ## 1. Summary
-Declare `IWeatherService` in the Weather module's Application layer and implement `OpenWeatherMapService` in
+Declare `IWeatherProvider` in the Weather module's Application layer and implement `OpenWeatherMapService` in
 its Infrastructure layer: typed `HttpClient`, imperial payload, F→C via the domain, mph→m/s, UTC time, and an
 API-key `DelegatingHandler` that keeps the key out of logs and exception messages.
 
@@ -25,7 +25,7 @@ As a developer, I want weather fetched behind an interface, so the app is testab
 Enables offline tests and isolates the provider; keeps the API key out of logs.
 
 ## 5. In scope
-- `IWeatherService` port (`Task<WeatherReport?>`, `null` = city not found) + `WeatherProviderException` (Application/Abstractions).
+- `IWeatherProvider` port (`Task<WeatherReport?>`, `null` = city not found) + `WeatherProviderException` (Application/Abstractions).
 - `OpenWeatherOptions` (`OpenWeather:BaseUrl`, `OpenWeather:ApiKey`).
 - Provider DTOs + `OpenWeatherMapMapper` (imperial → domain).
 - `OpenWeatherMapService` typed client; 10s timeout.
@@ -42,7 +42,7 @@ Caching; provider fallback; One Call 3.0; query/endpoint (e03s03).
 ## 8. Layer touchpoints
 | Assembly | Change |
 |----------|--------|
-| `Weather.Modules.Weather.Application` | `Abstractions/IWeatherService`, `WeatherProviderException` |
+| `Weather.Modules.Weather.Application` | `Abstractions/IWeatherProvider`, `WeatherProviderException` |
 | `Weather.Modules.Weather.Infrastructure` | `OpenWeatherMap/` options + DTOs + mapper + service + key handler; `WeatherModuleExtensions` |
 
 ## 9. API contract
@@ -60,11 +60,11 @@ e03s01.
 | Malformed/empty body | `WeatherProviderException` |
 
 ## 12. Implementation steps
-1. Add `IWeatherService` (nullable result = not found) + `WeatherProviderException` → verify: `dotnet build src/Modules/Weather/Weather.Modules.Weather.Application/Weather.Modules.Weather.Application.csproj --warnaserror`
+1. Add `IWeatherProvider` (nullable result = not found) + `WeatherProviderException` → verify: `dotnet build src/Modules/Weather/Weather.Modules.Weather.Application/Weather.Modules.Weather.Application.csproj --warnaserror`
 2. Add `OpenWeatherOptions` + provider DTOs + `OpenWeatherMapMapper` → verify: `dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=OpenWeatherMapping`
 3. Add `OpenWeatherMapService` typed client + 10s timeout → verify: `dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=OpenWeatherMapService`
 4. Add `OpenWeatherApiKeyHandler` + the per-client `Warning` log level; assert the key never appears in exception messages or log output → verify: `dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=ApiKeyHandler`
-5. Add `AddWeatherModule` (options, typed client, MediatR, FluentValidation, pipeline) → verify: `dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=WeatherModuleWiring`
+5. Add `AddWeatherModule` (options, typed client, MediatR, FluentValidation, pipeline) → verify: `dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=WeatherServiceWiring`
 
 ## 13. Test plan
 - Mapping: canned imperial payload → domain (temperature F, mph→m/s, pressure hPa, humidity, sky normalized, UTC time).

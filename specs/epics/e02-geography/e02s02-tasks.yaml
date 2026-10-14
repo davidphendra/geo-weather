@@ -1,36 +1,67 @@
 story_id: e02s02
-title: Geography — City aggregate + GetCitiesByCountry (AsNoTracking)
-status: failing
+title: Geography — City catalog + EF migrations + cities action
+status: done
 bcps: 3
 module: M1
+standards: docs/engineering/csharp-standards.md
 tasks:
   - id: 1
-    description: "Add GeoCoordinate value object with range validation"
-    verify: "dotnet test src/Modules/Geography/Tests --filter Category=GeoCoordinate"
+    description: >
+      Add GeoCoordinate value object (latitude/longitude guards), CityId typed id (Guid), and City domain type
+      (CityId, CountryCode, Name, GeoCoordinate) with a Create factory.
+    verify: "dotnet test src/Modules/Geography/Tests/Weather.Modules.Geography.Tests --filter Category=CityDomain"
     risk: P1
-    status: failing
+    status: passing
     allure: { severity: high, categories: ["Geography", "unit"] }
   - id: 2
-    description: "Add City aggregate + CityConfiguration + seed"
-    verify: "dotnet test src/Modules/Geography/Tests --filter Category=CityConfig"
-    risk: P1
-    status: failing
-    allure: { severity: high, categories: ["Geography", "integration"] }
+    description: >
+      Add CityEntityTypeConfiguration (FK to Countries; GeoCoordinate as a complex property) plus the
+      CreateCitiesSchema migration and a SeedCities migration applying a handful of major cities per country via
+      migrationBuilder.Sql(...) from an embedded .sql resource; Down deletes the seeded rows.
+    verify: "dotnet test src/Modules/Geography/Tests/Weather.Modules.Geography.Tests --filter Category=CityConfig"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["Geography", "integration"] }
   - id: 3
-    description: "Add Cities/GetCitiesByCountry query + validator + handler (AsNoTracking)"
-    verify: "dotnet test src/Modules/Geography/Tests --filter Category=GetCities"
+    description: >
+      Add ICityReadRepository with a SQL-filtered GetByCountryAsync(CountryCode, ct) (predicate on IQueryable),
+      plus GetCitiesByCountryQuery + validator + handler using .AsNoTracking(); normalize the country code to
+      upper-case. No GetAll-style method.
+    verify: "dotnet test src/Modules/Geography/Tests/Weather.Modules.Geography.Tests --filter Category=GetCities"
     risk: P1
-    status: failing
+    status: passing
     allure: { severity: high, categories: ["Geography", "unit"] }
   - id: 4
-    description: "Extend IGeographyModule with GetCitiesAsync"
-    verify: "dotnet test src/Modules/Geography/Tests --filter Category=GeographyModule"
-    risk: P0
-    status: failing
-    allure: { severity: critical, categories: ["Geography", "ModularMonolith"] }
+    description: "Add CityDto and CityDtoMapper."
+    verify: "dotnet test src/Modules/Geography/Tests/Weather.Modules.Geography.Tests --filter Category=CityDto"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["Geography", "unit"] }
   - id: 5
-    description: "Add GET /api/countries/{countryCode}/cities with 404 for unknown"
-    verify: "dotnet test src/Tests/IntegrationTests --filter Category=Cities"
+    description: >
+      Extend IGeographyService with GetCitiesAsync and implement it in GeographyService.
+    verify: "dotnet build src/Modules/Geography/Weather.Modules.Geography.Infrastructure/Weather.Modules.Geography.Infrastructure.csproj --warnaserror"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["Geography", "ModularMonolith"] }
+  - id: 6
+    description: >
+      Add the GET api/countries/{countryCode}/cities action to GeographyController (ActionResult<IReadOnlyList<CityDto>>,
+      [FromRoute], [ProducesResponseType] 200/404) with 404 for an unknown country code. No logic beyond calling
+      IGeographyService.
+    verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=GeographyErrors"
     risk: P1
-    status: failing
-    allure: { severity: high, categories: ["Geography", "integration"] }
+    status: passing
+    allure: { severity: high, categories: ["Geography", "WebApi", "integration"] }
+  - id: 7
+    description: "Add a Weather.Api.UnitTests controller test for the cities action (Ok with stub list; NotFound result type)."
+    verify: "dotnet test src/Tests/Weather.Api.UnitTests"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["WebApi", "unit"] }
+  - id: 8
+    description: "Standards gate: Geography compiles under analyzers and passes formatting."
+    verify: "dotnet format src/Modules/Geography/Weather.Modules.Geography.Infrastructure/Weather.Modules.Geography.Infrastructure.csproj --verify-no-changes"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Geography", "Standards"] }

@@ -10,7 +10,7 @@
 | Type | feat |
 
 ## 1. Summary
-Finalize the shared end-to-end harness: boot the host with a stub `IWeatherService`, per-module SQLite `:memory:`
+Finalize the shared end-to-end harness: boot the host with a stub `IWeatherProvider`, per-module SQLite `:memory:`
 contexts, and an inline Events Bus; add an offline guard test and wire coverage.
 
 ## 2. Context
@@ -23,7 +23,7 @@ As a developer, I want a reliable offline harness, so the suite is deterministic
 Turns the executive constraint into a verifiable property.
 
 ## 5. In scope
-- `WeatherHostFactory` replacing `IWeatherService` and each module's DbContext with test doubles.
+- `WeatherHostFactory` replacing `IWeatherProvider` and each module's DbContext with test doubles.
 - Per-module `:memory:` connections (one open connection each).
 - Inline outbox publisher so integration events flow deterministically in tests.
 - Offline guard test + coverage collection.

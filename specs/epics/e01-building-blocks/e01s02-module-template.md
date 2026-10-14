@@ -25,7 +25,7 @@ As a developer, I want the module skeleton and event plumbing, so modules can be
 Prevents architectural drift; every later module plugs into the same template.
 
 ## 5. In scope
-- `Weather.Modules.Geography.{Domain,Application,Infrastructure,IntegrationEvents}` skeleton + `IGeographyModule` + `GeographyModule` + `GeographyContext`.
+- `Weather.Modules.Geography.{Domain,Application,Infrastructure,IntegrationEvents}` skeleton + `IGeographyService` + `GeographyService` + `GeographyContext`.
 - `BuildingBlocks.Infrastructure`: `IInMemoryEventsBus`, `InMemoryEventsBus`, `Outbox`, background publisher, `UnitOfWork`.
 - Host initializes modules (`AddGeographyModule()` + `Initialize`), `EventsBusStartup`.
 - `src/Tests/ArchTests/Modules/ModuleTests.cs` — per-module "no dependency on other modules except IntegrationEvents".
@@ -59,7 +59,7 @@ e01s01.
 | Cross-module test passes vacuously | Require a seeded type per module before the rule is considered green. |
 
 ## 12. Implementation steps
-1. Create the Geography module skeleton (4 assemblies) + `IGeographyModule`/`GeographyModule`/`GeographyContext` → verify: `dotnet build Weather.sln --warnaserror`
+1. Create the Geography module skeleton (4 assemblies) + `IGeographyService`/`GeographyService`/`GeographyContext` → verify: `dotnet build Weather.sln --warnaserror`
 2. Add `IInMemoryEventsBus`/`InMemoryEventsBus` to BuildingBlocks.Infrastructure → verify: `dotnet test src/Tests/ArchTests --filter Category=EventsBus`
 3. Add per-module `Outbox` + domain-event dispatcher + background publisher → verify: `dotnet test src/Modules/Geography/Tests --filter Category=Outbox`
 4. Host initializes the module and exposes `GET /api/health/modules` → verify: `dotnet test src/Tests/IntegrationTests --filter Category=ModuleInit`

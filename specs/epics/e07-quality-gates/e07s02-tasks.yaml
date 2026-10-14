@@ -4,7 +4,7 @@ status: failing
 bcps: 3
 tasks:
   - id: 1
-    description: "Extract WeatherHostFactory with overridden DI (stub IWeatherService, per-module test contexts)"
+    description: "Extract WeatherHostFactory with overridden DI (stub IWeatherProvider, per-module test contexts)"
     verify: "dotnet test src/Tests/IntegrationTests"
     risk: P0
     status: failing

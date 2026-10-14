@@ -4,7 +4,7 @@
 **Date:** 2025-10-13
 
 ## Context
-Weather must be proxied behind `IWeatherService`. The payload must include location, UTC time,
+Weather must be proxied behind `IWeatherProvider`. The payload must include location, UTC time,
 wind (speed + direction), visibility, pressure, sky condition, temperature in F and C, dew point,
 and relative humidity. The requirement states Fahrenheit arrives from the provider and is converted
 to Celsius.

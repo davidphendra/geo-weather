@@ -7,9 +7,9 @@ project_cycle:
   completed_phases: [1, 2]
   mode: standard
 
-active_epic: e03
+active_epic: e02
 active_story: null
-active_flow: weather_module_done
+active_flow: geography_module
 
 epic_cycle:
   step: null
@@ -18,13 +18,12 @@ epic_cycle:
   fast_mode: false
 
 handoff:
-  next_skill: verify-work
+  next_skill: build-epic
   context: >
-    e03 Weather module is IMPLEMENTED and green: 57 module tests + 4 integration tests pass; full
-    preflight (build --warnaserror, format --verify-no-changes, dotnet test, check-layout.sh) is green.
-    Weather module is self-contained (no BuildingBlocks, no cross-module reference). Nothing committed
-    yet. Next: verify-work/audit-code, then commit-message if the user asks to commit. Do not start
-    other modules (BuildingBlocks/e01 remains deferred).
+    IMMEDIATE WORK: e02 Geography module (read side) ONLY. Self-contained per ADR-0008 (no BuildingBlocks,
+    module-local ValidationBehavior, EF Core in the module's Infrastructure). Scope: e02s01 (countries) and
+    e02s02 (cities); e02s03 (CityAddedIntegrationEvent) is DEFERRED (needs shared Outbox/Events Bus).
+    Do NOT implement until the user says go; no git operations. Other modules remain out of scope.
 
 architecture:
   style: "Modular monolith (bounded contexts) + CQRS + Onion-per-module"
@@ -52,6 +51,8 @@ decisions:
   - { id: ADR-0005, title: "Modular monolith: bounded contexts, modules, and repo slicing", status: proposed }
   - { id: ADR-0006, title: "Per-module data isolation and schemas", status: proposed }
   - { id: ADR-0007, title: "Weather module is read-only and self-contained", status: proposed }
+  - { id: ADR-0008, title: "Geography module is self-contained (read side first)", status: proposed }
+  - { id: ADR-0009, title: "Controller-based APIs (ControllerBase) for the HTTP host", status: proposed }
 
 risks:
   - id: R1
@@ -59,7 +60,7 @@ risks:
     mitigation: Derive via the Magnus formula in the Weather domain (ADR-0003).
   - id: R2
     description: OWM API key required for live runs; tests must stay offline.
-    mitigation: Stub IWeatherService + HttpMessageHandler(JSON fixtures); user-secrets for live runs.
+    mitigation: Stub IWeatherProvider + HttpMessageHandler(JSON fixtures); user-secrets for live runs.
   - id: R3
     description: Existing WebUI is a default Blazor template.
     mitigation: e06 reshapes Components/Pages/Weather.razor; e01 moves it under src/.

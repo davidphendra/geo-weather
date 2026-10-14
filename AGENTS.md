@@ -19,14 +19,14 @@ Stack: C# / .NET 10 / ASP.NET Core / Blazor / EF Core (SQLite) / MediatR.
 | Run WebUI | `dotnet run --project src/Weather.WebUI` |
 
 ## Architecture
-Modular monolith sliced by bounded context (reference: kgrzybek/modular-monolith-with-ddd). BuildingBlocks (`Weather.BuildingBlocks.{Domain,Application,Infrastructure}`) hold shared DDD/infra primitives. Each module is a full assembly set: `Weather.Modules.<Module>.{Domain, Application, Infrastructure, IntegrationEvents}` with its own composition root and data. Modules: **Geography**, **Weather** (core), **Favorites**, **Notes**. Each module is internally Onion-layered and uses CQRS (MediatR). A thin `Weather.Api` host exposes one endpoint area per module and calls that module through its `I<Module>Module` interface. `Weather.WebUI` is the Blazor client and uses only the API's HTTP contract. See `specs/adr/0005` and `0006`.
+Modular monolith sliced by bounded context (reference: kgrzybek/modular-monolith-with-ddd). BuildingBlocks (`Weather.BuildingBlocks.{Domain,Application,Infrastructure}`) hold shared DDD/infra primitives. Each module is a full assembly set: `Weather.Modules.<Module>.{Domain, Application, Infrastructure, IntegrationEvents}` with its own composition root and data. Modules: **Geography**, **Weather** (core), **Favorites**, **Notes**. Each module is internally Onion-layered and uses CQRS (MediatR). A thin `Weather.Api` host exposes one endpoint area per module and calls that module through its `I<Module>Service` interface. `Weather.WebUI` is the Blazor client and uses only the API's HTTP contract. See `specs/adr/0005` and `0006`.
 
 ## Conventions
 - Each module is internally layered: Domain ← Application ← Infrastructure. Domain has no framework dependency.
 - A module MUST reference another module ONLY through its `IntegrationEvents` assembly.
 - Modules MUST communicate only asynchronously via the Events Bus. Direct cross-module calls are forbidden.
 - Each module owns its data: its own `DbContext` and its own SQLite file. No shared tables or cross-module joins.
-- The API host is thin: bind → `I<Module>Module` → map result. No application logic in endpoints.
+- The API host is thin: bind → `I<Module>Service` → map result. No application logic in endpoints.
 - Every EF Core read query MUST use `.AsNoTracking()`.
 - Temperature is stored in the Weather domain in Celsius; Fahrenheit arrives only at the infrastructure boundary.
 - Update `specs/` before writing code.

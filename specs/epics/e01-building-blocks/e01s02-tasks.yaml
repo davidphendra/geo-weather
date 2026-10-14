@@ -4,7 +4,7 @@ status: failing
 bcps: 5
 tasks:
   - id: 1
-    description: "Create the Geography module skeleton (Domain/Application/Infrastructure/IntegrationEvents) with IGeographyModule, GeographyModule, GeographyContext"
+    description: "Create the Geography module skeleton (Domain/Application/Infrastructure/IntegrationEvents) with IGeographyService, GeographyService, GeographyContext"
     verify: "dotnet build Weather.sln --warnaserror"
     risk: P0
     status: failing
