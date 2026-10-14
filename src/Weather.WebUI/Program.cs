@@ -11,6 +11,7 @@ using Weather.WebUI.Api.ErrorHandling;
 using Weather.WebUI.Components;
 using Weather.WebUI.Configuration;
 using Weather.WebUI.Security;
+using Weather.WebUI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,11 @@ builder.Services.AddRazorComponents()
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddCsp(builder.Configuration);
+
+// Same-origin REST client for the Blazor UI; the origin is resolved per request from
+// NavigationManager.BaseUri, so there is deliberately no configured base address (D7).
+builder.Services.AddHttpClient<WeatherApiClient>();
+builder.Services.AddScoped<WeatherExplorerModel>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails(options => options.CustomizeProblemDetails = context =>
 {
