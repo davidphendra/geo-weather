@@ -29,4 +29,18 @@
         <None Update="App_Data\**\*" CopyToOutputDirectory="Never" CopyToPublishDirectory="Never" />
     </ItemGroup>
 
+    <ItemGroup>
+        <!-- The Tailwind toolchain is author-time only; keep it out of build/publish output. -->
+        <Content Remove="node_modules/**/*" />
+        <None Remove="node_modules/**/*" />
+        <Compile Remove="node_modules/**/*" />
+    </ItemGroup>
+
+    <!-- Tailwind is built at author time. The compiled wwwroot/app.css is committed, so a plain
+         dotnet build (and CI/Preflight) needs no Node; this target only runs when it is missing. -->
+    <Target Name="BuildTailwind" BeforeTargets="Build" Condition="!Exists('$(MSBuildProjectDirectory)/wwwroot/app.css')">
+        <Exec Command="npm ci" WorkingDirectory="$(MSBuildProjectDirectory)" Condition="!Exists('$(MSBuildProjectDirectory)/node_modules')" />
+        <Exec Command="npm run build:css" WorkingDirectory="$(MSBuildProjectDirectory)" />
+    </Target>
+
 </Project>

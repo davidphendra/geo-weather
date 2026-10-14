@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer components {
+  /* Replaces the prototype's inline style="font-variation-settings: 'FILL' 1",
+     which a strict CSP (style-src-attr 'none') forbids. */
+  .icon-fill {
+    font-variation-settings: 'FILL' 1;
+  }
+}
