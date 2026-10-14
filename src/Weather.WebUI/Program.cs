@@ -112,16 +112,24 @@ app.UseWhen(
     context => context.Request.Path.StartsWithSegments("/api"),
     api => api.UseExceptionHandler());
 
-// Keep the Blazor not-found page off the API and CSP-report surfaces so their non-HTML responses stay intact.
-app.UseWhen(
-    context => !context.Request.Path.StartsWithSegments("/api")
-               && !context.Request.Path.StartsWithSegments("/_csp"),
-    ui => ui.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true));
+// Re-execute the Blazor not-found page for unmatched UI routes. It must run in the main pipeline:
+// inside UseWhen the branch is forked and the re-executed request never reaches the endpoints
+// (BUG-001). /api is kept out of it by its own Problem Details fallback below.
+app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 
 app.UseAntiforgery();
 
 app.MapStaticAssets();
 app.MapControllers();
+
+// Unmatched /api routes return RFC 9457 Problem Details with a body, so the not-found re-execute
+// above leaves the API surface JSON (BUG-001).
+app.MapFallback("/api/{**slug}", () => Results.Problem(
+    type: ApiProblemTypes.ResourceNotFound,
+    title: "Resource not found",
+    statusCode: StatusCodes.Status404NotFound,
+    detail: "No API endpoint matches the request.",
+    extensions: new Dictionary<string, object?> { ["code"] = ApiErrorCodes.ResourceNotFound }));
 
 // CSP violation sink (unauthenticated). Report bodies are no-cors POSTs; no CORS policy is needed.
 app.MapPost("/_csp/report", (HttpRequest request, ILoggerFactory loggerFactory) =>
@@ -129,7 +137,10 @@ app.MapPost("/_csp/report", (HttpRequest request, ILoggerFactory loggerFactory) 
     const long maxReportBytes = 16 * 1024;
     if (request.ContentLength is > maxReportBytes)
     {
-        return Results.StatusCode(StatusCodes.Status413PayloadTooLarge);
+        // A body (and content type) keeps this response out of the not-found re-execute.
+        return Results.Json(
+            new { code = ApiErrorCodes.MalformedRequest, detail = "The CSP report exceeds the size limit." },
+            statusCode: StatusCodes.Status413PayloadTooLarge);
     }
 
     loggerFactory.CreateLogger("CspReport").LogWarning(
