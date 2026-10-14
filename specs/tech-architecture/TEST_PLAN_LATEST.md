@@ -41,7 +41,7 @@ This is the reference rule verbatim, and it is what makes "modules may reference
 executable.
 
 ### API (`src/Tests/ArchTests/Api/ApiTests.cs`)
-Each API endpoint area (`Weather.Api.Modules.<Module>`) must not depend on any other module's namespace.
+Each API endpoint area (`Weather.WebUI.Api.Modules.<Module>`) must not depend on any other module's namespace.
 
 ## Risk classification
 | Scenario ID | Description | Risk |

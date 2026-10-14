@@ -79,6 +79,18 @@ epics:
     bcps: 3
     capsule_dir: epics/e08-docs
     note: README, AI instructions, module map, GitHub-ready repo.
+  - id: e10
+    title: Single Host (merge API into WebUI)
+    wsjf: 7.0
+    bcps: 6
+    capsule_dir: epics/e10-single-host
+    note: Collapse the thin Weather.Api host into Weather.WebUI - one process serves the Blazor UI and the REST API. Preserves the e09 contract and module boundaries (ADR-0012).
+  - id: e11
+    title: SQLite Data File Location (App_Data)
+    wsjf: 8.0
+    bcps: 3
+    capsule_dir: epics/e11-app-data-location
+    note: Move SQLite files under App_Data (outside wwwroot); confirm against Microsoft Learn that only wwwroot is addressable; add a not-served regression guard (ADR-0013).
 
 bugs:
   total: 0

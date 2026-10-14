@@ -1,0 +1,43 @@
+story_id: e11s02
+title: Source the SQLite data location from appsettings.json
+status: done
+bcps: 3
+kind: refactor
+adr: specs/adr/0013-sqlite-app-data-location.md
+tasks:
+  - id: 1
+    description: "Add a Database section to src/Weather.WebUI/appsettings.json (DataDirectory + Files map for Geography/Favorites/Notes)"
+    verify: "grep -q '\"Database\"' src/Weather.WebUI/appsettings.json"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["Configuration", "Host"] }
+  - id: 2
+    description: "Add Weather.WebUI/Configuration/DatabaseOptions.cs (SectionName, DataDirectory, Files dictionary)"
+    verify: "dotnet build src/Weather.WebUI/Weather.WebUI.csproj --warnaserror"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["Configuration", "Host"] }
+  - id: 3
+    description: "Refactor Program.cs to bind DatabaseOptions, resolve DataDirectory (absolute or content-root-relative), and compose ConnectionStrings defaults only when unconfigured; delete the hardcoded dictionary"
+    verify: "dotnet build src/Weather.WebUI/Weather.WebUI.csproj --warnaserror"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Configuration", "Host"] }
+  - id: 4
+    description: "Add DatabaseConfiguration tests: overridden Database:DataDirectory is used; ConnectionStrings override wins; DB serving guard still passes"
+    verify: "dotnet test Weather.sln --filter Category=DatabaseConfiguration"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Configuration", "integration"] }
+  - id: 5
+    description: "Amend ADR-0013 and update tech-stack/CONVENTIONS to say the location is config-driven"
+    verify: "grep -q 'Database:DataDirectory' specs/adr/0013-sqlite-app-data-location.md"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["Configuration", "docs"] }
+  - id: 6
+    description: "Full preflight: build + format + test all green"
+    verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["Configuration", "Standards"] }

@@ -1,0 +1,43 @@
+story_id: e11s01
+title: Store SQLite files under App_Data (outside wwwroot) and prove they are not served
+status: done
+bcps: 3
+kind: security
+adr: specs/adr/0013-sqlite-app-data-location.md
+tasks:
+  - id: 1
+    description: "Host resolves <content root>/App_Data and sets default absolute ConnectionStrings:{Geography,Favorites,Notes} only when none is configured; create the directory before migrations"
+    verify: "dotnet build src/Weather.WebUI/Weather.WebUI.csproj --warnaserror"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Security Review", "Host"] }
+  - id: 2
+    description: "EF design-time factories resolve to the same App_Data folder"
+    verify: "dotnet build Weather.sln --warnaserror"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["Host"] }
+  - id: 3
+    description: "Move existing dev SQLite files into src/Weather.WebUI/App_Data (gitignore already covers App_Data/ and *.db)"
+    verify: "test -f src/Weather.WebUI/App_Data/geography.db && ! ls src/Weather.WebUI/*.db"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["Host"] }
+  - id: 4
+    description: "Regression test: sentinel .db files under content root and App_Data both return 404"
+    verify: "dotnet test Weather.sln --filter Category=SingleHost"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Security Review", "integration"] }
+  - id: 5
+    description: "Record ADR-0013 and update ADR-0006 note, tech-stack persistence row, CONVENTIONS data access rule"
+    verify: "test -f specs/adr/0013-sqlite-app-data-location.md"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["Security Review", "docs"] }
+  - id: 6
+    description: "Full preflight: build + format + test all green"
+    verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["Security Review", "Standards"] }

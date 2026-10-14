@@ -16,6 +16,11 @@ Because each module is now its own assembly set with its own composition root, d
 2. **One SQLite database file per module** in the running app:
    `data/geography.db`, `data/favorites.db`, `data/notes.db`. This is *stronger* than the reference's shared
    database with separate schemas — it is effectively data-isolation level 3 for SQLite.
+
+   > **Location (ADR-0013):** the files live under `<content root>/App_Data/`
+   > (`geography.db`, `favorites.db`, `notes.db`), outside `wwwroot`, so they are never addressable as
+   > static files.
+
 3. **No cross-module foreign keys or joins.** A module reads only its own tables.
 4. **A module may reference only another module's `IntegrationEvents` assembly**, never its `Domain`/
    `Application`/`Infrastructure` or its `DbContext`.

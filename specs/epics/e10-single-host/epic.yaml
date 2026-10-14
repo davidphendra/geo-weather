@@ -1,0 +1,17 @@
+id: e10
+title: Single Host (merge API into WebUI)
+wsjf: 7.0
+total_bcps: 6
+status: done
+kind: refactor
+note: >
+  Collapse the thin Weather.Api host into Weather.WebUI so one ASP.NET Core process serves both the Blazor UI
+  and the REST API. Preserves the e09 REST contract and all module boundaries. See ADR-0012. One story.
+stories:
+  - id: e10s01
+    title: Merge Weather.Api into Weather.WebUI (single story, single host)
+    bcps: 6
+    status: done
+    spec: e10s01-single-host.md
+    tasks: e10s01-tasks.yaml
+    delta: MODIFIED

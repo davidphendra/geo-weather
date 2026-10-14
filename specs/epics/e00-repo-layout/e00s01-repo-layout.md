@@ -1,5 +1,8 @@
 # Story e00s01 — Scaffold the modular-monolith repository layout
 
+> **Amended by e10s01 (ADR-0012, 2025-10-15):** `Weather.Api` was merged into `Weather.WebUI`. The layout and
+> reference graph below are the original e00 as-built record; the current single host is `Weather.WebUI`.
+
 | Field | Value |
 |-------|-------|
 | ID | e00s01 |

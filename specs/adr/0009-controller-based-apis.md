@@ -1,6 +1,7 @@
 # ADR-0009 — Controller-based APIs (ControllerBase) for the HTTP host
 
 **Status:** Proposed (needs user confirmation)
+**Amended by:** ADR-0012 (2025-10-15) — controllers now live in the `Weather.WebUI` host; the controller-based decision is unchanged.
 **Date:** 2025-10-13
 
 ## Context

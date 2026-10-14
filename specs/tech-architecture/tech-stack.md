@@ -54,15 +54,16 @@ Modules/
     ...Infrastructure/ FavoritesContext, FavoritesModule, Outbox/, Configuration/
     ...IntegrationEvents/ CityAddedIntegrationEventHandler (lives in Application/Infrastructure)
   Weather.Modules.Notes/  (mirror of Favorites for WeatherNote)
-Weather.Api/            thin host; Modules/<Module>/*Endpoints.cs; Program/Startup initializes modules
-Weather.WebUI/          Blazor client; HTTP contract only
+Weather.WebUI/          single host (ADR-0012); Components/ (Blazor UI) + Api/Modules/<Module>/*Controller.cs;
+                        Program initializes modules
 
-Tests (7 projects — LOCKED):
+Tests (8 projects — 7 locked + controller unit tests):
   BuildingBlocks/Tests/Weather.BuildingBlocks.Tests/          BuildingBlocks unit tests
   Modules/<Module>/Tests/Weather.Modules.<Module>.Tests/      one per module (4); folders
                                                               UnitTests/ IntegrationTests/ ArchTests/
   Tests/Weather.ArchTests/                                    cross-module ModuleTests + ApiTests + BuildingBlocks guard
   Tests/Weather.IntegrationTests/                             end-to-end host tests (offline)
+  Tests/Weather.WebUI.UnitTests/                             controller unit tests (ADR-0009)
 ```
 
 > **Locked decision (2025-10-13):** 7 test projects — one per module (with `UnitTests`/
@@ -105,11 +106,11 @@ Geography ──CityAddedIntegrationEvent──► InMemoryEventsBus ──► F
 | Language | C# 14 | `nullable enable`, `ImplicitUsings enable` |
 | Runtime | .NET 10 (SDK 10.0.401) | present |
 | API | ASP.NET Core MVC controllers (`ControllerBase`, `[ApiController]`) | thin, per-module controllers; `ActionResult<T>` (ADR-0009) |
-| Front-end | Blazor Web App | existing `Weather.WebUI`, reshaped |
+| Front-end | Blazor Web App | hosted in `Weather.WebUI` alongside the API (ADR-0012); consumes the API over HTTP |
 | CQRS | MediatR 12.x | pinned — ADR-0004 |
 | Validation | FluentValidation | pipeline behavior per module |
 | ORM | EF Core 10 | one context per persisting module |
-| Persistence | SQLite | one file per module — ADR-0006 |
+| Persistence | SQLite | one file per module under the configured `Database:DataDirectory` (default `App_Data`, outside `wwwroot`) — ADR-0006/0013 |
 | Events | In-memory Events Bus + per-module Outbox | reference pattern |
 | DI | Microsoft DI (per-module `Add<Module>Module()`) | deviation from the reference's Autofac — ADR-0005 |
 | Arch tests | NetArchTest.Rules (or ArchUnitNET) | per-module + cross-module rules |

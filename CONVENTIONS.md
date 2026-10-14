@@ -80,7 +80,7 @@ Boundary rules — a violation is a build-breaking defect:
 - Modules MUST communicate only asynchronously via the Events Bus. Direct cross-module calls are forbidden.
 - Permitted cross-module flows: Geography → Favorites and Geography → Notes (`CityAddedIntegrationEvent`). Weather is independent.
 - Each module owns its data: own `DbContext`, own SQLite file, no cross-module joins or foreign keys.
-- Cross-module reference is forbidden in the API host too: each API area talks to one module only.
+- Cross-module reference is forbidden in the host too: each API area talks to one module only.
 - Modules are initialized by the host via `Add<Module>Module()` + `Initialize(...)`.
 - Enforced by `ModuleTests` (cross-module), `LayersTests` (per module), and `ApiTests` (host) — NetArchTest.
 
@@ -92,11 +92,10 @@ Boundary rules — a violation is a build-breaking defect:
 | `<Module>.Application` | own Domain, `BuildingBlocks.Application`, MediatR, FluentValidation | own Infrastructure, EF Core |
 | `<Module>.Infrastructure` | own Domain/Application, `BuildingBlocks.Infrastructure`, EF Core, `HttpClient` | other modules |
 | `<Module>.IntegrationEvents` | BCL | anything module-internal |
-| `Weather.Api` | each module's `Application.Contracts` | another module's namespace from an API area |
-| `Weather.WebUI` | HTTP contract of Api only | any server project |
+| `Weather.WebUI` (host) | each module's `Application.Contracts` + `Infrastructure` (composition root) | another module's namespace from an API area |
 
 - Dependencies point inward within a module. Domain has zero external framework dependencies.
-- The API host is thin: bind → `I<Module>Service` → map result. No application logic in endpoints.
+- The host is thin: bind → `I<Module>Service` → map result. No application logic in endpoints.
 
 ## CQRS Patterns
 
@@ -110,7 +109,7 @@ Boundary rules — a violation is a build-breaking defect:
 
 ## Naming Conventions
 
-- Projects: `Weather.BuildingBlocks.<Layer>`, `Weather.Modules.<Module>.<Layer>`, `Weather.Api`, `Weather.WebUI`.
+- Projects: `Weather.BuildingBlocks.<Layer>`, `Weather.Modules.<Module>.<Layer>`, `Weather.WebUI` (host: Blazor UI + REST API).
 - Modules: `Geography`, `Weather`, `Favorites`, `Notes` (bounded-context names, never technical names).
 - Folders mirror layers/features; files are one-type-per-file.
 - Interfaces: `IWeatherProvider`, `ICityRepository`, `IDateTimeProvider`.
@@ -122,7 +121,7 @@ Boundary rules — a violation is a build-breaking defect:
 - Every read query uses `.AsNoTracking()`.
 - EF Core entity configuration lives in `IEntityTypeConfiguration<T>` classes, one per entity.
 - Domain entities have no EF attributes. Infrastructure maps them fluently.
-- Persistence is SQLite, one file per persisting module (`geography.db`, `favorites.db`, `notes.db`).
+- Persistence is SQLite, one file per persisting module (`geography.db`, `favorites.db`, `notes.db`) under the configured `Database:DataDirectory` (default `App_Data/`), outside `wwwroot` (ADR-0013).
 - Tests use the EF Core InMemory provider or SQLite `:memory:` per module.
 - Each persisting module owns a `DbContext`; migrations are per-context.
 - A module may store only a **local projection** of another module's reference data; it must not query another module's tables.

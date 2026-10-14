@@ -1,6 +1,7 @@
 # ADR-0005 — Modular monolith: bounded contexts, modules, and repo slicing
 
 **Status:** Proposed (needs user confirmation)
+**Amended by:** ADR-0012 (2025-10-15) — the separate `Weather.Api` host is merged into `Weather.WebUI`; the module rules below are unchanged.
 **Supersedes:** ADR-0001 (Onion layout — the single set of layer projects is replaced by per-module layering)
 **Date:** 2025-10-13 (revised)
 

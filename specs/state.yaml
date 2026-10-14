@@ -7,9 +7,9 @@ project_cycle:
   completed_phases: [1, 2]
   mode: standard
 
-active_epic: e05
-active_story: null
-active_flow: null
+active_epic: e10
+active_story: e10s01
+active_flow: develop-tdd
 
 epic_cycle:
   step: null
@@ -18,12 +18,14 @@ epic_cycle:
   fast_mode: false
 
 handoff:
-  next_skill: verify-work
+  next_skill: audit-code
   context: >
-    COMPLETED: e05 Notes module (M4) — WeatherNote + AddWeatherNote + POST /api/weather/notes (ADR-0011 contract),
-    local City projection from CityAddedIntegrationEvent, minimal (CityId/CountryCode/Name). Pure consumer (no Outbox).
-    All verify filters green; preflight green (build/format/test). Not committed (per user instruction).
-    PRIOR CONTEXT: e09 API Response Contract (ADR-0011); e04 Favorites done.
+    COMPLETED: e11s02 SQLite location is config-driven — new "Database" section in WebUI appsettings.json
+    (DataDirectory + Files) bound by DatabaseOptions; Program.cs composes ConnectionStrings defaults from it
+    (absolute or content-root-relative dir) with no hardcoded DB names; ConnectionStrings still override.
+    DatabaseConfiguration tests prove relocation + override precedence. Preflight green (179 tests).
+    PRIOR: e11s01 App_Data + not-served guard (ADR-0013); e10s01 single host (ADR-0012). Not committed.
+    Evidence: specs/verifications/e11s01.md, specs/verifications/e11s02.md.
 
 architecture:
   style: "Modular monolith (bounded contexts) + CQRS + Onion-per-module"
@@ -55,6 +57,8 @@ decisions:
   - { id: ADR-0009, title: "Controller-based APIs (ControllerBase) for the HTTP host", status: proposed }
   - { id: ADR-0010, title: "Favorites module decisions (event-driven, CityId key, GET, 409, global)", status: proposed }
   - { id: ADR-0011, title: "REST API response contract (RFC 9457 Problem Details + code + traceId)", status: proposed }
+  - { id: ADR-0012, title: "Single host: merge Weather.Api into Weather.WebUI", status: proposed }
+  - { id: ADR-0013, title: "SQLite data files live in App_Data, outside the web root", status: proposed }
 
 risks:
   - id: R1

@@ -10,7 +10,10 @@ public sealed class FavoritesContextFactory : IDesignTimeDbContextFactory<Favori
     {
         DbContextOptionsBuilder<FavoritesContext> options = new();
 
-        options.UseSqlite("Data Source=favorites.db");
+        string dataDirectory = Path.Combine(Directory.GetCurrentDirectory(), "App_Data");
+        Directory.CreateDirectory(dataDirectory);
+
+        options.UseSqlite($"Data Source={Path.Combine(dataDirectory, "favorites.db")}");
 
         return new FavoritesContext(options.Options);
     }

@@ -26,7 +26,7 @@ First visible end-to-end path once Geography is live.
 ## 5. In scope
 - `WeatherApiClient` (`GetCountriesAsync`, `GetCitiesAsync`) with configurable base address.
 - `Weather.razor` country/city selects; loading and error states.
-- CORS for the WebUI origin.
+- Same-origin hosted API (no CORS needed — ADR-0012).
 
 ## 6. Out of scope
 Weather rendering and saving (e06s02).
@@ -38,7 +38,7 @@ Weather rendering and saving (e06s02).
 | Assembly | Change |
 |----------|--------|
 | Weather.WebUI | `Services/WeatherApiClient`, `Components/Pages/Weather.razor`, DI in Program.cs |
-| Weather.Api | CORS policy |
+| Weather.WebUI (host) | no CORS policy — the API is served on the same origin (ADR-0012) |
 
 ## 9. API contract (consumed)
 `GET /api/countries`; `GET /api/countries/{code}/cities`.
@@ -49,7 +49,7 @@ e02s01, e02s02, e01s01 (WebUI moved).
 ## 11. Risks
 | Risk | Mitigation |
 |------|-----------|
-| Base URL mismatch | Configure `BaseAddress` from config |
+| Base URL mismatch | Configure `BaseAddress` from the app's own origin (same-origin host, ADR-0012) |
 | Async void | `async Task OnInitializedAsync` + null guards |
 
 ## 12. Implementation steps
@@ -81,7 +81,7 @@ WebUI builds; cascade works against a running API.
 Persistence of selection; search.
 
 ## 18. Risks / notes
-Client DTOs are local records; no server project reference.
+The client consumes the API's HTTP contract even though the UI and the host share one process (ADR-0012).
 
 ## 19. Sizing / BCP rationale
 5 BCPs — typed client + component wiring.

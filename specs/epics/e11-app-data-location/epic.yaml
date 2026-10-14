@@ -1,0 +1,25 @@
+id: e11
+title: SQLite Data File Location (App_Data)
+wsjf: 8.0
+total_bcps: 6
+status: done
+kind: security
+note: >
+  Move SQLite files out of the host content root into a dedicated App_Data folder that is never wired to
+  static-file middleware. Confirms against Microsoft Learn that only wwwroot is addressable; hardens the
+  hosting layout and adds a serving regression guard. See ADR-0013.
+stories:
+  - id: e11s01
+    title: Store SQLite files under App_Data (outside wwwroot) and prove they are not served
+    bcps: 3
+    status: done
+    spec: e11s01-app-data.md
+    tasks: e11s01-tasks.yaml
+    delta: MODIFIED
+  - id: e11s02
+    title: Source the SQLite data location from appsettings.json
+    bcps: 3
+    status: done
+    spec: e11s02-configurable.md
+    tasks: e11s02-tasks.yaml
+    delta: MODIFIED

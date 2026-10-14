@@ -7,7 +7,7 @@ composition root + own schema; modules integrate **only** asynchronously via int
 ## How the reference divides modules (the method)
 MyMeetings modules are bounded contexts: **UserAccess, Registrations, Meetings, Administration, Payments**. Each
 has `Domain / Application / Infrastructure / IntegrationEvents` assemblies, its own DbContext/schema, its own
-composition root, and one `I<Module>Service` interface used by the API host. Cross-module rules (verbatim from
+composition root, and one `I<Module>Service` interface used by the host. Cross-module rules (verbatim from
 its README and `ModuleTests.cs`):
 - API has no application logic; it sends commands/queries to exactly one module.
 - **Modules communicate only asynchronously via the Events Bus — direct calls are not allowed.**
@@ -42,8 +42,7 @@ src/
     Weather.Modules.Weather/{Domain,Application,Infrastructure,IntegrationEvents}
     Weather.Modules.Favorites/{Domain,Application,Infrastructure,IntegrationEvents}
     Weather.Modules.Notes/{Domain,Application,Infrastructure,IntegrationEvents}
-  Weather.Api/            thin host; one endpoint area per module
-  Weather.WebUI/          Blazor client (HTTP only)
+  Weather.WebUI/          single host (ADR-0012); Blazor UI + one endpoint area per module
 src/Modules/<M>/Tests/{UnitTests,IntegrationTests,ArchTests}
 src/Tests/ArchTests/      ModuleTests (cross-module) + ApiTests
 src/Tests/IntegrationTests/  end-to-end host tests

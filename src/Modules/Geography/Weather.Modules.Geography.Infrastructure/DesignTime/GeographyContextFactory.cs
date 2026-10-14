@@ -10,7 +10,10 @@ public sealed class GeographyContextFactory : IDesignTimeDbContextFactory<Geogra
     {
         DbContextOptionsBuilder<GeographyContext> options = new();
 
-        options.UseSqlite("Data Source=geography.db");
+        string dataDirectory = Path.Combine(Directory.GetCurrentDirectory(), "App_Data");
+        Directory.CreateDirectory(dataDirectory);
+
+        options.UseSqlite($"Data Source={Path.Combine(dataDirectory, "geography.db")}");
 
         return new GeographyContext(options.Options);
     }

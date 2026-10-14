@@ -1,0 +1,85 @@
+story_id: e10s01
+title: Merge Weather.Api into Weather.WebUI (single story, single host)
+status: done
+bcps: 6
+kind: refactor
+adr: specs/adr/0012-merge-api-into-webui.md
+tasks:
+  - id: 1
+    description: "Add module Application+Infrastructure ProjectReferences and Microsoft.AspNetCore.OpenApi package to Weather.WebUI.csproj"
+    verify: "dotnet build src/Weather.WebUI/Weather.WebUI.csproj --warnaserror"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["SingleHost", "Host"] }
+  - id: 2
+    description: "Move Weather.Api Common/, ErrorHandling/, and Modules/*Controller.cs into Weather.WebUI/Api/; rename namespaces Weather.Api.* -> Weather.WebUI.Api.*"
+    verify: "dotnet build src/Weather.WebUI/Weather.WebUI.csproj --warnaserror"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["SingleHost", "Host"] }
+  - id: 3
+    description: "Merge the API pipeline into Weather.WebUI/Program.cs (AddControllers/AddOpenApi/AddProblemDetails/AddExceptionHandler/InvalidModelState/AddInMemoryEventsBus/modules; path-scoped UseExceptionHandler for /api and UseStatusCodePagesWithReExecute off /api; add public partial class Program)"
+    verify: "dotnet build src/Weather.WebUI/Weather.WebUI.csproj --warnaserror"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["SingleHost", "Host"] }
+  - id: 4
+    description: "Delete src/Weather.Api; repoint Weather.IntegrationTests and Weather.ArchTests to Weather.WebUI; repoint and fix Weather.Api.UnitTests usings/namespaces; update Weather.sln"
+    verify: "dotnet build Weather.sln --warnaserror && dotnet test Weather.sln"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["SingleHost", "Host", "integration"] }
+  - id: 5
+    description: "Rename Weather.Api.UnitTests -> Weather.WebUI.UnitTests (folder, csproj, namespaces, sln)"
+    verify: "dotnet test src/Tests/Weather.WebUI.UnitTests"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["SingleHost", "unit"] }
+  - id: 6
+    description: "Reconcile launch settings/config: keep WebUI ports 5121/7137, remove API launchSettings, merge appsettings keys (no-op: API config was identical)"
+    verify: "dotnet build Weather.sln --warnaserror"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["SingleHost", "Host"] }
+  - id: 7
+    description: "Add SingleHost regression tests (Category=SingleHost): API route returns JSON; / returns HTML; unknown /api route stays non-HTML; error carries X-Correlation-ID"
+    verify: "dotnet test Weather.sln --filter Category=SingleHost"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["SingleHost", "integration"] }
+  - id: 8
+    description: "Prove UseHttpsRedirection does not redirect the test host (harden WeatherHostFactory if it does)"
+    verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=ProblemDetails"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["SingleHost", "integration"] }
+  - id: 9
+    description: "Add specs/adr/0012-merge-api-into-webui.md and cross-reference notes in ADR-0005 and ADR-0009"
+    verify: "test -f specs/adr/0012-merge-api-into-webui.md"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["SingleHost", "docs"] }
+  - id: 10
+    description: "Update AGENTS.md (single run command, host wording) and CONVENTIONS.md (project naming, layer/host table)"
+    verify: "grep -q 'src/Weather.WebUI' AGENTS.md && ! grep -rq 'src/Weather.Api' AGENTS.md"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["SingleHost", "docs"] }
+  - id: 11
+    description: "Update specs/tech-architecture/tech-stack.md, TEST_PLAN_LATEST.md, and PLAN_LATEST.md (project count, host layout, ApiTests scope)"
+    verify: "! grep -rn 'Weather[.]Api' specs/tech-architecture/"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["SingleHost", "docs"] }
+  - id: 12
+    description: "Update pending capsules e06/e07 for the single host (drop CORS, host = WebUI) and register e10 in release-plan.yaml, execution-status.yaml, state.yaml"
+    verify: "! grep -rn 'Weather[.]Api' specs/epics/e06-webui specs/epics/e07-quality-gates && grep -q 'e10-single-host' specs/release-plan.yaml && grep -q 'e10s01' specs/execution-status.yaml"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["SingleHost", "docs"] }
+  - id: 13
+    description: "Full preflight: build + format + test all green"
+    verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["SingleHost", "Standards"] }

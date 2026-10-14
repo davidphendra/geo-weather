@@ -10,7 +10,10 @@ public sealed class NotesContextFactory : IDesignTimeDbContextFactory<NotesConte
     {
         DbContextOptionsBuilder<NotesContext> options = new();
 
-        options.UseSqlite("Data Source=notes.db");
+        string dataDirectory = Path.Combine(Directory.GetCurrentDirectory(), "App_Data");
+        Directory.CreateDirectory(dataDirectory);
+
+        options.UseSqlite($"Data Source={Path.Combine(dataDirectory, "notes.db")}");
 
         return new NotesContext(options.Options);
     }
