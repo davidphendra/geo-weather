@@ -65,6 +65,22 @@ public sealed class CommandDispatchModelTests
     }
 
     [Fact]
+    public async Task Manual_target_posts_to_the_favorites_endpoint()
+    {
+        (CommandDispatchModel model, List<string> requests) = Create(_ => Created(
+            """{"id":"11111111-1111-1111-1111-111111111111","cityId":"22222222-2222-2222-2222-222222222222","city":"Kyoto","countryCode":"JP","createdAtUtc":"2025-01-01T00:00:00+00:00"}"""));
+
+        model.BindManual("Kyoto", "JP");
+        model.Text = "Pinned node";
+
+        await model.SubmitAsync(CancellationToken.None);
+
+        Assert.Equal("/api/cities/favorites", Assert.Single(requests));
+        Assert.Single(model.History);
+        Assert.True(model.LastResult?.IsSuccess);
+    }
+
+    [Fact]
     public async Task Empty_text_is_rejected_without_a_request()
     {
         (CommandDispatchModel model, List<string> requests) = Create(_ => Created("{}"));
