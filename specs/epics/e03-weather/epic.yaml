@@ -18,7 +18,8 @@ note: >
   docs/engineering/csharp-standards.md. Final task lists: e03s01 (6), e03s02 (7), e03s03 (7) — 20 tasks.
   POST-SHIP CHANGE REQUEST: e03s04 replaces the over-broad AddStandardResilienceHandler (which also enabled a
   circuit breaker + rate limiter that SCOPE_LATEST deferred) with an explicit configurable
-  total -> retry -> attempt-timeout pipeline bound from OpenWeather:Resilience (ADR-0015).
+  total -> retry -> attempt-timeout pipeline bound from OpenWeather:Resilience (ADR-0015). Done — 6 tasks,
+  evidence in specs/verifications/e03s04.md; Weather module tests 70 -> 93.
 stories:
   - id: e03s01
     title: Weather domain — value objects + WeatherReport
@@ -44,7 +45,7 @@ stories:
   - id: e03s04
     title: Configurable retry resilience for the OpenWeatherMap client
     bcps: 3
-    status: todo
+    status: done
     spec: e03s04-resilience-config.md
     tasks: e03s04-tasks.yaml
     delta: MODIFIED

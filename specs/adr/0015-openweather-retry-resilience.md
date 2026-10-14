@@ -33,7 +33,7 @@ only the strategies the project committed to, configured from `appsettings.json`
 |---|----------|-------|
 | D1 | Pipeline composition | `AddResilienceHandler("openweather", …)`: total timeout (outer) → retry → attempt timeout (inner) |
 | D2 | Configuration section | `OpenWeather:Resilience` |
-| D3 | Retry count semantics | `MaxRetryAttempts` = retries **after** the first attempt; total attempts = `MaxRetryAttempts + 1` (Polly semantics) |
+| D3 | Retry count semantics | `MaxRetryAttempts` = retries **after** the first attempt; total attempts = `MaxRetryAttempts + 1` (Polly semantics). `0` disables retries entirely: Polly rejects `MaxRetryAttempts < 1`, so the composition root adds no retry strategy when the value is `0` |
 | D4 | Backoff | Exponential with jitter (`DelayBackoffType.Exponential`, `UseJitter = true`), base `RetryBaseDelaySeconds` |
 | D5 | Deferred strategies | No circuit breaker, no rate limiter, no hedging |
 | D6 | Startup validation | `[Range]` guards + a cross-field rule `TotalTimeoutSeconds >= AttemptTimeoutSeconds`; `ValidateOnStart()` |
@@ -54,7 +54,8 @@ Settings and defaults:
 
 `HttpRetryStrategyOptions` handles only transient failures by default — `408`, `429`, `5xx`, and
 `HttpRequestException`/`TimeoutRejectedException` — so a `404` (city not found) is never retried and remains the
-expected `null` outcome. The final failure still maps to `WeatherProviderException` → `502
+expected `null` outcome. The options carry a `[Range(0, 10)]` bound, so a value of `0` (no retry strategy) is
+valid while values above `10` fail startup validation. The final failure still maps to `WeatherProviderException` → `502
 DEPENDENCY_UNAVAILABLE` (ADR-0011).
 
 ## Rationale
@@ -95,3 +96,4 @@ DEPENDENCY_UNAVAILABLE` (ADR-0011).
 | `Microsoft.Extensions.Http.Resilience.HttpRetryStrategyOptions` | "By default, the options are configured to handle only transient failures." |
 | `Microsoft.Extensions.DependencyInjection.ResilienceHttpClientBuilderExtensions.AddResilienceHandler` | Accepts a `ResiliencePipelineBuilder<HttpResponseMessage>` and a `ResilienceHandlerContext` (used to read `IOptions<OpenWeatherResilienceOptions>`). |
 | `Polly.Retry.RetryStrategyOptions<T>.MaxRetryAttempts` | Number of retries after the initial attempt. |
+| Polly validation (observed at runtime) | `HttpRetryStrategyOptions` are rejected when `MaxRetryAttempts < 1` ("must be between 1 and 2147483647"), hence the conditional registration for `0`. |

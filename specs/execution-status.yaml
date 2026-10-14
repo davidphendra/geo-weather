@@ -17,7 +17,7 @@ stories:
   e03s01: { status: done }
   e03s02: { status: done }
   e03s03: { status: done }
-  e03s04: { status: todo }
+  e03s04: { status: done }
   e04s01: { status: done }
   e04s02: { status: done }
   e05s01: { status: todo }

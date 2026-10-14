@@ -1,6 +1,6 @@
 story_id: e03s04
 title: Configurable retry resilience for the OpenWeatherMap client
-status: failing
+status: passing
 bcps: 3
 module: M2
 standards: docs/engineering/csharp-standards.md
@@ -14,7 +14,7 @@ tasks:
       TotalTimeoutSeconds >= AttemptTimeoutSeconds. Unit-test every range and the cross-field rule.
     verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=OpenWeatherResilienceOptions"
     risk: P1
-    status: failing
+    status: passing
     allure:
       severity: high
       categories: ["Weather", "WeatherProvider", "unit"]
@@ -28,7 +28,7 @@ tasks:
       Extend WeatherModuleWiringTests so the graph resolves and no circuit breaker/rate limiter remains.
     verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=WeatherServiceWiring"
     risk: P0
-    status: failing
+    status: passing
     allure:
       severity: critical
       categories: ["Weather", "WeatherProvider", "integration"]
@@ -41,7 +41,7 @@ tasks:
       Use RetryBaseDelaySeconds = 0.01 so the suite stays fast; assert call counts, never wall-clock.
     verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=OpenWeatherResilience"
     risk: P0
-    status: failing
+    status: passing
     allure:
       severity: critical
       categories: ["Weather", "WeatherProvider", "integration"]
@@ -53,7 +53,7 @@ tasks:
       No live network call.
     verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=WeatherResilienceConfig"
     risk: P1
-    status: failing
+    status: passing
     allure:
       severity: high
       categories: ["Weather", "WeatherProvider", "integration"]
@@ -65,7 +65,7 @@ tasks:
       deferred), CONVENTIONS.md (Defensive Code Categories), and DECISIONS.md DD4.
     verify: "rg -n 'e03s04|ADR-0015|MaxRetryAttempts' specs CONVENTIONS.md"
     risk: P3
-    status: failing
+    status: passing
     allure:
       severity: minor
       categories: ["Weather", "Documentation"]
@@ -75,7 +75,7 @@ tasks:
       test suite.
     verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln"
     risk: P1
-    status: failing
+    status: passing
     allure:
       severity: high
       categories: ["Weather", "Standards"]

@@ -6,7 +6,8 @@ namespace Weather.Modules.Weather.Infrastructure.OpenWeatherMap;
 /// Configurable retry resilience for the OpenWeatherMap client, bound from
 /// <c>OpenWeather:Resilience</c>. <see cref="MaxRetryAttempts"/> follows Polly semantics: it is the number of
 /// retries <em>after</em> the first attempt, so the total number of attempts is <c>MaxRetryAttempts + 1</c>.
-/// See specs/adr/0015-openweather-retry-resilience.md.
+/// A value of <c>0</c> disables retries (Polly requires at least one retry when a retry strategy is added, so
+/// no retry strategy is registered). See specs/adr/0015-openweather-retry-resilience.md.
 /// </summary>
 public sealed class OpenWeatherResilienceOptions
 {

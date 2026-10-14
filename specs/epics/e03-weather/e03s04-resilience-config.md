@@ -185,8 +185,10 @@ unchanged; no live network in tests.
 Caching; circuit breaker; provider fallback; new telemetry instruments.
 
 ## 18. Risks / notes
-`MaxRetryAttempts` follows Polly semantics (retries after the first attempt). Document this wherever the setting
-is described so operators do not expect `MaxRetryAttempts=3` to mean three total attempts.
+`MaxRetryAttempts` follows Polly semantics (retries after the first attempt), so `MaxRetryAttempts=3` means up to
+four total attempts. Document this wherever the setting is described so operators do not misread it.
+Implementation note (discovered during TDD): Polly rejects `MaxRetryAttempts < 1`, so `0` is implemented by not
+registering a retry strategy at all — worth a comment in the composition root and a test.
 
 ## 19. Sizing / BCP rationale
 3 BCPs — options + validator, composition-root pipeline, and the behavioral test harness that proves the
