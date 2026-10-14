@@ -1,6 +1,7 @@
 # Flat story status store. Statuses: todo | in_progress | done | blocked | deferred
 stories:
   e09s01: { status: done }
+  e09s02: { status: done }
   e00s01: { status: done }
   e01s01: { status: deferred }
   e01s02: { status: deferred }

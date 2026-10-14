@@ -1,0 +1,42 @@
+story_id: e09s02
+title: Align Weather & Geography controllers to the Favorites response contract
+status: done
+bcps: 2
+kind: cross-cutting
+standards: docs/engineering/rest-api-standards.md
+prerequisites: [e09s01]
+tasks:
+  - id: 1
+    description: >
+      WeatherController.GetCurrentWeather: declare 200 (WeatherReportDto), 404 (ProblemDetails),
+      422 (ValidationProblemDetails), 502 (ProblemDetails), 500 (ProblemDetails); remove the unreachable 400.
+    verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=OpenApiContract"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["ApiContract", "WebApi"] }
+  - id: 2
+    description: "GeographyController.GetCountries: declare 200 (IReadOnlyList<CountryDto>) and 500 (ProblemDetails); remove the unreachable 400."
+    verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=OpenApiContract"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["ApiContract", "WebApi"] }
+  - id: 3
+    description: "GeographyController.GetCitiesByCountry: declare 200, 404, 422, 500; remove the unreachable 400."
+    verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=OpenApiContract"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["ApiContract", "WebApi"] }
+  - id: 4
+    description: >
+      Add OpenApiContractTests parsing /openapi/v1.json and asserting each action's declared response codes equal the
+      expected set (Weather GET = 200/404/422/500/502; countries GET = 200/500; cities GET = 200/404/422/500).
+    verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=OpenApiContract"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["ApiContract", "integration"] }
+  - id: 5
+    description: "Standards gate: Weather.Api compiles under analyzers and passes formatting."
+    verify: "dotnet format src/Weather.Api/Weather.Api.csproj --verify-no-changes"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["ApiContract", "Standards"] }
