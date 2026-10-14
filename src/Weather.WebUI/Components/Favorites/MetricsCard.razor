@@ -1,0 +1,31 @@
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between">
+    <div class="flex items-center justify-between">
+        <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">@Label</span>
+        <span class="material-symbols-outlined text-secondary text-[20px]">@Icon</span>
+    </div>
+    <div class="mt-space-sm flex items-baseline gap-space-xs">
+        <span class="font-headline-lg text-headline-lg text-on-surface font-semibold @(Mono ? "font-code-md" : string.Empty)">@Value</span>
+        @if (!string.IsNullOrWhiteSpace(Unit))
+        {
+            <span class="font-code-sm text-code-sm text-on-surface-variant">@Unit</span>
+        }
+    </div>
+    @if (!string.IsNullOrWhiteSpace(Note))
+    {
+        <div class="mt-space-xs font-code-sm text-code-sm text-on-surface-variant">@Note</div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Label { get; set; } = string.Empty;
+
+    [Parameter, EditorRequired] public string Icon { get; set; } = string.Empty;
+
+    [Parameter, EditorRequired] public string Value { get; set; } = string.Empty;
+
+    [Parameter] public string? Unit { get; set; }
+
+    [Parameter] public string? Note { get; set; }
+
+    [Parameter] public bool Mono { get; set; }
+}

@@ -1,0 +1,55 @@
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
+    <div class="px-space-lg py-space-md bg-surface-container-low flex items-center justify-between">
+        <div class="flex items-center gap-space-sm">
+            <span class="font-label-md text-label-md text-on-surface font-semibold uppercase tracking-wider">DbSet&lt;FavoriteCity&gt;</span>
+            <span class="font-code-sm text-code-sm px-2 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed-variant font-medium">AsNoTracking</span>
+        </div>
+        <span class="font-code-sm text-code-sm text-on-surface-variant">@Rows.Count row(s)</span>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-left">
+            <thead class="bg-surface-container-low/60 text-on-surface-variant font-code-sm text-code-sm">
+                <tr>
+                    <th class="py-2.5 px-space-lg">GUID / Node</th>
+                    <th class="py-2.5 px-space-md">Location</th>
+                    <th class="py-2.5 px-space-md">Type</th>
+                    <th class="py-2.5 px-space-md">Snapshot Condition</th>
+                    <th class="py-2.5 px-space-md">Note &amp; Domain Tags</th>
+                    <th class="py-2.5 px-space-md">Saved UTC</th>
+                    <th class="py-2.5 px-space-lg text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Rows.Count == 0)
+                {
+                    <tr>
+                        <td colspan="7" class="py-6 px-space-lg text-center font-code-sm text-code-sm text-on-surface-variant">
+                            No favorites match the current filter.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (FavoriteCityModel row in Rows)
+                    {
+                        <EntityRow Row="row" OnInspect="OnInspect"/>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="px-space-lg py-space-sm bg-surface-container-low/40 flex items-center justify-between font-code-sm text-code-sm text-on-surface-variant">
+        <span>Query: <code class="text-on-surface">.AsNoTracking()</code></span>
+        <span>Showings @Rows.Count of @TotalCount</span>
+    </div>
+</div>
+
+@code {
+    [Parameter] public IReadOnlyList<FavoriteCityModel> Rows { get; set; } = [];
+
+    [Parameter] public int TotalCount { get; set; }
+
+    [Parameter] public EventCallback<FavoriteCityModel> OnInspect { get; set; }
+}

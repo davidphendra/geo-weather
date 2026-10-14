@@ -1,0 +1,101 @@
+@inject CommandDispatchModel Dispatch
+<section class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
+        <div class="flex items-center gap-space-xs">
+            <span class="material-symbols-outlined text-secondary text-[20px]">bolt</span>
+            <span class="font-headline-sm text-headline-sm text-on-surface">
+                @(Dispatch.Intent == MutationIntent.Favorite ? "CreateFavoriteCommand" : "AddWeatherNoteCommand")
+            </span>
+        </div>
+        <div class="inline-flex bg-surface-container-low p-1 rounded-lg gap-1" role="group" aria-label="Mutation intent">
+            <button type="button" class="@IntentClass(MutationIntent.Favorite)"
+                    @onclick="() => SetIntent(MutationIntent.Favorite)">Favorite</button>
+            <button type="button" class="@IntentClass(MutationIntent.Note)"
+                    @onclick="() => SetIntent(MutationIntent.Note)">Note</button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+        <div>
+            <label class="block font-label-sm text-label-sm text-on-surface-variant mb-1 uppercase tracking-wide" for="quick-city">Target City / Node</label>
+            <input id="quick-city" @ref="_cityInput" type="text"
+                   class="w-full bg-surface-container-low text-on-surface font-body-sm text-body-sm px-3 py-2 rounded-lg outline-none"
+                   @bind="_cityName" @bind:after="Rebind"/>
+        </div>
+        <div>
+            <label class="block font-label-sm text-label-sm text-on-surface-variant mb-1 uppercase tracking-wide" for="quick-country">Country Code</label>
+            <input id="quick-country" type="text" maxlength="3"
+                   class="w-full bg-surface-container-low text-on-surface font-code-sm text-code-sm px-3 py-2 rounded-lg outline-none uppercase"
+                   @bind="_countryCode" @bind:after="Rebind"/>
+        </div>
+        <div>
+            <label class="block font-label-sm text-label-sm text-on-surface-variant mb-1 uppercase tracking-wide">Classification</label>
+            <div class="w-full bg-surface-container-low text-on-surface font-body-sm text-body-sm px-3 py-2 rounded-lg flex items-center justify-between">
+                <span class="font-code-sm text-code-sm text-on-surface font-medium">
+                    @(Dispatch.Intent == MutationIntent.Favorite ? "Pinned Favorite City" : "Weather Note")
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <label class="block font-label-sm text-label-sm text-on-surface-variant mb-1 uppercase tracking-wide" for="quick-note">
+            @(Dispatch.Intent == MutationIntent.Favorite ? "Favorite Alias / Label" : "Weather Observation Note")
+        </label>
+        <textarea id="quick-note" rows="2"
+                  class="w-full bg-surface-container-low text-on-surface font-body-sm text-body-sm px-3 py-2 rounded-lg outline-none resize-none"
+                  placeholder="Provide a label or telemetry note…" @bind="Dispatch.Text"></textarea>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Dispatch.ValidationError))
+    {
+        <p class="font-code-sm text-code-sm text-error" role="alert">@Dispatch.ValidationError</p>
+    }
+
+    @if (Dispatch.Error is not null)
+    {
+        <ProblemBanner Problem="Dispatch.Error"/>
+    }
+
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm pt-space-xs">
+        <span class="font-code-sm text-code-sm text-on-surface-variant">Endpoint: @EndpointLabel</span>
+        <button type="button"
+                class="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-secondary text-on-secondary font-body-sm text-body-sm font-medium hover:bg-on-secondary-container transition-colors shadow-sm disabled:opacity-50"
+                @onclick="SubmitAsync" disabled="@Dispatch.Posting">
+            <span class="material-symbols-outlined text-[16px]">send</span>
+            @(Dispatch.Posting ? "Dispatching…" : "Dispatch Command")
+        </button>
+    </div>
+</section>
+
+@code {
+    private string _cityName = string.Empty;
+    private string _countryCode = string.Empty;
+    private ElementReference _cityInput;
+
+    [Parameter] public EventCallback OnDispatched { get; set; }
+
+    private string EndpointLabel => Dispatch.Intent == MutationIntent.Favorite
+        ? "POST /api/cities/favorites"
+        : "POST /api/weather/notes";
+
+    public Task FocusAsync() => _cityInput.FocusAsync().AsTask();
+
+    private void SetIntent(MutationIntent intent) => Dispatch.Intent = intent;
+
+    private void Rebind() => Dispatch.BindManual(_cityName, _countryCode);
+
+    private async Task SubmitAsync()
+    {
+        await Dispatch.SubmitAsync(CancellationToken.None);
+
+        if (Dispatch.LastResult?.IsSuccess == true)
+        {
+            await OnDispatched.InvokeAsync();
+        }
+    }
+
+    private string IntentClass(MutationIntent intent) => intent == Dispatch.Intent
+        ? "px-2.5 py-1 rounded font-code-sm text-code-sm bg-surface-container-lowest text-on-surface font-medium shadow-sm"
+        : "px-2.5 py-1 rounded font-code-sm text-code-sm text-on-surface-variant hover:text-on-surface";
+}

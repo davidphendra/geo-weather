@@ -1,0 +1,36 @@
+<section class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+    <div class="flex items-center gap-space-xs">
+        <span class="material-symbols-outlined text-secondary text-[20px]">account_tree</span>
+        <span class="font-headline-sm text-headline-sm text-on-surface">Data Pipeline Topology</span>
+    </div>
+
+    <div class="flex flex-col gap-space-sm font-code-sm text-code-sm">
+        <div class="p-space-sm bg-surface-container-low rounded-lg flex items-center justify-between">
+            <div class="flex items-center gap-space-xs">
+                <span class="material-symbols-outlined text-secondary text-[16px]">edit_note</span>
+                <span class="text-on-surface font-medium">Command Path (Write)</span>
+            </div>
+            <span class="text-on-surface-variant">MediatR → FavoritesContext</span>
+        </div>
+        <div class="p-space-sm bg-surface-container-low rounded-lg flex items-center justify-between">
+            <div class="flex items-center gap-space-xs">
+                <span class="material-symbols-outlined text-secondary text-[16px]">query_stats</span>
+                <span class="text-on-surface font-medium">Query Path (Read)</span>
+            </div>
+            <span class="text-on-surface-variant">AsNoTracking</span>
+        </div>
+        <div class="p-space-sm bg-surface-container-low rounded-lg flex items-center justify-between">
+            <div class="flex items-center gap-space-xs">
+                <span class="material-symbols-outlined text-secondary text-[16px]">lock</span>
+                <span class="text-on-surface font-medium">Data Isolation</span>
+            </div>
+            <span class="text-on-surface-variant">favorites.db</span>
+        </div>
+    </div>
+
+    <div class="bg-surface-container-low p-space-md rounded-lg flex flex-col gap-1 text-on-surface-variant font-code-sm text-code-sm">
+        <span class="text-on-surface font-medium">Context Lifetime: Scoped (per-request)</span>
+        <span>Errors: <code class="text-secondary">RFC 9457 Problem Details</code></span>
+        <span>Cross-module: <code class="text-secondary">CityAddedIntegrationEvent</code></span>
+    </div>
+</section>

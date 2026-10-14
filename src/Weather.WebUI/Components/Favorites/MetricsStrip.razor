@@ -1,0 +1,23 @@
+@using System.Globalization
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-space-md">
+    <MetricsCard Label="Tracked Entities" Icon="database" Value="@FavoritesCount.ToString(CultureInfo.InvariantCulture)"
+                 Unit="Records" Note="GET /api/cities/favorites"/>
+    <MetricsCard Label="Favorite Cities" Icon="star" Value="@FavoritesCount.ToString(CultureInfo.InvariantCulture)"
+                 Unit="Cities" Note="Pinned monitoring nodes"/>
+    <MetricsCard Label="Weather Notes" Icon="description" Value="—"
+                 Unit="Not available" Note="Notes module is POST-only"/>
+    <MetricsCard Label="EF Core Context" Icon="dataset" Value="FavoritesContext"
+                 Unit="SQLite" Note="TrackingBehavior.NoTracking" Mono/>
+    <MetricsCard Label="Last Mutation" Icon="history" Value="@LastMutationLabel"
+                 Note="CommandHandler::Dispatch"/>
+</div>
+
+@code {
+    [Parameter] public int FavoritesCount { get; set; }
+
+    [Parameter] public DateTimeOffset? LastMutation { get; set; }
+
+    private string LastMutationLabel => LastMutation is null
+        ? "—"
+        : LastMutation.Value.ToUniversalTime().ToString("HH:mm:ss", CultureInfo.InvariantCulture) + "Z";
+}

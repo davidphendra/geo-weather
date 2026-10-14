@@ -1,0 +1,41 @@
+@inject EntityFilterModel Filter
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-space-md">
+    <div class="flex flex-1 items-center gap-space-sm bg-surface-container-low px-space-md py-1.5 rounded-lg">
+        <span class="material-symbols-outlined text-on-surface-variant text-[18px]">search</span>
+        <input class="bg-transparent border-none outline-none font-body-sm text-body-sm text-on-surface placeholder:text-on-surface-variant w-full"
+               placeholder="Filter by city, country or GUID…" aria-label="Filter favorites"
+               @bind="Filter.Search" @bind:event="oninput"/>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-space-sm">
+        <select class="bg-surface-container-low text-on-surface font-code-sm text-code-sm px-space-md py-2 rounded-lg outline-none cursor-pointer"
+                aria-label="Filter by region" @bind="Filter.Country">
+            <option value="ALL">All Regions</option>
+            @foreach (string countryCode in Filter.Countries)
+            {
+                <option value="@countryCode">@(countryCode)</option>
+            }
+        </select>
+
+        <div class="inline-flex bg-surface-container-low p-1 rounded-lg gap-1" role="group" aria-label="Record classification">
+            <button type="button" class="@SegmentClass(EntityTypeFilter.All)"
+                    @onclick="() => Filter.Type = EntityTypeFilter.All">All</button>
+            <button type="button" class="@SegmentClass(EntityTypeFilter.Favorites)"
+                    @onclick="() => Filter.Type = EntityTypeFilter.Favorites">Favorites</button>
+        </div>
+
+        <button type="button"
+                class="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-primary text-on-primary font-body-sm text-body-sm font-medium hover:bg-on-primary-fixed-variant transition-colors shadow-sm"
+                @onclick="() => OnNewCommand.InvokeAsync()">
+            <span class="material-symbols-outlined text-[16px]">add</span>New Command
+        </button>
+    </div>
+</div>
+
+@code {
+    [Parameter] public EventCallback OnNewCommand { get; set; }
+
+    private string SegmentClass(EntityTypeFilter filter) => filter == Filter.Type
+        ? "px-2.5 py-1 rounded font-code-sm text-code-sm bg-surface-container-lowest text-on-surface font-medium shadow-sm"
+        : "px-2.5 py-1 rounded font-code-sm text-code-sm text-on-surface-variant hover:text-on-surface";
+}

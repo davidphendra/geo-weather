@@ -1,0 +1,26 @@
+@if (!string.IsNullOrWhiteSpace(Value) || !string.IsNullOrWhiteSpace(Detail))
+{
+    @if (!string.IsNullOrWhiteSpace(Value))
+    {
+        <div class="flex items-center gap-1.5 font-code-sm text-code-sm text-on-surface">
+            <span class="material-symbols-outlined text-secondary text-[16px]">@Icon</span>
+            <span class="font-medium">@Value</span>
+        </div>
+    }
+    @if (!string.IsNullOrWhiteSpace(Detail))
+    {
+        <span class="font-code-sm text-code-sm text-on-surface-variant block">@Detail</span>
+    }
+}
+else
+{
+    <span class="font-code-sm text-code-sm text-on-surface-variant">Not available</span>
+}
+
+@code {
+    [Parameter] public string? Icon { get; set; }
+
+    [Parameter] public string? Value { get; set; }
+
+    [Parameter] public string? Detail { get; set; }
+}

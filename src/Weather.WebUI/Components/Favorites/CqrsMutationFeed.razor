@@ -1,0 +1,47 @@
+@inject CommandDispatchModel Dispatch
+<section class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+    <div class="flex items-center justify-between">
+        <div class="flex items-center gap-space-xs">
+            <span class="material-symbols-outlined text-secondary text-[20px]">monitor_heart</span>
+            <span class="font-headline-sm text-headline-sm text-on-surface">CQRS Mutation Feed</span>
+        </div>
+        <span class="flex items-center gap-1 font-code-sm text-code-sm text-secondary">
+            <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>LIVE
+        </span>
+    </div>
+
+    <div class="bg-primary-container p-space-md rounded-xl font-code-sm text-code-sm flex flex-col gap-space-sm max-h-[380px] overflow-y-auto">
+        <div class="flex items-start justify-between text-on-primary-container font-medium border-b border-surface/10 pb-1">
+            <span>EVENT STREAM</span>
+            <button type="button" class="hover:text-surface transition-colors" @onclick="() => Dispatch.ClearHistory()">Clear</button>
+        </div>
+
+        @if (Dispatch.History.Count == 0)
+        {
+            <span class="text-on-primary-container">No commands dispatched this session.</span>
+        }
+        else
+        {
+            @foreach (CommandLogEntry entry in Dispatch.History)
+            {
+                <div class="flex flex-col gap-0.5">
+                    <div class="flex items-center justify-between">
+                        <span class="@VerbClass(entry.Intent) font-semibold">@Verb(entry.Intent)</span>
+                        <span class="text-on-primary-container">@entry.At.ToUniversalTime().ToString("HH:mm:ss")</span>
+                    </div>
+                    <span class="text-surface">Status: @entry.Outcome.Status @(entry.Outcome.IsSuccess ? "Created" : "Failed")</span>
+                </div>
+            }
+        }
+    </div>
+</section>
+
+@code {
+    private static string Verb(MutationIntent intent) => intent == MutationIntent.Favorite
+        ? "POST /api/cities/favorites"
+        : "POST /api/weather/notes";
+
+    private static string VerbClass(MutationIntent intent) => intent == MutationIntent.Favorite
+        ? "text-secondary-fixed"
+        : "text-tertiary-fixed-dim";
+}

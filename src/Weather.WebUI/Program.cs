@@ -29,6 +29,7 @@ builder.Services.AddCsp(builder.Configuration);
 builder.Services.AddHttpClient<WeatherApiClient>();
 builder.Services.AddScoped<WeatherExplorerModel>();
 builder.Services.AddScoped<CommandDispatchModel>();
+builder.Services.AddScoped<EntityFilterModel>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails(options => options.CustomizeProblemDetails = context =>
 {
