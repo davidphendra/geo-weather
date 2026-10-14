@@ -431,7 +431,7 @@ csharp_style_namespace_declarations = block_scoped
 
 # WebUI host: enforce the C# standards (docs/engineering/csharp-standards.md) where it composes
 # the application. Scoped to the host project so the modules can be audited as a separate effort.
-[src/Weather.WebUI/**/*.cs]
+[src/Weather.WebUI/**.cs]
 # Naming and style the standard mandates.
 dotnet_naming_rule.async_methods_end_with_async.severity = warning
 dotnet_style_namespace_match_folder = true:warning
@@ -448,3 +448,28 @@ dotnet_diagnostic.CA2234.severity = warning
 dotnet_diagnostic.CA2007.severity = none   # no ConfigureAwait in ASP.NET Core
 dotnet_diagnostic.CA1515.severity = none   # types are public for the test projects
 dotnet_diagnostic.ASP0027.severity = none  # public partial Program kept for WebApplicationFactory
+
+# Modules and BuildingBlocks: the same gates as the WebUI host, minus the Async-suffix naming rule
+# (MediatR Handle implementations cannot be renamed). Production assemblies only - the path patterns
+# exclude each module's Tests project.
+[src/Modules/*/Weather.Modules.*/**.cs]
+dotnet_style_namespace_match_folder = true:warning
+dotnet_style_readonly_field = true:warning
+dotnet_style_prefer_collection_expression = when_types_loosely_match:warning
+dotnet_diagnostic.CA1307.severity = warning
+dotnet_diagnostic.CA1861.severity = warning
+dotnet_diagnostic.CA2227.severity = warning
+dotnet_diagnostic.CA2234.severity = warning
+dotnet_diagnostic.CA2007.severity = none   # no ConfigureAwait in ASP.NET Core
+dotnet_diagnostic.CA1515.severity = none   # public contract types by design
+
+[src/BuildingBlocks/Weather.*/**.cs]
+dotnet_style_namespace_match_folder = true:warning
+dotnet_style_readonly_field = true:warning
+dotnet_style_prefer_collection_expression = when_types_loosely_match:warning
+dotnet_diagnostic.CA1307.severity = warning
+dotnet_diagnostic.CA1861.severity = warning
+dotnet_diagnostic.CA2227.severity = warning
+dotnet_diagnostic.CA2234.severity = warning
+dotnet_diagnostic.CA2007.severity = none   # no ConfigureAwait in ASP.NET Core
+dotnet_diagnostic.CA1515.severity = none   # public contract types by design

@@ -20,7 +20,7 @@ internal sealed class OpenWeatherMapService(
         ArgumentException.ThrowIfNullOrWhiteSpace(cityName);
 
         string city = string.IsNullOrWhiteSpace(countryCode) ? cityName : $"{cityName},{countryCode}";
-        string requestUri = $"data/2.5/weather?q={Uri.EscapeDataString(city)}&units=imperial";
+        Uri requestUri = new($"data/2.5/weather?q={Uri.EscapeDataString(city)}&units=imperial", UriKind.Relative);
 
         logger.LogDebug("Requesting current weather for {City}", cityName);
 

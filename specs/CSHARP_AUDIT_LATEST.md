@@ -79,3 +79,57 @@ violating file: `dotnet build --warnaserror` failed on `CA1307` and `dotnet form
   (`CA2234`, `CA1848`/`CA1873`, `CA1032`, `CA2007`, …) and should be a separate audit.
 - The test projects.
 - Behavior/HTTP-contract changes (this was a code-quality change only).
+
+---
+
+# Follow-up — Modules & BuildingBlocks
+
+> Scope: the **production assemblies** of every module (`src/Modules/*/Weather.Modules.*/`) and
+> `src/BuildingBlocks/Weather.*/`. Each module's `Tests` project is out of scope.
+
+## Enforcement extended (same gates)
+
+`.editorconfig` now has matching sections for those paths with the same curated rules as the WebUI host:
+`namespace_match_folder`, `readonly_field`, `prefer_collection_expression` and `CA1307`, `CA1861`,
+`CA2227`, `CA2234`; `CA2007`/`CA1515` stay disabled.
+
+**Deliberate difference:** the `Async`-suffix naming rule is **not** applied here. Seven async methods are
+MediatR `Handle` implementations (`GetFavoritesQueryHandler`, `AddFavoriteCityCommandHandler`,
+`AddWeatherNoteCommandHandler`, `GetCurrentWeatherQueryHandler`, `GetCitiesByCountryQueryHandler`,
+`GetCountriesQueryHandler`, `ValidationBehavior`) — interface methods that cannot be renamed. The rule
+stays WebUI-only.
+
+## Fixes under those gates
+
+| Finding | File | Fix |
+|---|---|---|
+| `CA2234` | `OpenWeatherMap/OpenWeatherMapService.cs` | pass a `Uri` (not a `string`) to `HttpClient.GetAsync` |
+| `IDE0305` ×2 | `ValidationBehavior.cs` | collection expressions |
+| `IDE0305` | `Favorites/GetFavoritesQueryHandler.cs`, `FavoriteCityReadRepository.cs`, `Geography/GetCitiesByCountryQueryHandler.cs`, `GetCountriesQueryHandler.cs` | collection expressions |
+
+Production `CA1307`/`CA1861`/`CA2227`, and `namespace_match_folder`/`readonly_field`, had no violations.
+
+## Glob correction (found while proving enforcement)
+
+The scoped sections originally used `[path/**/*.cs]`, which — per editorconfig `**` semantics — requires
+**at least one** directory, so files sitting directly in a project root (e.g. `Program.cs`) were not
+matched. Changed all scoped sections to `[path/**.cs]`, which matches zero or more segments. **Proven**
+with root-level and subfolder probes (`IDE0130` for modules, `IDE1006` for WebUI).
+
+## Backlog — reported, not gated (pre-existing; `AnalysisMode=All`-only)
+
+`CA1032` (~50 exception constructors across the domain/application exceptions), `CA1849` (sync
+`Database.Migrate()` in the three DB initializers), `CA1848`/`CA1873` (logging), `CA1056`
+(`OpenWeatherOptions.BaseUrl` string), `CA1040`/`CA1711` (integration-event interfaces), `CA2000`
+(disposal, mostly tests), `CA1707` (test-method underscores). None of these are enabled at
+`AnalysisLevel=latest`; they are not currently gating and are not fixed in this change.
+
+## Evidence
+
+| Command | Result |
+|---|---|
+| `dotnet build Weather.sln --warnaserror` | 0 warnings, 0 errors |
+| `dotnet format Weather.sln --verify-no-changes` | clean |
+| `dotnet test Weather.sln` | 248 passed, 0 failed |
+| Root/subfolder probes | `IDE0130` (modules) and `IDE1006` (WebUI) fail the gates; `CA2234` fails the build |
+| Test-project check | module `Tests` paths are excluded by the section globs |

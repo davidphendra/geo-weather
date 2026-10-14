@@ -15,7 +15,7 @@ public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidat
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
-        IValidator<TRequest>[] applicable = validators.ToArray();
+        IValidator<TRequest>[] applicable = [.. validators];
 
         if (applicable.Length == 0)
         {
@@ -27,7 +27,7 @@ public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidat
         ValidationResult[] results = await Task.WhenAll(
             applicable.Select(validator => validator.ValidateAsync(context, cancellationToken)));
 
-        ValidationFailure[] failures = results.SelectMany(result => result.Errors).ToArray();
+        ValidationFailure[] failures = [.. results.SelectMany(result => result.Errors)];
 
         if (failures.Length > 0)
         {

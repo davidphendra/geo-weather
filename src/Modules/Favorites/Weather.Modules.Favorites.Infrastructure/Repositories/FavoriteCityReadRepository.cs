@@ -29,13 +29,14 @@ internal sealed class FavoriteCityReadRepository(FavoritesContext context) : IFa
             .OrderBy(row => row.CityName)
             .ToListAsync(cancellationToken);
 
-        return rows
-            .Select(row => new FavoriteCityView(
+        return
+        [
+            .. rows.Select(row => new FavoriteCityView(
                 row.Id.Value,
                 row.CityId.Value,
                 row.CityName,
                 row.CountryCode.Value,
-                row.CreatedAtUtc))
-            .ToArray();
+                row.CreatedAtUtc)),
+        ];
     }
 }

@@ -13,6 +13,6 @@ internal sealed class GetFavoritesQueryHandler(IFavoriteCityReadRepository readR
     {
         IReadOnlyList<FavoriteCityView> views = await readRepository.GetFavoritesAsync(cancellationToken);
 
-        return views.Select(view => view.ToDto()).ToArray();
+        return [.. views.Select(view => view.ToDto())];
     }
 }

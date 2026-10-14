@@ -17,6 +17,6 @@ internal sealed class GetCountriesQueryHandler(ICountryReadRepository countryRea
             new CountryQuery(request.SearchTerm),
             cancellationToken);
 
-        return countries.Select(country => country.ToDto()).ToArray();
+        return [.. countries.Select(country => country.ToDto())];
     }
 }

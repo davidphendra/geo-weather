@@ -25,6 +25,6 @@ internal sealed class GetCitiesByCountryQueryHandler(
 
         IReadOnlyList<City> cities = await cityReadRepository.GetByCountryAsync(countryCode, cancellationToken);
 
-        return cities.Select(city => city.ToDto()).ToArray();
+        return [.. cities.Select(city => city.ToDto())];
     }
 }
