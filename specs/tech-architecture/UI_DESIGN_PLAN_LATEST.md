@@ -225,7 +225,7 @@ Bookkeeping to update when stories are written: `specs/epics/e06-webui/epic.yaml
 | Q4 | Command form intent | **A — single form with Favorite ⇄ Note toggle (default Favorite)** |
 | Q5 | Logo | **A — local placeholder SVG** `wwwroot/img/geoweather-mark.svg` |
 | Q6 | Favorites type filter | **A — `All | Favorites`** (matches export) |
-| Q7 | Tailwind toolchain | **A — `src/Weather.WebUI/package.json`, npm build, committed `app.css`; CI drift guard implemented: `scripts/check-tailwind-css.sh` + `.github/workflows/tailwind-drift.yml`** |
+| Q7 | Tailwind toolchain | **A — `src/Weather.WebUI/package.json`, npm build, committed `app.css`; CI drift guard `scripts/check-tailwind-css.sh`, run by the Azure DevOps pipeline (`azure-pipelines.yml`; see `specs/tech-architecture/AZURE_PIPELINE_PLAN_LATEST.md`)** |
 | Q8 | Visual-parity gate | **B — Playwright computed-style + geometry assertions; screenshots as artifacts; token tests in `dotnet test`** |
 | Q9 | Fonts for the harness | **A — harness may fetch the Google fonts; `dotnet test` stays offline** |
 | Q10 | CSP report route | **A — `/_csp/report`** (non-API path) |
