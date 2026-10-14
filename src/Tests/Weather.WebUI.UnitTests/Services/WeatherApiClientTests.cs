@@ -101,6 +101,18 @@ public sealed class WeatherApiClientTests
     }
 
     [Fact]
+    public async Task A_network_failure_is_reported_as_dependency_unavailable()
+    {
+        WeatherApiClient client = Create(_ => throw new HttpRequestException("connection refused"));
+
+        WeatherApiException exception = await Assert.ThrowsAsync<WeatherApiException>(
+            () => client.GetWeatherAsync("London", "GB", CancellationToken.None));
+
+        Assert.Equal(502, exception.Problem.Status);
+        Assert.Equal("DEPENDENCY_UNAVAILABLE", exception.Problem.Code);
+    }
+
+    [Fact]
     public async Task AddFavorite_returns_the_created_resource_and_status()
     {
         WeatherApiClient client = Create(_ => Json(

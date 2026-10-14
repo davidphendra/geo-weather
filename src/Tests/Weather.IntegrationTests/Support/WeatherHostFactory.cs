@@ -1,4 +1,5 @@
 using global::Weather.Modules.Weather.Application.Abstractions;
+using global::Weather.WebUI.Services;
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -34,6 +35,11 @@ public sealed class WeatherHostFactory : WebApplicationFactory<Program>
         {
             services.RemoveAll<IWeatherProvider>();
             services.AddSingleton<IWeatherProvider, StubWeatherProvider>();
+
+            // The Blazor pages call the same-origin API through WeatherApiClient; route those calls to
+            // this in-memory test server instead of a real socket so page tests exercise real data.
+            services.AddHttpClient<WeatherApiClient>()
+                .ConfigurePrimaryHttpMessageHandler(() => Server.CreateHandler());
         });
     }
 }
