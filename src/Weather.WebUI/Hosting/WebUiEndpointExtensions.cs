@@ -15,6 +15,7 @@ internal static class WebUiEndpointExtensions
         }
 
         app.MapStaticAssets();
+        app.MapHealthEndpoints();
         app.MapControllers();
 
         // Unmatched /api routes return RFC 9457 Problem Details with a body, so the not-found

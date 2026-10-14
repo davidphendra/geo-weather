@@ -142,6 +142,22 @@ Boundary rules — a violation is a build-breaking defect:
 - **Graceful degradation:** weather endpoint returns `502` ProblemDetails when upstream is unavailable.
 - Not used in this project: rate limit, circuit breaker (single external provider, in-process cache is out of scope).
 
+## Observability & Telemetry
+
+OpenTelemetry metrics/traces/logs are exported to Azure Monitor (ADR-0014).
+
+- Instrument definitions live once in `Weather.BuildingBlocks.Application.Telemetry` (`WeatherMeters`,
+  `WeatherActivity`). Modules emit into those instruments; they never reference an OpenTelemetry package.
+- The host is the only place an exporter is configured (`UseMicrosoftOpenTelemetry`). Telemetry is off by
+  default and enabled with `Observability:Enabled`.
+- **Metric cardinality is bounded.** A metric attribute may only be a closed enum, country code, HTTP method,
+  route template, module/handler name, or status code. Never a city name, note text, id, URL, query string, or
+  exception message — those belong on spans.
+- Never log secrets, tokens, connection strings, or API keys. The Application Insights connection string is
+  read from configuration only.
+- Every error response's `traceId` is the OpenTelemetry trace id; keep it that way.
+- Adding an instrument requires updating `specs/tech-architecture/OBSERVABILITY_PLAN_LATEST.md` first.
+
 ## Specs Output Convention
 
 All planning, scope, decisions, and verification artifacts go under `specs/`. No code without a story in `specs/epics/`.

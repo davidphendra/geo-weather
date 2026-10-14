@@ -11,7 +11,8 @@ internal static class ProblemDetailsCustomization
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        string traceId = Activity.Current?.Id ?? context.HttpContext.TraceIdentifier;
+        // The W3C trace id (not the span id) so the value matches the exported OTLP trace.
+        string traceId = Activity.Current?.TraceId.ToHexString() ?? context.HttpContext.TraceIdentifier;
         context.ProblemDetails.Extensions.TryAdd("traceId", traceId);
         context.HttpContext.Response.Headers["X-Correlation-ID"] = traceId;
     }

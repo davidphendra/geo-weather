@@ -1,5 +1,9 @@
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
+
 using MediatR;
 
+using Weather.BuildingBlocks.Application.Telemetry;
 using Weather.BuildingBlocks.Domain.SharedKernel;
 using Weather.Modules.Geography.Application.Abstractions;
 using Weather.Modules.Geography.Domain.Cities;
@@ -16,6 +20,11 @@ internal sealed class GetCitiesByCountryQueryHandler(
         GetCitiesByCountryQuery request,
         CancellationToken cancellationToken)
     {
+        WeatherMeters.GeographyCityListRequests.Add(1, new TagList
+        {
+            { WeatherMeters.Tags.CountryCode, request.CountryCode },
+        });
+
         CountryCode countryCode = CountryCode.From(request.CountryCode);
 
         if (!await countryReadRepository.ExistsAsync(countryCode, cancellationToken))

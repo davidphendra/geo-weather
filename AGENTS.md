@@ -17,6 +17,23 @@ Stack: C# / .NET 10 / ASP.NET Core / Blazor / EF Core (SQLite) / MediatR.
 | Preflight | `dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln` |
 | Run | `dotnet run --project src/Weather.WebUI` |
 
+## Observability
+
+OpenTelemetry (metrics, traces, logs) → Azure Monitor via the Microsoft OpenTelemetry Distro (ADR-0014).
+Full runbook: `docs/operations/observability.md`. Metric catalog: `specs/tech-architecture/OBSERVABILITY_PLAN_LATEST.md`.
+
+| What | How |
+|------|-----|
+| Run with local telemetry | `dotnet run --project src/Weather.WebUI` (launch profile sets Console exporter) |
+| Health checks | `curl /health/live`, `curl /health/ready` |
+| Enable in a deployed env | `Observability__Enabled=true` + `APPLICATIONINSIGHTS_CONNECTION_STRING` |
+| View telemetry | Azure Monitor Workbook `ops/azure-monitor/workbook.json` |
+| Trace a reported error | search the response `traceId` in Application Insights |
+| Telemetry tests | `dotnet test Weather.sln --filter Category=Observability` |
+
+Rules: instruments live once in `Weather.BuildingBlocks.Application`; modules never reference an OpenTelemetry
+package; metric attributes are bounded (no city names, ids, URLs, or PII); never log secrets.
+
 ## Architecture
 Modular monolith sliced by bounded context (reference: kgrzybek/modular-monolith-with-ddd). BuildingBlocks (`Weather.BuildingBlocks.{Domain,Application,Infrastructure}`) hold shared DDD/infra primitives. Each module is a full assembly set: `Weather.Modules.<Module>.{Domain, Application, Infrastructure, IntegrationEvents}` with its own composition root and data. Modules: **Geography**, **Weather** (core), **Favorites**, **Notes**. Each module is internally Onion-layered and uses CQRS (MediatR). A single thin `Weather.WebUI` host serves both the Blazor UI and one REST endpoint area per module, and calls each module through its `I<Module>Service` interface. The UI consumes that API over HTTP. See `specs/adr/0005`, `0006`, and `0012`.
 

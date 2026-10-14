@@ -1,0 +1,62 @@
+story_id: e12s01
+title: Telemetry foundation & host wiring
+status: passing
+bcps: 5
+kind: feat
+adr: specs/adr/0014-opentelemetry-observability.md
+tasks:
+  - id: 1
+    description: "Add Microsoft.OpenTelemetry 1.1.0 and OpenTelemetry.Instrumentation.Runtime to Directory.Packages.props and Weather.WebUI.csproj"
+    verify: "dotnet build Weather.sln --warnaserror"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Observability", "Host"] }
+  - id: 2
+    description: "Add ObservabilityOptions (Enabled, ExportTarget, SamplingRatio, TracesPerSecond) bound from configuration and validated on start"
+    verify: "dotnet test src/Tests/Weather.WebUI.UnitTests"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Observability", "unit"] }
+  - id: 3
+    description: "Add WeatherMeters (Meter 'Weather', instrument definitions, tag-key constants) and WeatherActivity (ActivitySource 'Weather.Activity') in Weather.BuildingBlocks.Application"
+    verify: "dotnet build Weather.sln --warnaserror"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["Observability", "BuildingBlocks"] }
+  - id: 4
+    description: "Wire UseMicrosoftOpenTelemetry in WebUiServiceCollectionExtensions gated by Observability:Enabled; set ExportTarget and sampling (TracesPerSecond=null before SamplingRatio); AddMeter('Weather') + AddSource('Weather.Activity'); add runtime instrumentation; set deployment.environment and cloud.provider resource attributes"
+    verify: "dotnet build Weather.sln --warnaserror && echo \"no new security findings in affected paths\""
+    risk: P0
+    status: passing
+    security: medium
+    allure: { severity: critical, categories: ["Observability", "Host", "Security Review"] }
+  - id: 5
+    description: "Set Observability:Enabled=false in the WeatherHostFactory test host; add arch tests: no *.Domain assembly references System.Diagnostics.Metrics; no module project references Microsoft.OpenTelemetry or OpenTelemetry.*"
+    verify: "dotnet test Weather.sln"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["Observability", "ArchTests"] }
+  - id: 6
+    description: "Change ProblemDetailsCustomization to use Activity.Current?.TraceId.ToHexString() (fallback HttpContext.TraceIdentifier) so traceId equals the OTLP trace id"
+    verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=ProblemDetails"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Observability", "integration"] }
+  - id: 7
+    description: "Add GET /health/live and GET /health/ready endpoints (readiness checks the three module DbContexts)"
+    verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=Health"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Observability", "integration"] }
+  - id: 8
+    description: "Add Category=Observability tests: disabled => no meter/tracer provider or exporter; enabled => 'Weather' meter and 'Weather.Activity' source registered"
+    verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=Observability"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Observability", "integration"] }
+  - id: 9
+    description: "Full preflight: build + format + test all green"
+    verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["Observability", "Standards"] }

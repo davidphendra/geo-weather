@@ -1,6 +1,11 @@
+using MediatR;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
+using Weather.BuildingBlocks.Application.Telemetry;
 using Weather.WebUI.Security;
 using Weather.WebUI.Services;
 
@@ -9,10 +14,21 @@ namespace Weather.WebUI.Hosting;
 /// <summary>Registers the Blazor UI, the REST API surface and their shared dependencies.</summary>
 internal static class WebUiServiceCollectionExtensions
 {
-    public static IServiceCollection AddWeatherUi(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddWeatherUi(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        IHostEnvironment environment)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(environment);
+
+        services.AddWeatherObservability(configuration, environment);
+
+        // Telemetry is always emitted into the shared Meter/ActivitySource; the exporter is optional.
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TelemetryBehavior<,>));
+        services.Configure<LoggerFactoryOptions>(options => options.ActivityTrackingOptions =
+            ActivityTrackingOptions.TraceId | ActivityTrackingOptions.SpanId);
 
         services.AddRazorComponents()
             .AddInteractiveServerComponents();

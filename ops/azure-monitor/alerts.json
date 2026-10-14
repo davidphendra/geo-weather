@@ -1,0 +1,159 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appInsightsResourceId": {
+      "type": "string",
+      "metadata": { "description": "Resource id of the Application Insights component to query." }
+    },
+    "actionGroupId": {
+      "type": "string",
+      "metadata": { "description": "Resource id of the action group notified when an alert fires." }
+    }
+  },
+  "variables": {
+    "location": "global"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Insights/scheduledQueryRules",
+      "apiVersion": "2023-03-15-preview",
+      "name": "weather-availability",
+      "location": "[variables('location')]",
+      "properties": {
+        "displayName": "Weather — API error rate > 1%",
+        "description": "Availability SLO: more than 1% of requests failed over the last 10 minutes.",
+        "severity": 1,
+        "enabled": true,
+        "evaluationFrequency": "PT5M",
+        "windowSize": "PT10M",
+        "scopes": [ "[parameters('appInsightsResourceId')]" ],
+        "criteria": {
+          "allOf": [
+            {
+              "query": "requests | where timestamp > ago(10m) | summarize ErrorRate = todouble(countif(success == false)) / count() * 100",
+              "timeAggregation": "Average",
+              "metricMeasureColumn": "ErrorRate",
+              "operator": "GreaterThan",
+              "threshold": 1,
+              "failingPeriods": { "numberOfEvaluationPeriods": 1, "minFailingPeriodsToAlert": 1 }
+            }
+          ]
+        },
+        "actions": { "actionGroups": [ "[parameters('actionGroupId')]" ] }
+      }
+    },
+    {
+      "type": "Microsoft.Insights/scheduledQueryRules",
+      "apiVersion": "2023-03-15-preview",
+      "name": "weather-latency",
+      "location": "[variables('location')]",
+      "properties": {
+        "displayName": "Weather — p95 latency > 1500ms",
+        "description": "Latency SLO breached on the weather endpoints.",
+        "severity": 2,
+        "enabled": true,
+        "evaluationFrequency": "PT5M",
+        "windowSize": "PT10M",
+        "scopes": [ "[parameters('appInsightsResourceId')]" ],
+        "criteria": {
+          "allOf": [
+            {
+              "query": "requests | where timestamp > ago(10m) and name contains '/api/weather' | summarize P95 = percentile(duration, 95)",
+              "timeAggregation": "Average",
+              "metricMeasureColumn": "P95",
+              "operator": "GreaterThan",
+              "threshold": 1500,
+              "failingPeriods": { "numberOfEvaluationPeriods": 1, "minFailingPeriodsToAlert": 1 }
+            }
+          ]
+        },
+        "actions": { "actionGroups": [ "[parameters('actionGroupId')]" ] }
+      }
+    },
+    {
+      "type": "Microsoft.Insights/scheduledQueryRules",
+      "apiVersion": "2023-03-15-preview",
+      "name": "weather-dependency",
+      "location": "[variables('location')]",
+      "properties": {
+        "displayName": "Weather — OpenWeatherMap failures > 2%",
+        "description": "Upstream dependency health degraded.",
+        "severity": 2,
+        "enabled": true,
+        "evaluationFrequency": "PT5M",
+        "windowSize": "PT10M",
+        "scopes": [ "[parameters('appInsightsResourceId')]" ],
+        "criteria": {
+          "allOf": [
+            {
+              "query": "customMetrics | where timestamp > ago(10m) and name startsWith 'weather.provider.failures' | summarize Failures = sum(valueSum)",
+              "timeAggregation": "Average",
+              "metricMeasureColumn": "Failures",
+              "operator": "GreaterThan",
+              "threshold": 0,
+              "failingPeriods": { "numberOfEvaluationPeriods": 1, "minFailingPeriodsToAlert": 1 }
+            }
+          ]
+        },
+        "actions": { "actionGroups": [ "[parameters('actionGroupId')]" ] }
+      }
+    },
+    {
+      "type": "Microsoft.Insights/scheduledQueryRules",
+      "apiVersion": "2023-03-15-preview",
+      "name": "weather-business-favorites",
+      "location": "[variables('location')]",
+      "properties": {
+        "displayName": "Weather — no favorites created while traffic is present",
+        "description": "Business guard: the favorite-create funnel stalled (created = 0) for an hour while lookups continued.",
+        "severity": 2,
+        "enabled": true,
+        "evaluationFrequency": "PT15M",
+        "windowSize": "PT1H",
+        "scopes": [ "[parameters('appInsightsResourceId')]" ],
+        "criteria": {
+          "allOf": [
+            {
+              "query": "let lookups = customMetrics | where timestamp > ago(1h) and name == 'weather.report.requests' | summarize Lookups = sum(valueSum); customMetrics | where timestamp > ago(1h) and name == 'favorites.operations' and tostring(customDimensions['favorites.outcome']) == 'created' | summarize Created = sum(valueSum) | extend Lookups = toscalar(lookups) | where Lookups > 0 and Created == 0 | project Created",
+              "timeAggregation": "Average",
+              "metricMeasureColumn": "Created",
+              "operator": "LessThanOrEqual",
+              "threshold": 0,
+              "failingPeriods": { "numberOfEvaluationPeriods": 1, "minFailingPeriodsToAlert": 1 }
+            }
+          ]
+        },
+        "actions": { "actionGroups": [ "[parameters('actionGroupId')]" ] }
+      }
+    },
+    {
+      "type": "Microsoft.Insights/scheduledQueryRules",
+      "apiVersion": "2023-03-15-preview",
+      "name": "weather-integration-events",
+      "location": "[variables('location')]",
+      "properties": {
+        "displayName": "Weather — integration event handler failed",
+        "description": "Integration SLO: a CityAddedIntegrationEvent handler threw.",
+        "severity": 2,
+        "enabled": true,
+        "evaluationFrequency": "PT5M",
+        "windowSize": "PT15M",
+        "scopes": [ "[parameters('appInsightsResourceId')]" ],
+        "criteria": {
+          "allOf": [
+            {
+              "query": "customMetrics | where timestamp > ago(15m) and name == 'integration.event.failed' | summarize Failures = sum(valueSum)",
+              "timeAggregation": "Average",
+              "metricMeasureColumn": "Failures",
+              "operator": "GreaterThan",
+              "threshold": 0,
+              "failingPeriods": { "numberOfEvaluationPeriods": 1, "minFailingPeriodsToAlert": 1 }
+            }
+          ]
+        },
+        "actions": { "actionGroups": [ "[parameters('actionGroupId')]" ] }
+      }
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+story_id: e12s04
+title: Operations — dashboards, alerts, runbook, docs
+status: passing
+bcps: 5
+kind: feat
+adr: specs/adr/0014-opentelemetry-observability.md
+tasks:
+  - id: 1
+    description: "Add ops/azure-monitor/workbook.json with technical (availability/latency/errors, dependency, runtime) and business (lookups, funnels, gauges) panels"
+    verify: "python3 -c \"import json;json.load(open('ops/azure-monitor/workbook.json'))\""
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Observability", "Ops"] }
+  - id: 2
+    description: "Add ops/azure-monitor/alerts.json with ARM alert rules for the plan SLOs (availability, latency, dependency, business, integration)"
+    verify: "python3 -c \"import json;json.load(open('ops/azure-monitor/alerts.json'))\""
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Observability", "Ops"] }
+  - id: 3
+    description: "Add docs/operations/observability.md runbook (signals, KQL queries, alert runbooks, trace drill-down, cardinality/no-PII policy, validation->api.errors mapping)"
+    verify: "test -f docs/operations/observability.md"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Observability", "docs"] }
+  - id: 4
+    description: "Update AGENTS.md (Observability commands table) and CONVENTIONS.md (metric cardinality, no-PII, telemetry placement rules)"
+    verify: "grep -q \"Observability\" AGENTS.md && grep -q \"cardinality\" CONVENTIONS.md"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["Observability", "docs"] }
+  - id: 5
+    description: "Update tech-stack.md, TEST_PLAN_LATEST.md and OBSERVABILITY_PLAN_LATEST.md (status implemented) for the OTel stack"
+    verify: "grep -q \"Microsoft.OpenTelemetry\" specs/tech-architecture/tech-stack.md"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["Observability", "docs"] }
+  - id: 6
+    description: "Cross-check every metric name referenced by the workbook/alerts against the plan catalog and the emitted instruments"
+    verify: "grep -oE \"(weather|favorites|notes|integration|api|mediatr|geography|http|dotnet)\\.[a-z_.]+\" ops/azure-monitor/workbook.json | sort -u"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Observability", "Ops"] }
+  - id: 7
+    description: "Register e12 in release-plan.yaml and execution-status.yaml; confirm ADR-0014 and the capsule exist"
+    verify: "test -f specs/adr/0014-opentelemetry-observability.md && grep -q \"e12-observability\" specs/release-plan.yaml && grep -q \"e12s01\" specs/execution-status.yaml"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["Observability", "docs"] }
+  - id: 8
+    description: "Full preflight: build + format + test all green"
+    verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["Observability", "Standards"] }

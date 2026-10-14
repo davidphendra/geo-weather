@@ -116,6 +116,7 @@ Geography ──CityAddedIntegrationEvent──► InMemoryEventsBus ──► F
 | DI | Microsoft DI (per-module `Add<Module>Module()`) | deviation from the reference's Autofac — ADR-0005 |
 | Arch tests | NetArchTest.Rules (or ArchUnitNET) | per-module + cross-module rules |
 | API docs | `Microsoft.AspNetCore.OpenApi` | `/openapi/v1.json` |
+| Observability | `Microsoft.OpenTelemetry` distro 1.1.0 → Azure Monitor; `OpenTelemetry.Instrumentation.Runtime` | ADR-0014; metrics/traces/logs; custom `Weather` meter + `Weather.Activity` source |
 
 ## Package decisions (slopcheck)
 | Package | Tag | Rationale |
@@ -127,6 +128,8 @@ Geography ──CityAddedIntegrationEvent──► InMemoryEventsBus ──► F
 | `NSubstitute` | [OK] | Reference uses it; actively maintained. |
 | `Shouldly` | [OK] | Avoids FluentAssertions v8 commercial license (reference pins FA 6.12). |
 | `Microsoft.AspNetCore.OpenApi` | [OK] | First-party. |
+| `Microsoft.OpenTelemetry` 1.1.0 | [OK] | Microsoft OpenTelemetry Distro (GA) — one-call OTel with the Azure Monitor exporter, ASP.NET Core/HttpClient instrumentation, and resource detectors (ADR-0014). |
+| `OpenTelemetry.Instrumentation.Runtime` | [OK] | Official OTel .NET; adds `dotnet.*` GC/thread-pool/process metrics the distro omits. |
 | `Microsoft.Extensions.Http.Resilience` | [OK] | First-party resilience for the OpenWeatherMap client (timeout + bounded retry with jitter). |
 | `xunit` + runner | [OK] | Reference uses NUnit; xUnit is our existing choice. |
 | ~~Autofac / per-module IoC container~~ | [SUS] | Reference does it; catalog marks it contested (ADR-0005 deviation). Not used. |

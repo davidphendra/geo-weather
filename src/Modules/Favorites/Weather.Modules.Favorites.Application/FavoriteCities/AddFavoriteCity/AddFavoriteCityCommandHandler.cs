@@ -1,8 +1,13 @@
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
+
 using MediatR;
 
 using Weather.BuildingBlocks.Application.Abstractions;
+using Weather.BuildingBlocks.Application.Telemetry;
 using Weather.Modules.Favorites.Application.Abstractions;
 using Weather.Modules.Favorites.Application.FavoriteCities.GetFavorites;
+using Weather.Modules.Favorites.Application.Telemetry;
 using Weather.Modules.Favorites.Domain.Cities;
 using Weather.Modules.Favorites.Domain.FavoriteCities;
 
@@ -17,27 +22,63 @@ internal sealed class AddFavoriteCityCommandHandler(
 {
     public async Task<FavoriteCityDto> Handle(AddFavoriteCityCommand request, CancellationToken cancellationToken)
     {
-        City city = await cityProjections.FindByNameAndCountryAsync(
-            request.CityName,
-            request.CountryCode,
-            cancellationToken)
-            ?? throw new CityNotFoundException(request.CityName, request.CountryCode);
+        long start = Stopwatch.GetTimestamp();
+        string outcome = WeatherMeters.Outcomes.Error;
 
-        if (await favorites.ExistsByCityIdAsync(city.CityId, cancellationToken))
+        try
         {
-            throw new FavoriteAlreadyExistsException(city.CityId);
+            City city = await cityProjections.FindByNameAndCountryAsync(
+                request.CityName,
+                request.CountryCode,
+                cancellationToken)
+                ?? throw new CityNotFoundException(request.CityName, request.CountryCode);
+
+            if (await favorites.ExistsByCityIdAsync(city.CityId, cancellationToken))
+            {
+                throw new FavoriteAlreadyExistsException(city.CityId);
+            }
+
+            FavoriteCity favorite = FavoriteCity.Create(FavoriteCityId.New(), city.CityId, dateTimeProvider.UtcNow);
+
+            await favorites.AddAsync(favorite, cancellationToken);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+
+            outcome = WeatherMeters.Outcomes.Created;
+
+            return new FavoriteCityDto(
+                favorite.Id.Value,
+                city.CityId.Value,
+                city.Name,
+                city.CountryCode.Value,
+                favorite.CreatedAtUtc);
         }
+        catch (CityNotFoundException)
+        {
+            outcome = WeatherMeters.Outcomes.CityNotFound;
 
-        FavoriteCity favorite = FavoriteCity.Create(FavoriteCityId.New(), city.CityId, dateTimeProvider.UtcNow);
+            throw;
+        }
+        catch (FavoriteAlreadyExistsException)
+        {
+            outcome = WeatherMeters.Outcomes.Duplicate;
 
-        await favorites.AddAsync(favorite, cancellationToken);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+            throw;
+        }
+        finally
+        {
+            TagList tags = new()
+            {
+                { WeatherMeters.Tags.Operation, "add" },
+                { WeatherMeters.Tags.FavoritesOutcome, outcome },
+            };
 
-        return new FavoriteCityDto(
-            favorite.Id.Value,
-            city.CityId.Value,
-            city.Name,
-            city.CountryCode.Value,
-            favorite.CreatedAtUtc);
+            WeatherMeters.FavoritesOperations.Add(1, tags);
+            WeatherMeters.FavoritesDuration.Record(Stopwatch.GetElapsedTime(start).TotalMilliseconds, tags);
+
+            if (outcome == WeatherMeters.Outcomes.Created)
+            {
+                FavoritesMetrics.Saved();
+            }
+        }
     }
 }

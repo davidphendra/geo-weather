@@ -29,8 +29,14 @@ public sealed class BuildingBlocksBoundaryTests
             "IInMemoryEventsBus",
             "IIntegrationEvent",
             "IIntegrationEventHandler`1",
+            // ADR-0014: shared telemetry primitives (instruments + activity source + tag/outcome catalogs).
+            "Outcomes",
+            "Tags",
+            "TelemetryBehavior`2",
             "ValidationBehaviorRegistration",
             "ValidationBehavior`2",
+            "WeatherActivity",
+            "WeatherMeters",
         ];
 
         Assert.Equal(expected, PublicTypeNames(typeof(IIntegrationEvent).Assembly));

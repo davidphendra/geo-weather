@@ -36,6 +36,8 @@ internal sealed class GlobalExceptionHandler(
                 httpContext.Request.Path);
         }
 
+        ApiErrorMetrics.Record(problem.Code, problem.Status, httpContext);
+
         httpContext.Response.StatusCode = problem.Status;
 
         ProblemDetails problemDetails = new()

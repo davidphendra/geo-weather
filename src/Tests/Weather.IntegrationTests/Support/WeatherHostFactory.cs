@@ -26,6 +26,7 @@ public sealed class WeatherHostFactory : WebApplicationFactory<Program>
                 ["OpenWeather:ApiKey"] = "test-key",
                 ["Logging:LogLevel:System.Net.Http.HttpClient.Weather"] = "Warning",
                 ["Csp:EnforceInDevelopment"] = "true",
+                ["Observability:Enabled"] = "false",
                 ["ConnectionStrings:Geography"] = $"Data Source={geographyDatabase}",
                 ["ConnectionStrings:Favorites"] = $"Data Source={favoritesDatabase}",
                 ["ConnectionStrings:Notes"] = $"Data Source={notesDatabase}",

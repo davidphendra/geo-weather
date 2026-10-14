@@ -94,6 +94,17 @@ epics:
     bcps: 3
     capsule_dir: epics/e11-app-data-location
     note: Move SQLite files under App_Data (outside wwwroot); confirm against Microsoft Learn that only wwwroot is addressable; add a not-served regression guard (ADR-0013).
+  - id: e12
+    title: Observability (OpenTelemetry → Azure Monitor)
+    wsjf: 6.5
+    bcps: 21
+    capsule_dir: epics/e12-observability
+    note: >
+      OpenTelemetry metrics/traces/logs exported to Azure Monitor via the Microsoft OpenTelemetry Distro (ADR-0014).
+      Technical (HTTP RED, runtime, OpenWeatherMap, MediatR, events bus) and business (weather lookups, favorites,
+      notes, integration events, api.errors) signals. Shared instruments in BuildingBlocks.Application; modules free
+      of OTel packages; EF Core instrumentation out of scope; sampling 100% dev / 10% prod. Plan:
+      specs/tech-architecture/OBSERVABILITY_PLAN_LATEST.md.
 
 bugs:
   total: 1

@@ -132,6 +132,7 @@ public sealed class DatabaseConfigurationTests
                     ["OpenWeather:BaseUrl"] = "https://api.openweathermap.org/",
                     ["OpenWeather:ApiKey"] = "test-key",
                     ["Logging:LogLevel:System.Net.Http.HttpClient.Weather"] = "Warning",
+                    ["Observability:Enabled"] = "false",
                 }));
             builder.ConfigureServices(services =>
             {

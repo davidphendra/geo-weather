@@ -23,6 +23,7 @@ src/Tests/IntegrationTests/                  end-to-end host tests (offline)
 | Module integration | each module `Tests/IntegrationTests` | module context + handler pipeline |
 | Architecture | each module `Tests/ArchTests` + `src/Tests/ArchTests` | per-module layers, cross-module isolation, API isolation |
 | End-to-end | `src/Tests/IntegrationTests` | host through `WebApplicationFactory`, stub provider, SQLite `:memory:` |
+| Observability (`Category=Observability`) | module tests + `Weather.WebUI.UnitTests` + `Weather.IntegrationTests` | metric/trace assertions via BCL `MeterListener`/`ActivityListener`; exporters disabled offline (ADR-0014) |
 
 ## Architecture rules (ported from the reference, adapted)
 

@@ -20,6 +20,8 @@ internal static class ApiBehaviorCustomization
         };
         problem.Extensions["code"] = ApiErrorCodes.MalformedRequest;
 
+        ApiErrorMetrics.Record(ApiErrorCodes.MalformedRequest, StatusCodes.Status400BadRequest, context.HttpContext);
+
         return new BadRequestObjectResult(problem);
     }
 }

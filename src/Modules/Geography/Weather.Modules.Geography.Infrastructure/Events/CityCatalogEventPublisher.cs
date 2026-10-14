@@ -1,9 +1,12 @@
+using System.Diagnostics;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 using Weather.BuildingBlocks.Application.Events;
+using Weather.BuildingBlocks.Application.Telemetry;
 using Weather.Modules.Geography.IntegrationEvents;
 
 namespace Weather.Modules.Geography.Infrastructure.Events;
@@ -25,6 +28,9 @@ internal sealed class CityCatalogEventPublisher(
         List<Domain.Cities.City> cities = await context.Cities
             .AsNoTracking()
             .ToListAsync(cancellationToken);
+
+        using Activity? activity = WeatherActivity.Source.StartActivity("geography.catalog.publish");
+        activity?.SetTag("geo.city.count", cities.Count);
 
         logger.LogInformation("Publishing CityAddedIntegrationEvent for {CityCount} cities", cities.Count);
 

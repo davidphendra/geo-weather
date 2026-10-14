@@ -31,4 +31,9 @@
     <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.13" />
     <PackageVersion Include="Microsoft.Extensions.Options.DataAnnotations" Version="10.0.13" />
   </ItemGroup>
+
+  <ItemGroup Label="Observability">
+    <PackageVersion Include="Microsoft.OpenTelemetry" Version="1.1.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.18.0" />
+  </ItemGroup>
 </Project>

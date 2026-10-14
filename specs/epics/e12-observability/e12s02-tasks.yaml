@@ -1,0 +1,49 @@
+story_id: e12s02
+title: Technical instrumentation (CQRS, events bus, provider, logs)
+status: passing
+bcps: 5
+kind: feat
+adr: specs/adr/0014-opentelemetry-observability.md
+tasks:
+  - id: 1
+    description: "Add TelemetryBehavior<TRequest,TResponse> in BuildingBlocks.Application (activity + mediatr.requests + mediatr.request.duration; tags request name/kind/module/outcome; rethrows unchanged) and register it once in the host"
+    verify: "dotnet build Weather.sln --warnaserror"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Observability", "CQRS"] }
+  - id: 2
+    description: "Instrument InMemoryEventsBus: integration.event.published/handled/failed/duration + publish and handle activities"
+    verify: "dotnet test src/BuildingBlocks/Tests/Weather.BuildingBlocks.Tests"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Observability", "EventsBus"] }
+  - id: 3
+    description: "Instrument CityCatalogEventPublisher with a startup activity and published count"
+    verify: "dotnet test src/Modules/Geography/Tests/Weather.Modules.Geography.Tests"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["Observability", "Geography"] }
+  - id: 4
+    description: "Instrument OpenWeatherMapService: weather.provider.requests/failures{error.type}/duration + weather.provider.get_current activity"
+    verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Observability", "Weather"] }
+  - id: 5
+    description: "Add trace_id/span_id to the logging scope and a JSON console formatter outside Development"
+    verify: "dotnet test Weather.sln"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["Observability", "Logging"] }
+  - id: 6
+    description: "Add Category=Observability assertions for mediatr/events/provider signals using MeterListener and ActivityListener"
+    verify: "dotnet test Weather.sln --filter Category=Observability"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Observability", "integration"] }
+  - id: 7
+    description: "Full preflight: build + format + test all green"
+    verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["Observability", "Standards"] }

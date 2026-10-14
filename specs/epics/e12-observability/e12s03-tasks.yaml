@@ -1,0 +1,49 @@
+story_id: e12s03
+title: Business metrics (weather, geography, favorites, notes, errors)
+status: passing
+bcps: 6
+kind: feat
+adr: specs/adr/0014-opentelemetry-observability.md
+tasks:
+  - id: 1
+    description: "Emit weather business metrics in the query handler: weather.report.requests/duration{outcome}, weather.city.not_found{geo.country_code}"
+    verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=Observability"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["Observability", "Weather", "Business"] }
+  - id: 2
+    description: "Emit geography business metrics in the query handlers: geography.country.list_requests{geo.has_search}, geography.city.list_requests{geo.country_code}"
+    verify: "dotnet test src/Modules/Geography/Tests/Weather.Modules.Geography.Tests --filter Category=Observability"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Observability", "Geography", "Business"] }
+  - id: 3
+    description: "Emit favorites.operations/duration in the handlers and register the favorites.saved.count ObservableGauge from FavoritesContext (AsNoTracking COUNT)"
+    verify: "dotnet test src/Modules/Favorites/Tests/Weather.Modules.Favorites.Tests --filter Category=Observability"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["Observability", "Favorites", "Business"] }
+  - id: 4
+    description: "Emit notes.operations/duration in the handler and register the notes.saved.count ObservableGauge from NotesContext (AsNoTracking COUNT)"
+    verify: "dotnet test src/Modules/Notes/Tests/Weather.Modules.Notes.Tests --filter Category=Observability"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["Observability", "Notes", "Business"] }
+  - id: 5
+    description: "Emit api.errors{error.code,http.response.status_code,http.request.method,http.route} in GlobalExceptionHandler and the malformed-request path using ApiErrorCodes"
+    verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=Observability"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["Observability", "ApiErrors", "Business"] }
+  - id: 6
+    description: "Add business-path assertions (success/not_found/provider_error/duplicate/validation) via MeterListener"
+    verify: "dotnet test Weather.sln --filter Category=Observability"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Observability", "Business", "integration"] }
+  - id: 7
+    description: "Full preflight: build + format + test all green"
+    verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["Observability", "Standards"] }

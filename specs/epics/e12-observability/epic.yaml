@@ -1,0 +1,43 @@
+id: e12
+title: Observability (OpenTelemetry → Azure Monitor)
+wsjf: 6.5
+total_bcps: 21
+status: done
+kind: cross-cutting
+note: >
+  Add OpenTelemetry metrics, traces, and logs to the single host and export them to Azure Monitor
+  (Application Insights) through the Microsoft OpenTelemetry Distro. Technical signals (HTTP RED, runtime,
+  outbound OpenWeatherMap, MediatR, events bus) and business signals (weather lookups, favorites, notes,
+  integration events) are exposed to the operations team. Custom instruments live once in
+  Weather.BuildingBlocks.Application; no module references an OpenTelemetry package. EF Core instrumentation
+  is out of scope. Sampling is 100% dev / 10% prod. Plan: specs/tech-architecture/OBSERVABILITY_PLAN_LATEST.md;
+  decision: ADR-0014.
+stories:
+  - id: e12s01
+    title: Telemetry foundation & host wiring
+    bcps: 5
+    status: todo
+    spec: e12s01-foundation.md
+    tasks: e12s01-tasks.yaml
+    delta: ADDED
+  - id: e12s02
+    title: Technical instrumentation (CQRS, events bus, provider, logs)
+    bcps: 5
+    status: todo
+    spec: e12s02-technical-instrumentation.md
+    tasks: e12s02-tasks.yaml
+    delta: ADDED
+  - id: e12s03
+    title: Business metrics (weather, geography, favorites, notes, errors)
+    bcps: 6
+    status: todo
+    spec: e12s03-business-metrics.md
+    tasks: e12s03-tasks.yaml
+    delta: ADDED
+  - id: e12s04
+    title: Operations — dashboards, alerts, runbook, docs
+    bcps: 5
+    status: todo
+    spec: e12s04-operations.md
+    tasks: e12s04-tasks.yaml
+    delta: ADDED
