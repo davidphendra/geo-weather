@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Weather.WebUI.Configuration;
 
 /// <summary>
@@ -13,5 +15,9 @@ public sealed class DatabaseOptions
     public string DataDirectory { get; set; } = string.Empty;
 
     /// <summary>Connection-string name (for example "Geography") to SQLite file name in <see cref="DataDirectory"/>.</summary>
+    [SuppressMessage(
+        "Design",
+        "CA2227:Collection properties should be read only",
+        Justification = "Configuration binding requires a settable collection.")]
     public Dictionary<string, string> Files { get; set; } = [];
 }

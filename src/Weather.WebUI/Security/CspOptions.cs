@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Weather.WebUI.Security;
 
 /// <summary>Content Security Policy configuration (bound from the "Csp" section).</summary>
@@ -12,8 +14,16 @@ public sealed class CspOptions
     public string ReportPath { get; set; } = "/_csp/report";
 
     /// <summary>Stylesheet origins permitted by style-src (for example the Google Fonts stylesheet host).</summary>
+    [SuppressMessage(
+        "Design",
+        "CA2227:Collection properties should be read only",
+        Justification = "Configuration binding requires a settable collection.")]
     public IList<string> StyleOrigins { get; set; } = ["https://fonts.googleapis.com"];
 
     /// <summary>Font-file origins permitted by font-src (for example the Google Fonts binary host).</summary>
+    [SuppressMessage(
+        "Design",
+        "CA2227:Collection properties should be read only",
+        Justification = "Configuration binding requires a settable collection.")]
     public IList<string> FontOrigins { get; set; } = ["https://fonts.gstatic.com"];
 }

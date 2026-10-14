@@ -428,3 +428,23 @@ csharp_style_var_when_type_is_apparent = true:suggestion
 generated_code = true
 dotnet_analyzer_diagnostic.severity = none
 csharp_style_namespace_declarations = block_scoped
+
+# WebUI host: enforce the C# standards (docs/engineering/csharp-standards.md) where it composes
+# the application. Scoped to the host project so the modules can be audited as a separate effort.
+[src/Weather.WebUI/**/*.cs]
+# Naming and style the standard mandates.
+dotnet_naming_rule.async_methods_end_with_async.severity = warning
+dotnet_style_namespace_match_folder = true:warning
+dotnet_style_readonly_field = true:warning
+dotnet_style_prefer_collection_expression = when_types_loosely_match:warning
+
+# Analyzer rules that back the standard.
+dotnet_diagnostic.CA1307.severity = warning
+dotnet_diagnostic.CA1861.severity = warning
+dotnet_diagnostic.CA2227.severity = warning
+dotnet_diagnostic.CA2234.severity = warning
+
+# Deliberately not applicable in this ASP.NET Core host (see specs/CSHARP_AUDIT_LATEST.md).
+dotnet_diagnostic.CA2007.severity = none   # no ConfigureAwait in ASP.NET Core
+dotnet_diagnostic.CA1515.severity = none   # types are public for the test projects
+dotnet_diagnostic.ASP0027.severity = none  # public partial Program kept for WebApplicationFactory
