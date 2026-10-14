@@ -1,0 +1,152 @@
+# Azure DevOps pipeline for the Weather modular monolith.
+#
+# CI  — runs on pull requests and main: restore, build (warnings as errors), format check,
+#       Tailwind CSS drift guard, and all offline tests (unit + architecture + in-process
+#       integration). The Playwright browser e2e harness is intentionally NOT run here.
+# CD  — runs only on main, after CI, and is gated by an Azure DevOps Environment approval
+#       (no automatic deployment). It zip-deploys the published WebUI to Azure App Service (Linux).
+#
+# Setup (one-time, see specs/tech-architecture/AZURE_PIPELINE_PLAN_LATEST.md):
+#   * create an ARM service connection and set $(azureServiceConnection)
+#   * set $(webAppName) (and optionally $(dotnetRuntimeStack)) as pipeline variables
+#   * create the 'production' Environment and add an Approval check to it
+
+trigger:
+  branches:
+    include:
+      - main
+
+pr:
+  branches:
+    include:
+      - main
+
+variables:
+  buildConfiguration: 'Release'
+  dotnetSdkVersion: '10.0.x'
+  nodeVersion: '20.x'
+  solution: 'Weather.sln'
+  webProject: 'src/Weather.WebUI/Weather.WebUI.csproj'
+  testResultsDirectory: '$(Agent.TempDirectory)/TestResults'
+
+  # --- Deployment settings: set these in the pipeline UI or a Library variable group ---
+  azureServiceConnection: 'REPLACE_ME-arm-service-connection'
+  webAppName: 'REPLACE_ME-app-service-name'
+  dotnetRuntimeStack: 'DOTNETCORE|10.0'
+
+stages:
+  - stage: CI
+    displayName: 'CI — build, format, tests'
+    jobs:
+      - job: BuildTest
+        displayName: 'Build & test (.NET 10)'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - checkout: self
+
+          - task: UseDotNet@2
+            displayName: 'Install .NET SDK $(dotnetSdkVersion)'
+            inputs:
+              packageType: 'sdk'
+              version: '$(dotnetSdkVersion)'
+
+          - task: NodeTool@0
+            displayName: 'Install Node.js $(nodeVersion)'
+            inputs:
+              versionSpec: '$(nodeVersion)'
+
+          - task: Cache@2
+            displayName: 'Cache NuGet packages'
+            inputs:
+              key: 'nuget | "$(Agent.OS)" | **/Directory.Packages.props, **/*.csproj'
+              restoreKeys: |
+                nuget | "$(Agent.OS)"
+              path: '$(UserProfile)/.nuget/packages'
+
+          - task: Cache@2
+            displayName: 'Cache npm packages'
+            inputs:
+              key: 'npm | "$(Agent.OS)" | src/Weather.WebUI/package-lock.json'
+              path: '$(Pipeline.Workspace)/.npm'
+
+          - script: dotnet restore $(solution)
+            displayName: 'dotnet restore'
+
+          - script: dotnet build $(solution) --configuration $(buildConfiguration) --no-restore -warnaserror
+            displayName: 'dotnet build (warnings as errors)'
+
+          - script: dotnet format $(solution) --verify-no-changes --no-restore
+            displayName: 'dotnet format --verify-no-changes'
+
+          - script: bash scripts/check-tailwind-css.sh
+            displayName: 'Tailwind CSS drift guard'
+            env:
+              npm_config_cache: '$(Pipeline.Workspace)/.npm'
+
+          - script: >
+              dotnet test $(solution)
+              --configuration $(buildConfiguration)
+              --no-build
+              --logger "trx;LogFileName=results.trx"
+              --collect:"XPlat Code Coverage"
+              --results-directory $(testResultsDirectory)
+            displayName: 'dotnet test (unit + architecture + integration; no e2e)'
+
+          - task: PublishTestResults@2
+            displayName: 'Publish test results'
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: 'VSTest'
+              testResultsFiles: '$(testResultsDirectory)/**/*.trx'
+              mergeTestResults: true
+              failTaskOnFailedTests: false
+
+          - task: PublishCodeCoverageResults@2
+            displayName: 'Publish code coverage'
+            condition: succeededOrFailed()
+            inputs:
+              summaryFileLocation: '$(testResultsDirectory)/**/coverage.cobertura.xml'
+              failIfCoverageEmpty: false
+
+          - script: >
+              dotnet publish $(webProject)
+              --configuration $(buildConfiguration)
+              --no-restore
+              --output $(Build.ArtifactStagingDirectory)/webapp
+            displayName: 'dotnet publish WebUI'
+
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish webapp artifact'
+            inputs:
+              targetPath: '$(Build.ArtifactStagingDirectory)/webapp'
+              artifact: 'webapp'
+
+  - stage: Deploy
+    displayName: 'CD — deploy to App Service (approval required)'
+    dependsOn: CI
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - deployment: DeployWebApp
+        displayName: 'Deploy GeoWeather WebUI'
+        pool:
+          vmImage: 'ubuntu-latest'
+        # Approval is configured on this Environment (Pipelines > Environments > production > Approvals).
+        environment: 'production'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: current
+                  displayName: 'Download webapp artifact'
+                  artifact: 'webapp'
+
+                - task: AzureWebApp@1
+                  displayName: 'Zip deploy to App Service (Linux)'
+                  inputs:
+                    azureSubscription: '$(azureServiceConnection)'
+                    appType: 'webAppLinux'
+                    appName: '$(webAppName)'
+                    package: '$(Pipeline.Workspace)/webapp'
+                    runtimeStack: '$(dotnetRuntimeStack)'
+                    deploymentMethod: 'zipDeploy'
