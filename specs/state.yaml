@@ -8,7 +8,7 @@ project_cycle:
   mode: standard
 
 active_epic: e06
-active_story: e06s01
+active_story: e06s06
 active_flow: develop-tdd
 
 epic_cycle:
@@ -18,13 +18,15 @@ epic_cycle:
   fast_mode: false
 
 handoff:
-  next_skill: kickoff-branch
+  next_skill: verify-work
   context: >
-    PLANNED: e06 WebUI Front-End (Telemetry Slate) — 6 stories written to specs/epics/e06-webui/
-    (e06s01 design system + shell, e06s02 API client + cascade, e06s03 Weather Explorer, e06s04 Favorites &
-    Saved Notes, e06s05 visual-parity gate, e06s06 CSP Level 3). Decisions D1–D8 + Q1–Q12 recorded in
-    specs/tech-architecture/UI_DESIGN_PLAN_LATEST.md. No application code written; nothing committed.
-    Next: kickoff-branch (feature/e06-webui off feature/e10-single-host), then develop-tdd per story.
+    COMPLETED: e06 WebUI Front-End (Telemetry Slate) — all 6 stories, 39/39 tasks. e06s01 design
+    system + shell; e06s02 WeatherApiClient + cascade; e06s03 Weather Explorer; e06s04 Favorites &
+    Saved Notes; e06s05 Playwright style-parity harness; e06s06 CSP Level 3. Evidence: e06s01/e02/e03/e04/e05/e06
+    verification files. Preflight green (246 dotnet tests); `npm run parity:styles` green (7 tests).
+    Two defects found and fixed: stale compiled app.css and 'strict-dynamic' blocking colocated .razor.js.
+    OPEN: BUG-001 (empty 404 body for unknown UI routes, pre-existing). Not committed beyond feature/e06-webui.
+    Next: verify-work for the epic, then release-branch.
     PRIOR: COMPLETED: e11s02 SQLite location is config-driven — new "Database" section in WebUI appsettings.json
     (DataDirectory + Files) bound by DatabaseOptions; Program.cs composes ConnectionStrings defaults from it
     (absolute or content-root-relative dir) with no hardcoded DB names; ConnectionStrings still override.
