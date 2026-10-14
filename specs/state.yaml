@@ -25,7 +25,12 @@ handoff:
     (absolute or content-root-relative dir) with no hardcoded DB names; ConnectionStrings still override.
     DatabaseConfiguration tests prove relocation + override precedence. Preflight green (179 tests).
     PRIOR: e11s01 App_Data + not-served guard (ADR-0013); e10s01 single host (ADR-0012). Not committed.
-    Evidence: specs/verifications/e11s01.md, specs/verifications/e11s02.md.
+    Evidence: specs/verifications/e11s01.md, specs/verifications/e11s02.md. e11s03: runtime SQLite data is
+    excluded from build/publish (Content Remove + CopyTo* = Never) and guarded by scripts/check-publish-no-data.sh;
+    publish artifact verified clean and the app creates App_Data at runtime. Evidence: specs/verifications/e11s03.md.
+    e11s04 (fix): a ConnectionStrings override pointing at a missing directory crashed startup (SQLite Error 14);
+    the host now creates the parent directory of every resolved SQLite connection string before migrations.
+    Regression test added; preflight green (180 tests). Evidence: specs/verifications/e11s04.md.
 
 architecture:
   style: "Modular monolith (bounded contexts) + CQRS + Onion-per-module"

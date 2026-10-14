@@ -111,6 +111,7 @@ Geography ──CityAddedIntegrationEvent──► InMemoryEventsBus ──► F
 | Validation | FluentValidation | pipeline behavior per module |
 | ORM | EF Core 10 | one context per persisting module |
 | Persistence | SQLite | one file per module under the configured `Database:DataDirectory` (default `App_Data`, outside `wwwroot`) — ADR-0006/0013 |
+| Publish | runtime data excluded | `App_Data\**\*` is `CopyToOutputDirectory`/`CopyToPublishDirectory = Never`; `scripts/check-publish-no-data.sh` guards the artifact — ADR-0013 |
 | Events | In-memory Events Bus + per-module Outbox | reference pattern |
 | DI | Microsoft DI (per-module `Add<Module>Module()`) | deviation from the reference's Autofac — ADR-0005 |
 | Arch tests | NetArchTest.Rules (or ArchUnitNET) | per-module + cross-module rules |

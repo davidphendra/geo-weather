@@ -38,12 +38,20 @@ Store SQLite files in **`<content root>/App_Data/`** and make that non-negotiabl
    when it is relative (absolute paths are honoured), and derives the `ConnectionStrings:{name}` defaults.
    Defaults apply **only** when no connection string is configured, so `appsettings`, environment variables,
    user-secrets, and tests still override them.
-2. The host creates `App_Data` before the module `IHostedService` initializers run `Database.Migrate()` (SQLite
-   creates a file but not its parent directory).
+2. The host creates the parent directory of every resolved SQLite connection string — the configured default
+   **and** any explicit `ConnectionStrings` override — before the module `IHostedService` initializers run
+   `Database.Migrate()`. SQLite creates a database file but not its parent directory, so a path on a mounted
+   volume would otherwise fail at startup with `unable to open database file`.
 3. `App_Data` is never registered with static-file middleware or directory browsing. It stays outside `wwwroot`.
 4. EF design-time factories resolve to the same `App_Data` folder so `dotnet ef` tooling is consistent.
 5. A regression test writes sentinel `.db` files under the content root and `App_Data` and asserts both return
    `404` (see `DatabaseFiles_AreNotServedOverHttp`).
+6. **Publish/deployment contract:** the release artifact carries **no** SQLite data. The WebUI project explicitly
+   excludes `App_Data\**\*` (`Content Remove` + `CopyToOutputDirectory`/`CopyToPublishDirectory = Never`), and
+   `scripts/check-publish-no-data.sh` publishes the host and fails if any `*.db`/`App_Data` appears. The app
+   creates `App_Data` at runtime, so deployments only need to provide a writable, persistent location (or
+   override `Database:DataDirectory` / `ConnectionStrings`). Shipping the databases is rejected: it would freeze
+   dev/seed state and risk exposing data.
 
 ## Consequences
 - Positive: data files are structurally separated from the served web root and from application code/config.

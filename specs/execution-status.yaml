@@ -5,6 +5,8 @@ stories:
   e10s01: { status: done }
   e11s01: { status: done }
   e11s02: { status: done }
+  e11s03: { status: done }
+  e11s04: { status: done }
   e00s01: { status: done }
   e01s01: { status: deferred }
   e01s02: { status: deferred }

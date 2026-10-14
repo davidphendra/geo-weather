@@ -69,6 +69,28 @@ public sealed class DatabaseConfigurationTests
         }
     }
 
+    [Fact]
+    public async Task ConnectionStringDirectory_IsCreatedWhenMissing()
+    {
+        string parentDirectory = Path.Combine(Path.GetTempPath(), $"weather-nested-{Guid.NewGuid():N}");
+        string favoritesDirectory = Path.Combine(parentDirectory, "data");
+        string favoritesDatabase = Path.Combine(favoritesDirectory, "favorites.db");
+        Environment.SetEnvironmentVariable("ConnectionStrings__Favorites", $"Data Source={favoritesDatabase}");
+
+        try
+        {
+            using DefaultDatabaseHostFactory factory = new();
+            await factory.CreateClient().GetAsync("/api/countries");
+
+            Assert.True(File.Exists(favoritesDatabase));
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("ConnectionStrings__Favorites", null);
+            DeleteDirectory(parentDirectory);
+        }
+    }
+
     private static void DeleteDirectory(string path)
     {
         try

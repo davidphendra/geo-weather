@@ -1,0 +1,37 @@
+story_id: e11s04
+title: Create the SQLite directory for any configured connection string
+status: done
+bcps: 1
+kind: fix
+adr: specs/adr/0013-sqlite-app-data-location.md
+tasks:
+  - id: 1
+    description: "Add Weather.WebUI/Configuration/SqliteConnectionDirectory.cs (parse SQLite connection string, skip :memory:, create parent directory)"
+    verify: "dotnet build src/Weather.WebUI/Weather.WebUI.csproj --warnaserror"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Configuration", "Host"] }
+  - id: 2
+    description: "Wire Program.cs to ensure the directory of every resolved ConnectionStrings entry (default or override) before migrations"
+    verify: "dotnet test Weather.sln --filter Category=DatabaseConfiguration"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Configuration", "integration"] }
+  - id: 3
+    description: "Regression test: an explicit ConnectionStrings override with a missing nested directory boots and creates the database"
+    verify: "dotnet test Weather.sln --filter Category=DatabaseConfiguration"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Configuration", "integration"] }
+  - id: 4
+    description: "Amend ADR-0013 to document directory provisioning for configured paths"
+    verify: "grep -q 'parent directory' specs/adr/0013-sqlite-app-data-location.md"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["Configuration", "docs"] }
+  - id: 5
+    description: "Full preflight: build + format + test all green"
+    verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["Configuration", "Standards"] }

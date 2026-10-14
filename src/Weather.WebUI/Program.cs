@@ -64,6 +64,13 @@ if (!string.IsNullOrWhiteSpace(database.DataDirectory) && database.Files.Count >
     }
 }
 
+// Create the directory for every resolved SQLite connection string (configured default or explicit override),
+// so SQLite never fails with "unable to open database file" on a fresh or containerised deployment.
+foreach (IConfigurationSection connection in builder.Configuration.GetSection("ConnectionStrings").GetChildren())
+{
+    SqliteConnectionDirectory.EnsureCreated(connection.Value);
+}
+
 // Modules.
 builder.Services.AddInMemoryEventsBus();
 builder.Services.AddWeatherModule(builder.Configuration);

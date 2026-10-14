@@ -1,7 +1,7 @@
 id: e11
 title: SQLite Data File Location (App_Data)
 wsjf: 8.0
-total_bcps: 6
+total_bcps: 9
 status: done
 kind: security
 note: >
@@ -22,4 +22,18 @@ stories:
     status: done
     spec: e11s02-configurable.md
     tasks: e11s02-tasks.yaml
+    delta: MODIFIED
+  - id: e11s03
+    title: Keep runtime SQLite data out of the build/publish artifact
+    bcps: 2
+    status: done
+    spec: e11s03-publish-exclusion.md
+    tasks: e11s03-tasks.yaml
+    delta: ADDED
+  - id: e11s04
+    title: Create the SQLite directory for any configured connection string
+    bcps: 1
+    status: done
+    spec: e11s04-ensure-directory.md
+    tasks: e11s04-tasks.yaml
     delta: MODIFIED

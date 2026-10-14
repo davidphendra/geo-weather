@@ -23,4 +23,10 @@
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     </ItemGroup>
 
+    <ItemGroup>
+        <!-- Runtime SQLite state (ADR-0013): created at runtime, never built or published. -->
+        <Content Remove="App_Data\**\*" />
+        <None Update="App_Data\**\*" CopyToOutputDirectory="Never" CopyToPublishDirectory="Never" />
+    </ItemGroup>
+
 </Project>

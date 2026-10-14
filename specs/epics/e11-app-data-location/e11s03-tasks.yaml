@@ -1,0 +1,31 @@
+story_id: e11s03
+title: Keep runtime SQLite data out of the build/publish artifact
+status: done
+bcps: 2
+kind: chore
+adr: specs/adr/0013-sqlite-app-data-location.md
+tasks:
+  - id: 1
+    description: "Add explicit publish-exclusion metadata for App_Data\\**\\* to Weather.WebUI.csproj (Content Remove + None Update with CopyToOutputDirectory/CopyToPublishDirectory = Never)"
+    verify: "! find src/Weather.WebUI/bin -name '*.db' | grep -q ."
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["Release", "Host"] }
+  - id: 2
+    description: "Add scripts/check-publish-no-data.sh that publishes the host and fails when any *.db / App_Data is present"
+    verify: "bash scripts/check-publish-no-data.sh"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["Release", "CI"] }
+  - id: 3
+    description: "Amend ADR-0013 and tech-stack with the publish/deployment contract (artifact carries no data; runtime creates App_Data)"
+    verify: "grep -q 'CopyToPublishDirectory' specs/adr/0013-sqlite-app-data-location.md"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["Release", "docs"] }
+  - id: 4
+    description: "Full preflight: build + format + test all green"
+    verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["Release", "Standards"] }
