@@ -1,36 +1,54 @@
 story_id: e03s01
-title: Weather domain — WeatherReport, Temperature conversion, dew point
-status: failing
+title: Weather domain — value objects + WeatherReport
+status: done
 bcps: 5
 module: M2
+standards: docs/engineering/csharp-standards.md
 tasks:
   - id: 1
-    description: "Add Temperature value object with FromFahrenheit/FromCelsius and 1-decimal rounding"
-    verify: "dotnet test src/Modules/Weather/Tests --filter Category=Temperature"
+    description: >
+      Add sealed record Temperature (decimal Celsius; Fahrenheit derived with MidpointRounding.AwayFromZero;
+      FromCelsius/FromFahrenheit; private ctor; XML docs). No framework or BuildingBlocks types.
+    verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=Temperature"
     risk: P0
-    status: failing
-    allure: { severity: critical, categories: ["Weather", "unit"] }
+    status: passing
+    allure: { severity: critical, categories: ["Weather", "WeatherDomain", "unit"] }
   - id: 2
-    description: "Add RelativeHumidity + Magnus-formula DewPoint.Derive"
-    verify: "dotnet test src/Modules/Weather/Tests --filter Category=DewPoint"
+    description: >
+      Add sealed record RelativeHumidity (0-100 WeatherDomainException guard) and DewPoint.Derive using the
+      Magnus formula, clamped to min(derived, temperature) so dewPoint <= temperature always holds.
+    verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=DewPoint"
     risk: P0
-    status: failing
-    allure: { severity: critical, categories: ["Weather", "unit"] }
+    status: passing
+    allure: { severity: critical, categories: ["Weather", "WeatherDomain", "unit"] }
   - id: 3
-    description: "Add WindInfo with degrees + cardinal direction derivation"
-    verify: "dotnet test src/Modules/Weather/Tests --filter Category=Wind"
+    description: >
+      Add static CardinalDirection.FromDegrees (16-point compass, argument guards) and sealed record WindInfo
+      (decimal m/s, int? DirectionDegrees, Cardinal => "Variable" when null; framework/domain guards).
+    verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=WindInfo"
     risk: P1
-    status: failing
-    allure: { severity: high, categories: ["Weather", "unit"] }
+    status: passing
+    allure: { severity: high, categories: ["Weather", "WeatherDomain", "unit"] }
   - id: 4
-    description: "Add SkyCondition, Visibility, Pressure, Location, WeatherReport aggregate"
-    verify: "dotnet test src/Modules/Weather/Tests --filter Category=WeatherReport"
+    description: >
+      Add SkyCondition (static instances + FromProvider normalization), Visibility, Pressure, and Location
+      (City + CountryCode only; ArgumentException.ThrowIfNullOrWhiteSpace guards) as sealed records.
+    verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=WeatherValueObjects"
     risk: P1
-    status: failing
-    allure: { severity: high, categories: ["Weather", "unit"] }
+    status: passing
+    allure: { severity: high, categories: ["Weather", "WeatherDomain", "unit"] }
   - id: 5
-    description: "Add business rules and guard clauses (humidity 0-100, non-negative speed, coordinate ranges)"
-    verify: "dotnet test src/Modules/Weather/Tests --filter Category=Invariants"
+    description: >
+      Add sealed record WeatherReport (DateTimeOffset ObservedAtUtc, UTC-offset guard, Create factory that
+      derives DewPoint) and sealed WeatherDomainException.
+    verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=WeatherReport"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["Weather", "WeatherDomain", "unit"] }
+  - id: 6
+    description: >
+      Standards gate: Domain compiles under analyzers and passes formatting; no LangVersion override; only BCL types.
+    verify: "dotnet build src/Modules/Weather/Weather.Modules.Weather.Domain/Weather.Modules.Weather.Domain.csproj --warnaserror && dotnet format src/Modules/Weather/Weather.Modules.Weather.Domain/Weather.Modules.Weather.Domain.csproj --verify-no-changes"
     risk: P1
-    status: failing
-    allure: { severity: high, categories: ["Weather", "unit"] }
+    status: passing
+    allure: { severity: high, categories: ["Weather", "WeatherDomain", "Standards"] }

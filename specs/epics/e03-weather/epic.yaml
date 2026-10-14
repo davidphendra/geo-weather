@@ -2,31 +2,39 @@ id: e03
 title: Weather Module (core)
 wsjf: 8.5
 total_bcps: 13
-status: todo
+status: done
 module: M2
+kind: core
+owns_data: false
 note: >
-  Core bounded context: weather domain (F->C conversion, dew point), OpenWeatherMap provider behind
-  IWeatherService, and GetCurrentWeather exposed through IWeatherModule. Independent of other modules —
-  the provider geocodes q={city},{country}, so no cross-module edge is needed.
+  FIRST implementation epic (e00 layout is done). The Weather module is read-only: no DbContext, no
+  migrations, no IntegrationEvents, no cross-module reference. It is self-contained — BCL + MediatR +
+  FluentValidation + HttpClient — and does NOT depend on BuildingBlocks, which is deferred to the
+  write-module epics. Domain value objects are sealed records; WeatherReport is an immutable record with a
+  Create factory (not an aggregate root, because nothing is persisted). The provider geocodes
+  q={city},{country}; Fahrenheit -> Celsius conversion and dew-point derivation are owned by the domain.
+  Design decisions are LOCKED — see DECISIONS.md (clamp dew point, decimal, no coordinates, nullable wind
+  direction, key hygiene via handler + log level, typesafe SkyCondition). C# standards:
+  docs/engineering/csharp-standards.md. Final task lists: e03s01 (6), e03s02 (7), e03s03 (7) — 20 tasks.
 stories:
   - id: e03s01
-    title: Weather domain — WeatherReport, Temperature conversion, dew point
+    title: Weather domain — value objects + WeatherReport
     bcps: 5
-    status: todo
+    status: done
     spec: e03s01-domain.md
     tasks: e03s01-tasks.yaml
     delta: ADDED
   - id: e03s02
-    title: OpenWeatherMap provider behind IWeatherService port
+    title: IWeatherService port + OpenWeatherMap adapter
     bcps: 4
-    status: todo
+    status: done
     spec: e03s02-provider.md
     tasks: e03s02-tasks.yaml
     delta: ADDED
   - id: e03s03
-    title: GetCurrentWeather query + GET /api/weather/{cityName} + error handling
+    title: GetCurrentWeather query + IWeatherModule + GET /api/weather/{cityName}
     bcps: 4
-    status: todo
+    status: done
     spec: e03s03-query.md
     tasks: e03s03-tasks.yaml
     delta: ADDED

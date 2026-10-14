@@ -1,42 +1,65 @@
 story_id: e03s03
-title: GetCurrentWeather query + GET /api/weather/{cityName} + error handling
-status: failing
+title: GetCurrentWeather query + IWeatherModule + GET /api/weather/{cityName}
+status: done
 bcps: 4
 module: M2
+standards: docs/engineering/csharp-standards.md
 tasks:
   - id: 1
-    description: "Add WeatherReportDto + domain->DTO mapping (temp C/F, dew point, wind, visibility, pressure, sky)"
-    verify: "dotnet test src/Modules/Weather/Tests --filter Category=WeatherDto"
-    risk: P1
-    status: failing
-    allure: { severity: high, categories: ["Weather", "unit"] }
+    description: >
+      Add sealed record GetCurrentWeatherQuery (IRequest<WeatherReportDto?>) + internal
+      GetCurrentWeatherQueryValidator (FluentValidation: city non-empty/max 100; country code length 2 when present)
+      + internal GetCurrentWeatherQueryHandler (nullable passthrough to IWeatherService).
+    verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=GetCurrentWeather"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["Weather", "WeatherQuery", "unit"] }
   - id: 2
-    description: "Add WeatherReports/GetCurrentWeather query + validator + handler with IWeatherService"
-    verify: "dotnet test src/Modules/Weather/Tests --filter Category=GetWeather"
-    risk: P0
-    status: failing
-    allure: { severity: critical, categories: ["Weather", "unit"] }
+    description: >
+      Add internal ValidationBehavior<TRequest,TResponse> (sealed, IReadOnlyList of validators, Task.WhenAll,
+      throws ValidationException) and register it in the pipeline.
+    verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=ValidationBehavior"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Weather", "WeatherQuery", "unit"] }
   - id: 3
-    description: "Implement IWeatherModule.GetCurrentWeatherAsync"
-    verify: "dotnet test src/Modules/Weather/Tests --filter Category=WeatherModule"
-    risk: P0
-    status: failing
-    allure: { severity: critical, categories: ["Weather", "ModularMonolith"] }
+    description: >
+      Add sealed records WeatherReportDto/LocationDto/TemperatureDto/WindDto (DirectionDegrees int?) and
+      internal WeatherReportDtoMapper (report -> DTO; NullReference-guarded).
+    verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=WeatherReportDto"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Weather", "WeatherQuery", "unit"] }
   - id: 4
-    description: "Add GET /api/weather/{cityName} in the host Weather area"
-    verify: "dotnet test src/Tests/IntegrationTests --filter Category=Weather"
+    description: >
+      Add public IWeatherModule contract (Task<WeatherReportDto?>) and internal WeatherModule implementation
+      (ISender.Send of GetCurrentWeatherQuery).
+    verify: "dotnet build src/Modules/Weather/Weather.Modules.Weather.Infrastructure/Weather.Modules.Weather.Infrastructure.csproj --warnaserror"
     risk: P0
-    status: failing
-    allure: { severity: critical, categories: ["Weather", "integration"] }
+    status: passing
+    allure: { severity: critical, categories: ["Weather", "WeatherQuery", "ModularMonolith"] }
   - id: 5
-    description: "Map not-found -> 404, provider failure -> 502, validation -> 400"
-    verify: "dotnet test src/Tests/IntegrationTests --filter Category=WeatherErrors"
+    description: >
+      Add Weather.Api/Modules/Weather/WeatherEndpoints.cs (thin, TypedResults<Ok<WeatherReportDto>, NotFound>)
+      and wire AddWeatherModule + MapWeatherEndpoints + GlobalExceptionHandler
+      (ValidationException -> 400, WeatherProviderException -> 502, fallback 500) in Program.cs.
+    verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=WeatherEndpoint"
     risk: P0
-    status: failing
-    allure: { severity: critical, categories: ["Weather", "integration"] }
+    status: passing
+    allure: { severity: critical, categories: ["Weather", "WeatherQuery", "integration"] }
   - id: 6
-    description: "Assert every required metric field is present and non-null"
-    verify: "dotnet test src/Tests/IntegrationTests --filter Category=WeatherPayload"
+    description: >
+      Integration (offline, WebApplicationFactory + stub IWeatherService): assert payload completeness and
+      error mapping - 200 with all required fields, 404 unknown city, 502 provider failure, 400 invalid input.
+    verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=WeatherErrors"
     risk: P0
-    status: failing
-    allure: { severity: critical, categories: ["Weather", "integration"] }
+    status: passing
+    allure: { severity: critical, categories: ["Weather", "WeatherQuery", "integration"] }
+  - id: 7
+    description: >
+      Story gate: full repo preflight is green (build under analyzers + formatting + tests), and no
+      cross-module reference was introduced (scripts/check-layout.sh).
+    verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln && bash scripts/check-layout.sh"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["Weather", "WeatherQuery", "Standards"] }

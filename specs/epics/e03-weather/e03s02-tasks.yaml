@@ -1,37 +1,69 @@
 story_id: e03s02
-title: OpenWeatherMap provider behind IWeatherService port
-status: failing
+title: IWeatherService port + OpenWeatherMap adapter
+status: done
 bcps: 4
 module: M2
+standards: docs/engineering/csharp-standards.md
 tasks:
   - id: 1
-    description: "Add IWeatherService port and WeatherProviderException in Weather.Application.Abstractions"
-    verify: "dotnet build Weather.sln --warnaserror"
+    description: >
+      Add package versions centrally (Directory.Packages.props) and references: MediatR, FluentValidation,
+      Microsoft.Extensions.Http, Microsoft.Extensions.Http.Resilience,
+      Microsoft.Extensions.Options.ConfigurationExtensions, Microsoft.Extensions.Configuration.Abstractions.
+      No BuildingBlocks reference.
+    verify: "dotnet restore Weather.sln && dotnet build src/Modules/Weather/Weather.Modules.Weather.Application/Weather.Modules.Weather.Application.csproj --warnaserror"
     risk: P1
-    status: failing
-    allure: { severity: high, categories: ["Weather", "unit"] }
+    status: passing
+    allure: { severity: high, categories: ["Weather", "WeatherProvider", "Standards"] }
   - id: 2
-    description: "Add provider DTOs + OpenWeatherMapper (imperial -> domain, mph -> m/s)"
-    verify: "dotnet test src/Modules/Weather/Tests --filter Category=WeatherMapping"
-    risk: P0
-    status: failing
-    allure: { severity: critical, categories: ["Weather", "unit"] }
+    description: >
+      Add IWeatherService port (Task<WeatherReport?>, null = not found) and sealed WeatherProviderException
+      (message + optional inner) in Application.Abstractions, with XML docs.
+    verify: "dotnet build src/Modules/Weather/Weather.Modules.Weather.Application/Weather.Modules.Weather.Application.csproj --warnaserror"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Weather", "WeatherProvider", "unit"] }
   - id: 3
-    description: "Add OpenWeatherMapService typed HttpClient with options, 10s timeout, bounded retry"
-    verify: "dotnet test src/Modules/Weather/Tests --filter Category=WeatherProvider"
+    description: >
+      Add OpenWeatherOptions ([Required] BaseUrl/ApiKey), internal OpenWeatherMapResponse DTOs, and
+      OpenWeatherMapMapper (imperial -> domain: F->C, mph->m/s, unix dt -> DateTimeOffset, SkyCondition,
+      Location; wraps WeatherDomainException as WeatherProviderException - DD8).
+    verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=OpenWeatherMapping"
     risk: P0
-    status: failing
-    allure: { severity: critical, categories: ["Weather", "integration"] }
+    status: passing
+    allure: { severity: critical, categories: ["Weather", "WeatherProvider", "unit"] }
   - id: 4
-    description: "Add HttpMessageHandler-stub tests: success, non-200, malformed JSON, timeout"
-    verify: "dotnet test src/Modules/Weather/Tests --filter Category=WeatherProvider"
-    risk: P0
-    status: failing
-    allure: { severity: critical, categories: ["Weather", "integration"] }
-  - id: 5
-    description: "Assert API key never appears in exception messages; register typed client in WeatherModule"
-    verify: "dotnet test src/Modules/Weather/Tests --filter Category=WeatherProviderSecrets"
+    description: >
+      Add internal OpenWeatherApiKeyHandler (DelegatingHandler appending appid); set
+      Logging:LogLevel:System.Net.Http.HttpClient.Weather = Warning. Assert the key appears in neither
+      exception messages nor log output (DD6).
+    verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=ApiKeyHandler"
     risk: P0
     security: medium
-    status: failing
-    allure: { severity: critical, categories: ["Weather", "Security Review"] }
+    status: passing
+    allure: { severity: critical, categories: ["Weather", "Security Review", "unit"] }
+  - id: 5
+    description: >
+      Add internal OpenWeatherMapService (primary ctor HttpClient + ILogger<T>) with structured logging,
+      CancellationToken propagation, and mapping 200 -> report, 404 -> null, 5xx/timeout/empty -> WeatherProviderException.
+      Tests use a canned HttpMessageHandler (offline).
+    verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=OpenWeatherMapService"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["Weather", "WeatherProvider", "integration"] }
+  - id: 6
+    description: >
+      Add AddWeatherModule composition root: options Bind + ValidateDataAnnotations + ValidateOnStart;
+      AddHttpClient typed client + OpenWeatherApiKeyHandler + AddStandardResilienceHandler; MediatR;
+      FluentValidation; ValidationBehavior pipeline. Tests assert the graph resolves and the real HttpClient is configured.
+    verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=WeatherModuleWiring"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Weather", "WeatherProvider", "unit"] }
+  - id: 7
+    description: >
+      Standards gate: Infrastructure compiles under analyzers and passes formatting.
+    verify: "dotnet build src/Modules/Weather/Weather.Modules.Weather.Infrastructure/Weather.Modules.Weather.Infrastructure.csproj --warnaserror && dotnet format src/Modules/Weather/Weather.Modules.Weather.Infrastructure/Weather.Modules.Weather.Infrastructure.csproj --verify-no-changes"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Weather", "WeatherProvider", "Standards"] }

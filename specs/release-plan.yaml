@@ -7,6 +7,7 @@ release:
   type: greenfield
   style: "Modular Monolith (bounded contexts) + CQRS + Onion-per-module"
   reference: "https://github.com/kgrzybek/modular-monolith-with-ddd"
+  immediate_epic: e03          # Weather module only — self-contained, no BuildingBlocks prerequisite
 
 modules:
   - { id: M1, name: Geography, kind: supporting, owns_data: true,  db: geography.db, publishes: [CityAddedIntegrationEvent] }
@@ -28,7 +29,8 @@ epics:
     wsjf: 9.5
     bcps: 10
     capsule_dir: epics/e01-building-blocks
-    note: Shared DDD/infra primitives, thin API host, module template, InMemory Events Bus + Outbox, cross-module arch tests. Depends on the e00 layout.
+    deferred: true
+    note: DEFERRED until the write-module epics. Shared DDD/infra primitives, Events Bus + Outbox. The Weather module (e03) is self-contained and does not depend on it (ADR-0007).
   - id: e03
     title: Weather Module (core)
     wsjf: 8.5

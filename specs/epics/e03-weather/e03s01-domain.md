@@ -1,4 +1,4 @@
-# Story e03s01 — Weather domain: WeatherReport, Temperature conversion, dew point
+# Story e03s01 — Weather domain: value objects + WeatherReport
 
 | Field | Value |
 |-------|-------|
@@ -10,64 +10,77 @@
 | Type | feat |
 
 ## 1. Summary
-Build the Weather module's framework-free domain: `Temperature` (F↔C), `DewPoint` (Magnus), `WindInfo`,
-`SkyCondition`, `Visibility`, `Pressure`, `RelativeHumidity`, `Location`, and the `WeatherReport` aggregate.
+Build the Weather module's framework-free domain as immutable C# records: `Temperature` (F↔C),
+`RelativeHumidity`, `DewPoint` (Magnus), `WindInfo` (+ cardinal), `SkyCondition`, `Visibility`, `Pressure`,
+`Location`, and the `WeatherReport` model with a `Create` factory.
 
 ## 2. Context
-This is the core domain of the application and the one piece of real business logic. Fahrenheit arrives from
-the provider and is converted here.
+This is the core domain of the application and the only real business logic. Fahrenheit arrives from the
+provider and is converted here; dew point is derived here. The module persists nothing, so there is no
+aggregate root and no identity — value objects plus one immutable report.
 
 ## 3. User story
-As a developer, I want a tested weather domain model, so metrics are correct and provider-independent.
+As a developer, I want a tested, self-contained weather domain, so metric math is correct and independent of
+the provider and of any shared BuildingBlocks.
 
 ## 4. Business value
-Correctness of every metric shown to users.
+Guarantees correctness of every metric shown to users; keeps the core domain free of framework and cross-module
+dependencies.
 
 ## 5. In scope
-- `Temperature`: `FromFahrenheit`, `FromCelsius`, `Celsius`, `Fahrenheit`, equality, 1-decimal rounding.
-- `RelativeHumidity` + `DewPoint.Derive(Temperature, RelativeHumidity)` (Magnus).
-- `WindInfo` (m/s, degrees, cardinal), `SkyCondition`, `Visibility`, `Pressure`, `Location`.
-- `WeatherReport` aggregate with invariants.
+- `Temperature`: `FromFahrenheit`, `FromCelsius`, `Celsius`, `Fahrenheit`, 1-decimal rounding, record equality; `decimal` throughout.
+- `RelativeHumidity` (0–100 guard) and `DewPoint.Derive(Temperature, RelativeHumidity)` via Magnus, **clamped to `min(derived, temperature)`** so `dewPoint ≤ temperature` always holds.
+- `WindInfo` (m/s, **nullable** direction 0–360, `Cardinal` → `"Variable"` when direction is absent) + `CardinalDirection.FromDegrees`.
+- `SkyCondition` (typesafe instances + `FromProvider`), `Visibility`, `Pressure`, `Location`.
+- `WeatherReport` immutable record with `Create` (UTC guard; computes dew point).
+- `WeatherDomainException` (module-local).
 - Domain unit tests.
 
 ## 6. Out of scope
-Provider mapping (e03s02); query/endpoint (e03s03).
+Provider mapping (e03s02); query/endpoint (e03s03); persistence; BuildingBlocks; domain events.
 
 ## 7. Domain concepts
-`WeatherReport`, `Temperature`, `DewPoint`, `RelativeHumidity`, `WindInfo`, `SkyCondition`, `Visibility`, `Pressure`, `Location`.
+`WeatherReport`, `Temperature`, `RelativeHumidity`, `DewPoint`, `WindInfo`, `CardinalDirection`,
+`SkyCondition`, `Visibility`, `Pressure`, `Location`.
 
 ## 8. Layer touchpoints
 | Assembly | Change |
 |----------|--------|
-| Weather.Domain | all value objects + aggregate |
+| `Weather.Modules.Weather.Domain` | `WeatherReports/` value objects + `WeatherReport`; `WeatherDomainException` |
+
+No other assembly changes. Domain references BCL only.
 
 ## 9. API contract
 None (pure domain).
 
 ## 10. Dependencies
-e01s01 (BuildingBlocks.Domain).
+e00s01 (the Weather module scaffold exists). No BuildingBlocks.
 
 ## 11. Risks
 | Risk | Mitigation |
 |------|-----------|
-| Floating-point drift | Single rounding rule + tests |
-| -40 equilibrium | Explicit P0 test |
+| Floating-point drift in conversion | `decimal` + single 1-decimal rounding rule; tested |
+| −40 equilibrium mishandled | explicit P0 test at −40 |
+| VOs drift into anemic records | private constructors + factory guards |
 
 ## 12. Implementation steps
-1. Add `Temperature` VO with conversions → verify: `dotnet test src/Modules/Weather/Tests --filter Category=Temperature`
-2. Add `RelativeHumidity` + Magnus `DewPoint.Derive` → verify: `dotnet test src/Modules/Weather/Tests --filter Category=DewPoint`
-3. Add `WindInfo` + cardinal derivation → verify: `dotnet test src/Modules/Weather/Tests --filter Category=Wind`
-4. Add `SkyCondition`, `Visibility`, `Pressure`, `Location`, `WeatherReport` → verify: `dotnet test src/Modules/Weather/Tests --filter Category=WeatherReport`
-5. Add business rules and guard clauses → verify: `dotnet test src/Modules/Weather/Tests --filter Category=Invariants`
+1. Add `Temperature` → verify: `dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=Temperature`
+2. Add `RelativeHumidity` + Magnus `DewPoint.Derive` (clamped to `min(derived, temperature)`) → verify: `dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=DewPoint`
+3. Add `WindInfo` + `CardinalDirection` → verify: `dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=WindInfo`
+4. Add `SkyCondition`, `Visibility`, `Pressure`, `Location` → verify: `dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=WeatherValueObjects`
+5. Add `WeatherReport.Create` + `WeatherDomainException` → verify: `dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=WeatherReport`
 
 ## 13. Test plan
-SC-e03s01-P0-01/02. 32→0, 212→100, 98.6→37, -40→-40, negatives; dew point ≤ temperature; cardinal boundaries; invalid humidity throws.
+- SC-e03s01-P0-01: 32°F→0°C, 212°F→100°C, 98.6°F→37°C, −40°F→−40°C, negative Celsius.
+- SC-e03s01-P0-02: dew point ≤ temperature; at 100% RH dew point ≈ temperature (±0.1).
+- Cardinal boundaries (0/90/180/270/360); humidity/watchdog guards throw `WeatherDomainException`.
+- `WeatherReport.Create` rejects a non-UTC timestamp; computes dew point from temperature + humidity.
 
 ## 14. Acceptance criteria (Gherkin)
 ```gherkin
 Scenario Outline: Fahrenheit to Celsius
-  Given <f> Fahrenheit
-  When converted
+  Given a Fahrenheit temperature of <f>
+  When I convert it
   Then Celsius is <c>
   Examples:
     | f    | c   |
@@ -76,27 +89,40 @@ Scenario Outline: Fahrenheit to Celsius
     | -40  | -40 |
     | 98.6 | 37  |
 
-Scenario: Dew point bounded by temperature
-  Given 20C and 100% humidity
-  Then dew point == 20C within 0.1
+Scenario: Dew point never exceeds temperature
+  Given air at 20C and 100% relative humidity
+  When I derive the dew point
+  Then the dew point is <= 20C
+  And it equals 20C
+
+Scenario: Missing wind direction is variable
+  Given a wind with speed but no direction
+  When I build the WindInfo
+  Then DirectionDegrees is null
+  And Cardinal is "Variable"
+
+Scenario: Non-UTC timestamp rejected
+  Given a report with a local timestamp
+  Then WeatherDomainException is thrown
 ```
 
 ## 15. Definition of done
-Domain tests green; no framework references.
+All domain tests green; Domain references BCL only; no BuildingBlocks types used.
 
 ## 16. Verification script
-1. `dotnet test src/Modules/Weather/Tests`.
-2. `dotnet test src/Tests/ArchTests --filter Category=DomainLayer`.
+1. `dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests`
+2. `dotnet build src/Modules/Weather/Weather.Modules.Weather.Domain/Weather.Modules.Weather.Domain.csproj --warnaserror`
 
 ## 17. Out of scope
-Kelvin; unit preference UI.
+Kelvin; unit-selection UI; history.
 
 ## 18. Risks / notes
-Dew point is derived (ADR-0003).
+`WeatherReport` is a record, not an `AggregateRoot` — deliberate (no persistence).
 
 ## 19. Sizing / BCP rationale
-5 BCPs — several VOs with real math and invariants.
+5 BCPs — several value objects with real math and invariants.
 
 ## 20. References
 - `specs/adr/0003-weather-provider-and-dew-point.md`
+- `specs/adr/0007-weather-module-read-only-self-contained.md`
 - `specs/product/GLOSSARY_LATEST.yaml`

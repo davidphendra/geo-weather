@@ -6,9 +6,9 @@ stories:
   e02s01: { status: todo }
   e02s02: { status: todo }
   e02s03: { status: todo }
-  e03s01: { status: todo }
-  e03s02: { status: todo }
-  e03s03: { status: todo }
+  e03s01: { status: done }
+  e03s02: { status: done }
+  e03s03: { status: done }
   e04s01: { status: todo }
   e04s02: { status: todo }
   e05s01: { status: todo }

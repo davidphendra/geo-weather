@@ -7,9 +7,9 @@ project_cycle:
   completed_phases: [1, 2]
   mode: standard
 
-active_epic: null
+active_epic: e03
 active_story: null
-active_flow: null
+active_flow: weather_module_done
 
 epic_cycle:
   step: null
@@ -18,13 +18,13 @@ epic_cycle:
   fast_mode: false
 
 handoff:
-  next_skill: build-epic
+  next_skill: verify-work
   context: >
-    e00s01 Repository Layout Scaffolding is DONE and green (28 projects, build/format/test pass,
-    check-layout.sh clean, no feature code). Next: e01s01 (BuildingBlocks Domain/Application/
-    Infrastructure content) — but only when the user says go. No git operations (user asked not to
-    commit). 7 decisions still pending confirmation (SCOPE_LATEST.yaml
-    constraints.decisions_to_confirm).
+    e03 Weather module is IMPLEMENTED and green: 57 module tests + 4 integration tests pass; full
+    preflight (build --warnaserror, format --verify-no-changes, dotnet test, check-layout.sh) is green.
+    Weather module is self-contained (no BuildingBlocks, no cross-module reference). Nothing committed
+    yet. Next: verify-work/audit-code, then commit-message if the user asks to commit. Do not start
+    other modules (BuildingBlocks/e01 remains deferred).
 
 architecture:
   style: "Modular monolith (bounded contexts) + CQRS + Onion-per-module"
@@ -51,6 +51,7 @@ decisions:
   - { id: ADR-0004, title: MediatR version and licensing posture, status: proposed }
   - { id: ADR-0005, title: "Modular monolith: bounded contexts, modules, and repo slicing", status: proposed }
   - { id: ADR-0006, title: "Per-module data isolation and schemas", status: proposed }
+  - { id: ADR-0007, title: "Weather module is read-only and self-contained", status: proposed }
 
 risks:
   - id: R1

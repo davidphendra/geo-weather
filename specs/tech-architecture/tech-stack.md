@@ -125,6 +125,7 @@ Geography ──CityAddedIntegrationEvent──► InMemoryEventsBus ──► F
 | `NSubstitute` | [OK] | Reference uses it; actively maintained. |
 | `Shouldly` | [OK] | Avoids FluentAssertions v8 commercial license (reference pins FA 6.12). |
 | `Microsoft.AspNetCore.OpenApi` | [OK] | First-party. |
+| `Microsoft.Extensions.Http.Resilience` | [OK] | First-party resilience for the OpenWeatherMap client (timeout + bounded retry with jitter). |
 | `xunit` + runner | [OK] | Reference uses NUnit; xUnit is our existing choice. |
 | ~~Autofac / per-module IoC container~~ | [SUS] | Reference does it; catalog marks it contested (ADR-0005 deviation). Not used. |
 | ~~FluentAssertions~~ | [SLOP] | v8 commercial license — avoid. |

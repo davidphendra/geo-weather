@@ -1,4 +1,4 @@
-# Story e03s02 — OpenWeatherMap provider behind IWeatherService
+# Story e03s02 — IWeatherService port + OpenWeatherMap adapter
 
 | Field | Value |
 |-------|-------|
@@ -10,37 +10,40 @@
 | Type | feat |
 
 ## 1. Summary
-Declare `IWeatherService` in the Weather module's Application layer and implement `OpenWeatherMapService` in its
-Infrastructure layer. Map the imperial payload into the domain `WeatherReport`.
+Declare `IWeatherService` in the Weather module's Application layer and implement `OpenWeatherMapService` in
+its Infrastructure layer: typed `HttpClient`, imperial payload, F→C via the domain, mph→m/s, UTC time, and an
+API-key `DelegatingHandler` that keeps the key out of logs and exception messages.
 
 ## 2. Context
-External calls hide behind a module-local port, so the domain is provider-agnostic and tests stay offline.
-ADR-0003 documents the endpoint and field semantics.
+External calls hide behind a module-local port, so the domain is provider-agnostic and tests stay offline
+(ADR-0003). The provider geocodes `q={city},{country}`, so Weather needs no other module.
 
 ## 3. User story
-As a developer, I want weather fetched behind an interface, so the app is testable and provider-agnostic.
+As a developer, I want weather fetched behind an interface, so the app is testable offline and provider-agnostic.
 
 ## 4. Business value
-Enables offline tests; isolates the provider.
+Enables offline tests and isolates the provider; keeps the API key out of logs.
 
 ## 5. In scope
-- `IWeatherService` port + `WeatherProviderException`.
-- `OpenWeatherMapService` typed client; `OpenWeather:BaseUrl`, `OpenWeather:ApiKey`.
-- Provider DTOs + `OpenWeatherMapper` → domain; mph → m/s; `Temperature.FromFahrenheit`.
-- Timeout (10s) + bounded retry (3).
+- `IWeatherService` port (`Task<WeatherReport?>`, `null` = city not found) + `WeatherProviderException` (Application/Abstractions).
+- `OpenWeatherOptions` (`OpenWeather:BaseUrl`, `OpenWeather:ApiKey`).
+- Provider DTOs + `OpenWeatherMapMapper` (imperial → domain).
+- `OpenWeatherMapService` typed client; 10s timeout.
+- `OpenWeatherApiKeyHandler` (`DelegatingHandler`) appending `appid`, plus the named client's log category set to `Warning` so the final URI (which carries the key) is never logged.
+- `AddWeatherModule` composition root (options, typed client, MediatR, validators, pipeline).
 - Tests with a canned `HttpMessageHandler` (no network).
 
 ## 6. Out of scope
-Caching; provider fallback.
+Caching; provider fallback; One Call 3.0; query/endpoint (e03s03).
 
 ## 7. Domain concepts
-`WeatherReport`, `Temperature`, `WindInfo`, `SkyCondition`.
+`WeatherReport`, `Temperature`, `WindInfo`, `SkyCondition`, `RelativeHumidity`, `DewPoint`, `Visibility`, `Pressure`, `Location`.
 
 ## 8. Layer touchpoints
 | Assembly | Change |
 |----------|--------|
-| Weather.Application | `Abstractions/IWeatherService`, `WeatherProviderException` |
-| Weather.Infrastructure | `OpenWeatherMapService`, options, DTOs, mapper, registration in `WeatherModule` |
+| `Weather.Modules.Weather.Application` | `Abstractions/IWeatherService`, `WeatherProviderException` |
+| `Weather.Modules.Weather.Infrastructure` | `OpenWeatherMap/` options + DTOs + mapper + service + key handler; `WeatherModuleExtensions` |
 
 ## 9. API contract
 Internal only.
@@ -51,51 +54,61 @@ e03s01.
 ## 11. Risks (security: medium — outbound + secret)
 | Risk | Mitigation |
 |------|-----------|
-| API key in logs/errors | Never log the URL; redact `appid` |
-| Provider down | Wrap in `WeatherProviderException` → 502 |
-| Untrusted JSON | Explicit typed DTOs |
+| API key in logs/exceptions | Attach via `DelegatingHandler`; set `Logging:LogLevel:System.Net.Http.HttpClient.Weather = Warning`; never log the URL |
+| Provider down | Catch `HttpRequestException` → `WeatherProviderException` → 502 |
+| Untrusted JSON | Explicit typed DTOs, no polymorphic deserialization |
+| Malformed/empty body | `WeatherProviderException` |
 
 ## 12. Implementation steps
-1. Add `IWeatherService` + `WeatherProviderException` → verify: `dotnet build Weather.sln --warnaserror`
-2. Add provider DTOs + `OpenWeatherMapper` (imperial → domain) → verify: `dotnet test src/Modules/Weather/Tests --filter Category=WeatherMapping`
-3. Add `OpenWeatherMapService` with typed client, options, timeout, retry → verify: `dotnet test src/Modules/Weather/Tests --filter Category=WeatherProvider`
-4. Add `HttpMessageHandler`-stub tests (success, non-200, malformed JSON, timeout) → verify: `dotnet test src/Modules/Weather/Tests --filter Category=WeatherProvider`
-5. Register options + typed client in `WeatherModule` → verify: `dotnet build Weather.sln --warnaserror`
+1. Add `IWeatherService` (nullable result = not found) + `WeatherProviderException` → verify: `dotnet build src/Modules/Weather/Weather.Modules.Weather.Application/Weather.Modules.Weather.Application.csproj --warnaserror`
+2. Add `OpenWeatherOptions` + provider DTOs + `OpenWeatherMapMapper` → verify: `dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=OpenWeatherMapping`
+3. Add `OpenWeatherMapService` typed client + 10s timeout → verify: `dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=OpenWeatherMapService`
+4. Add `OpenWeatherApiKeyHandler` + the per-client `Warning` log level; assert the key never appears in exception messages or log output → verify: `dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=ApiKeyHandler`
+5. Add `AddWeatherModule` (options, typed client, MediatR, FluentValidation, pipeline) → verify: `dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=WeatherModuleWiring`
 
 ## 13. Test plan
-- Mapping: imperial payload → domain.
-- Failure: 404/500/timeout/malformed → `WeatherProviderException`.
-- Security: API key absent from exception messages.
+- Mapping: canned imperial payload → domain (temperature F, mph→m/s, pressure hPa, humidity, sky normalized, UTC time).
+- Service: 200 → `WeatherReport`; 404 → `null` (expected, no exception); 5xx/timeout/empty/malformed → `WeatherProviderException`.
+- Security: assert the API key never appears in exception messages.
 
 ## 14. Acceptance criteria (Gherkin)
 ```gherkin
-Scenario: Payload maps to domain
-  Given a canned imperial response
+Scenario: Provider payload maps to domain
+  Given a canned OpenWeatherMap imperial response
   When the service fetches weather
   Then temperature.fahrenheit equals the payload value
   And wind speed is converted from mph to m/s
+  And the sky condition is normalized
 
 Scenario: Upstream failure is wrapped
   Given the provider returns 503
+  When the service fetches weather
   Then WeatherProviderException is thrown
-  And its message contains no API key
+  And its message does not contain the API key
+
+Scenario: Unknown city
+  Given the provider returns 404
+  Then the result is null (no exception)
 ```
 
 ## 15. Definition of done
-No real I/O in tests; mapper covered.
+No test performs real I/O; mapper + service + key handler covered; DI composes.
 
 ## 16. Verification script
-1. `dotnet test src/Modules/Weather/Tests --filter Category=WeatherProvider`.
+1. `dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=OpenWeather`.
+2. Confirm tests use a stub `HttpMessageHandler` (no sockets).
 
 ## 17. Out of scope
-Geocoding API; One Call 3.0.
+Geocoding API; caching.
 
 ## 18. Risks / notes
-The provider resolves `q={city},{country}`, letting Weather stay module-independent.
+Packages added here (central package management): MediatR, FluentValidation, Microsoft.Extensions.Http,
+Microsoft.Extensions.Options.ConfigurationExtensions, Microsoft.Extensions.Configuration.Abstractions.
 
 ## 19. Sizing / BCP rationale
-4 BCPs — external boundary + mapping + resilience.
+4 BCPs — external boundary + mapping + resilience + secret handling.
 
 ## 20. References
 - `specs/adr/0003-weather-provider-and-dew-point.md`
+- `specs/adr/0007-weather-module-read-only-self-contained.md`
 - `specs/tech-architecture/SECURITY_PLAN_LATEST.md`

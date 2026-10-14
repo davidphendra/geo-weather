@@ -1,6 +1,6 @@
 # Weather App — Implementation Plan (Modular Monolith · CQRS · Onion-per-module)
 
-Status: **PLANNING COMPLETE — immediate work is e00s01 (repo layout only).**
+Status: **PLANNING COMPLETE — immediate work is the e03 Weather module only (self-contained).**
 Model: `kgrzybek/modular-monolith-with-ddd` — a module = a bounded context = its own assembly set + own
 composition root + own schema; modules integrate **only** asynchronously via integration events.
 
@@ -112,12 +112,15 @@ e00s01 (layout) → e01s01 → e01s02 → e02s01 → e02s02 → e02s03 → e03s0
 e05s01 → e05s02 → e06s01 → e06s02 → e07s01 → e07s02 → e08s01.
 Per story: `develop-tdd` → `verify-work` → `audit-code` → `commit-message` → `release-branch`.
 
-## Immediate scope — e00s01 (layout only)
-Create every project, folder, project reference, build-config file, solution entry, and test project for the
-modular monolith, plus a compile/test gate. Hard boundary: **no feature code** — no BuildingBlocks types, no
-DbContexts, no handlers, no endpoints. One placeholder smoke test per test project is the only code added.
-See `specs/epics/e00-repo-layout/e00s01-tasks.yaml` (13 tasks). Canonical test-project paths are defined there;
-later stories' `verify:` paths must match them.
+## Immediate scope — e03 Weather module only
+Build the Weather module (M2) end-to-end and nothing else. It is a read-only, self-contained bounded context:
+no DbContext, no migrations, no IntegrationEvents, no cross-module reference, **no BuildingBlocks dependency**
+(ADR-0007). Domain value objects are `sealed record`s; `WeatherReport` is an immutable record with a `Create`
+factory (not an aggregate root); CQRS uses MediatR directly with a module-local `ValidationBehavior`.
+
+The provider geocodes `q={city},{country}`, so Weather needs no other module. Fahrenheit → Celsius and dew
+point live in the domain. Stories: `e03s01` domain, `e03s02` provider port/adapter, `e03s03` query + endpoint.
+See `specs/epics/e03-weather/`. BuildingBlocks (e01) and the other modules are deferred and MUST NOT be started.
 
 ## Requirement coverage map
 
