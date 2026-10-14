@@ -1,5 +1,13 @@
-﻿@page "/not-found"
+@page "/not-found"
 @layout MainLayout
 
-<h3>Not Found</h3>
-<p>Sorry, the content you are looking for does not exist.</p>
+<PageTitle>Not Found</PageTitle>
+
+<div class="w-full px-gutter md:px-margin-desktop py-space-xl max-w-[1600px] mx-auto">
+    <section class="bg-surface-container-lowest shadow-sm rounded-xl p-space-lg md:p-space-xl flex flex-col gap-space-sm">
+        <span class="font-label-sm text-label-sm text-error uppercase font-semibold tracking-wider">404</span>
+        <h1 class="font-headline-lg text-headline-lg text-on-surface font-semibold">Page not found</h1>
+        <p class="font-body-md text-body-md text-on-surface-variant">The page you are looking for does not exist.</p>
+        <a class="font-code-sm text-code-sm text-secondary hover:underline" href="/">Return to Weather Explorer</a>
+    </section>
+</div>
