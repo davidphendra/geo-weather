@@ -97,7 +97,7 @@ epics:
 
 bugs:
   total: 1
-  fixed: 0
+  fixed: 1
   deferred: 0
   wontfix: 0
   registry: specs/bugs/registry.yaml

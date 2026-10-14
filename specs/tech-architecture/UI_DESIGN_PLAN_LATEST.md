@@ -207,7 +207,7 @@ Bookkeeping to update when stories are written: `specs/epics/e06-webui/epic.yaml
 
 ## 10. Risks
 
-- Tailwind build adds a Node/npm toolchain to a .NET solution (mitigate: compiled CSS committed; build step additive).
+- Tailwind build adds a Node/npm toolchain to a .NET solution (mitigate: compiled CSS committed; build step additive; CI drift guard fails a PR whose `app.css` is stale).
 - D2 keeps a runtime font CDN dependency — offline runs use fallback fonts (accepted, documented).
 - Prototype content (Telemetry/CQRS/EF internals) is illustrative; UI text must not claim behaviour the app does not have.
 - Scope of e06 grows from 2 to 6 stories (raise `e06.total_bcps` and WSJF).
@@ -225,7 +225,7 @@ Bookkeeping to update when stories are written: `specs/epics/e06-webui/epic.yaml
 | Q4 | Command form intent | **A — single form with Favorite ⇄ Note toggle (default Favorite)** |
 | Q5 | Logo | **A — local placeholder SVG** `wwwroot/img/geoweather-mark.svg` |
 | Q6 | Favorites type filter | **A — `All | Favorites`** (matches export) |
-| Q7 | Tailwind toolchain | **A — `src/Weather.WebUI/package.json`, npm build, committed `app.css`; include the optional CI drift guard** |
+| Q7 | Tailwind toolchain | **A — `src/Weather.WebUI/package.json`, npm build, committed `app.css`; CI drift guard implemented: `scripts/check-tailwind-css.sh` + `.github/workflows/tailwind-drift.yml`** |
 | Q8 | Visual-parity gate | **B — Playwright computed-style + geometry assertions; screenshots as artifacts; token tests in `dotnet test`** |
 | Q9 | Fonts for the harness | **A — harness may fetch the Google fonts; `dotnet test` stays offline** |
 | Q10 | CSP report route | **A — `/_csp/report`** (non-API path) |
