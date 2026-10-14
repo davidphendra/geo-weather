@@ -58,7 +58,7 @@ e06s01 (App.razor/head), e10s01.
 ## 11. Risks
 | Risk | Mitigation |
 |------|-----------|
-| `'strict-dynamic'` blocks a framework script | Report-Only first; capture at `/_csp/report`; fallback policy without `'strict-dynamic'` |
+| `'strict-dynamic'` blocks a framework script | **Resolved:** `'strict-dynamic'` blocked Blazor's colocated `.razor.js` module scripts, so it was dropped; the policy is `script-src 'self' 'nonce-…'` (see `specs/verifications/e06s06.md`) |
 | Google Fonts origins blocked | Explicit `style-src`/`font-src` origins (D2/Q9) |
 | Inline style attributes | `.icon-fill` class; `style-src-attr 'none'` |
 | Nonce replay from cache | `Cache-Control: no-store` on nonce-bearing responses |

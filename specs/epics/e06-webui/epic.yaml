@@ -40,14 +40,14 @@ stories:
   - id: e06s05
     title: Visual-parity verification
     bcps: 5
-    status: todo
+    status: done
     spec: e06s05-visual-parity.md
     tasks: e06s05-tasks.yaml
     delta: ADDED
   - id: e06s06
     title: Content Security Policy Level 3
     bcps: 5
-    status: todo
+    status: done
     spec: e06s06-csp.md
     tasks: e06s06-tasks.yaml
     delta: ADDED

@@ -45,10 +45,10 @@ tasks:
     description: "Confirm Blazor interactivity/circuit under enforcement (no CSP violations)."
     verify: "npm --prefix src/Weather.WebUI run parity:styles"
     risk: P0
-    status: failing
+    status: passing
     allure: { severity: critical, categories: ["WebUI", "Security Review", "visual"] }
 notes: >
-  Tasks 1-6 verified green. Task 7 is blocked until the Playwright harness (e06s05) exists; the nonce and
-  header are confirmed by integration tests and a manual curl, but browser-level circuit/no-violation
-  verification is still pending. Prerequisite e06s01 was not implemented, so the nonce was applied to the
-  template App.razor; the e06s01 shell rewrite MUST keep the nonce on the ImportMap and blazor.web.js.
+  Tasks 1-7 verified green. Task 7 found that 'strict-dynamic' blocked Blazor's colocated .razor.js
+  module scripts; the policy now uses script-src 'self' 'nonce-…' (no 'strict-dynamic'), and the
+  Playwright harness proves the circuit stays alive under enforcement. Evidence: specs/verifications/e06s06.md,
+  specs/verifications/e06s05.md.

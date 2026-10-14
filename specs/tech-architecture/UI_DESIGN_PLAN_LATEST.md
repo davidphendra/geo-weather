@@ -27,7 +27,7 @@ Both prototypes are static **Tailwind (CDN) + Google Fonts (Geist, JetBrains Mon
 | D5 | Scope placement | **A — Reshape epic e06** into the Telemetry Slate WebUI epic (5 stories). |
 | D6 | Render mode | **A — `@rendermode InteractiveServer`** on `/` and `/favorites`. |
 | D7 | Same-origin API addressing | **A — derive the origin from `NavigationManager.BaseUri` at runtime; no `Api:BaseAddress` configuration key.** |
-| D8 | Content Security Policy | **A — CSP Level 3 via a global response header, per-request nonce + `'strict-dynamic'`, enforced on every page; report-only in `Development` unless overridden.** |
+| D8 | Content Security Policy | **A — CSP Level 3 via a global response header, per-request nonce + `'self'` (no `'strict-dynamic'`), enforced on every page; report-only in `Development` unless overridden.** |
 
 ## 3. Design tokens (binding — from `code.html`)
 
@@ -132,8 +132,8 @@ Applied **centrally to every response** with a `Content-Security-Policy` **respo
 base-uri 'self';
 default-src 'self';
 object-src 'none';
-script-src 'self' 'nonce-{N}' 'strict-dynamic';
-script-src-elem 'self' 'nonce-{N}' 'strict-dynamic';
+script-src 'self' 'nonce-{N}';
+script-src-elem 'self' 'nonce-{N}';
 script-src-attr 'none';
 style-src 'self' https://fonts.googleapis.com;
 style-src-elem 'self' https://fonts.googleapis.com;
@@ -154,7 +154,7 @@ report-uri /_csp/report;
 | Feature | Why |
 |---|---|
 | Per-request **nonce** | Authorises the Blazor bootstrap script + `ImportMap` without `'unsafe-inline'` |
-| **`'strict-dynamic'`** | Trust propagates only from nonced scripts; host/scheme allowlists for `script-src` are ignored |
+| **No `'strict-dynamic'` (revised)** | `'strict-dynamic'` disables host allowlisting and blocked Blazor's colocated `.razor.js` module scripts (emitted as `<script src>` with no nonce), breaking the circuit. Dropped in favour of `'self'` + nonce; see `specs/verifications/e06s06.md`. |
 | `script-src-elem` / `script-src-attr` / `style-src-elem` / `style-src-attr` | Level 3 granularity; `*-attr 'none'` forbids inline event handlers and `style=` attributes |
 | `frame-ancestors 'none'` | Clickjacking defence (header-only) |
 | `form-action 'self'`, `base-uri 'self'`, `object-src 'none'` | Level 3 hardening |
@@ -211,7 +211,7 @@ Bookkeeping to update when stories are written: `specs/epics/e06-webui/epic.yaml
 - D2 keeps a runtime font CDN dependency — offline runs use fallback fonts (accepted, documented).
 - Prototype content (Telemetry/CQRS/EF internals) is illustrative; UI text must not claim behaviour the app does not have.
 - Scope of e06 grows from 2 to 6 stories (raise `e06.total_bcps` and WSJF).
-- **CSP `'strict-dynamic'` + Blazor**: the policy may need tuning if the framework injects scripts not covered by the nonce. Mitigation: start `Report-Only`, capture violations at `/_csp/report`, adjust; fallback policy drops `'strict-dynamic'` and uses `script-src 'self' 'nonce-…'` plus hashes.
+- **CSP + Blazor colocated scripts**: `'strict-dynamic'` is intentionally **not** used — it blocked Blazor's non-nonced `.razor.js` module scripts. Policy is `script-src 'self' 'nonce-…'`; verified by the e06s05 Playwright harness (zero violations, circuit alive).
 - **D2 (font CDN) widens the CSP**: `https://fonts.googleapis.com` (style) and `https://fonts.gstatic.com` (font) must be allowed. Self-hosting would remove this and is the tighter option.
 - **Nonce vs. caching**: any response carrying a per-request nonce must not be cached and replayed with a mismatched header. Mitigation: CSP middleware marks HTML responses `Cache-Control: no-store` (or the nonce is embedded consistently per response).
 
