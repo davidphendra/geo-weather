@@ -1,0 +1,43 @@
+story_id: e06s03
+title: Weather Explorer page
+status: failing
+bcps: 7
+standards: docs/engineering/csharp-standards.md
+prerequisites: [e06s01, e06s02]
+tasks:
+  - id: 1
+    description: "Build QueryControllerPanel (pipeline chips + country/city selects + Fetch) and MediatRExpressionBar."
+    verify: "dotnet build src/Weather.WebUI/Weather.WebUI.csproj --warnaserror"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["WebUI"] }
+  - id: 2
+    description: "Build StationHeroCard + DiagnosticMetricGrid/DiagnosticCell with the D3 substitutions (visibility for UV, cardinal for gusts, observed-at for trend)."
+    verify: "dotnet build src/Weather.WebUI/Weather.WebUI.csproj --warnaserror"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["WebUI"] }
+  - id: 3
+    description: "Build the ForecastStrip 'Forecast not available' shell (no fabricated series)."
+    verify: "dotnet build src/Weather.WebUI/Weather.WebUI.csproj --warnaserror"
+    risk: P2
+    status: failing
+    allure: { severity: normal, categories: ["WebUI"] }
+  - id: 4
+    description: "Build CommandDispatchForm with a Favorite ⇄ Note intent toggle (default Favorite) and ChangeTrackerResponseWell rendering the real status + JSON."
+    verify: "dotnet test src/Tests/Weather.WebUI.UnitTests --filter Category=CommandDispatch"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["WebUI", "unit"] }
+  - id: 5
+    description: "Build ArchitectureDeepDive (cURL / C# tabs, real route paths, static content)."
+    verify: "dotnet build src/Weather.WebUI/Weather.WebUI.csproj --warnaserror"
+    risk: P2
+    status: failing
+    allure: { severity: normal, categories: ["WebUI"] }
+  - id: 6
+    description: "Wire WeatherExplorer.razor (loading/error/not-found states) and add an integration test for GET /."
+    verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=WeatherExplorerPage"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["WebUI", "integration"] }

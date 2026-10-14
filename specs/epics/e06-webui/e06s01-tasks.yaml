@@ -1,35 +1,55 @@
 story_id: e06s01
-title: Country & city dropdowns wired to the API
+title: Telemetry Slate design system + app shell
 status: failing
-bcps: 5
+bcps: 8
+standards: docs/engineering/csharp-standards.md
+prerequisites: [e10s01]
 tasks:
   - id: 1
-    description: "Add WeatherApiClient + client DTOs + DI with configurable base address"
-    verify: "dotnet build Weather.sln --warnaserror"
-    risk: P1
-    status: failing
-    allure: { severity: high, categories: ["WebUI"] }
-  - id: 2
-    description: "Confirm same-origin hosting needs no CORS policy (ADR-0012); the API is served by the same WebUI process"
-    verify: "! grep -rn 'AddCors' src/Weather.WebUI"
+    description: "Add src/Weather.WebUI/package.json with tailwindcss@3.4.17 and a build:css script."
+    verify: "npm --prefix src/Weather.WebUI install"
     risk: P2
     status: failing
-    allure: { severity: normal, categories: ["WebUI", "integration"] }
+    allure: { severity: normal, categories: ["WebUI", "Design System"] }
+  - id: 2
+    description: "Add tailwind.config.js (colors, borderRadius, spacing, fontFamily, fontSize verbatim from code.html) and Styles/tailwind.css; compile to wwwroot/app.css."
+    verify: "npm --prefix src/Weather.WebUI run build:css && test -s src/Weather.WebUI/wwwroot/app.css"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["WebUI", "Design System"] }
   - id: 3
-    description: "Build the country dropdown populated from GET /api/countries"
-    verify: "dotnet build src/Weather.WebUI"
-    risk: P1
+    description: "Add the .icon-fill component-layer class (font-variation-settings: 'FILL' 1) so no inline styles are needed."
+    verify: "grep -q 'icon-fill' src/Weather.WebUI/Styles/tailwind.css"
+    risk: P2
     status: failing
-    allure: { severity: high, categories: ["WebUI"] }
+    allure: { severity: normal, categories: ["WebUI", "Design System"] }
   - id: 4
-    description: "Build the city cascade + loading/error states"
-    verify: "dotnet build src/Weather.WebUI"
+    description: "Commit the compiled wwwroot/app.css and add an additive MSBuild target so plain dotnet build needs no Node."
+    verify: "dotnet build src/Weather.WebUI/Weather.WebUI.csproj --warnaserror"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["WebUI", "Design System"] }
+  - id: 5
+    description: "Add the local placeholder logo wwwroot/img/geoweather-mark.svg."
+    verify: "test -f src/Weather.WebUI/wwwroot/img/geoweather-mark.svg"
+    risk: P3
+    status: failing
+    allure: { severity: minor, categories: ["WebUI", "Design System"] }
+  - id: 6
+    description: "Rebuild Components/App.razor (Google fonts links + app.css, body classes) and MainLayout/AppHeader/AppNav/AppFooter; badge shows .NET 10."
+    verify: "dotnet build src/Weather.WebUI/Weather.WebUI.csproj --warnaserror"
     risk: P1
     status: failing
     allure: { severity: high, categories: ["WebUI"] }
-  - id: 5
-    description: "Unit test WeatherApiClient parsing with a stubbed HttpMessageHandler"
-    verify: "dotnet test src/Tests/IntegrationTests --filter Category=ApiClient"
+  - id: 7
+    description: "Delete template UI (Home.razor, Counter.razor, Weather.razor, sidebar/NavMenu, Bootstrap assets, template app.css)."
+    verify: "! grep -rqE 'Counter|Hello, world' src/Weather.WebUI/Components"
     risk: P1
     status: failing
-    allure: { severity: high, categories: ["WebUI", "unit"] }
+    allure: { severity: high, categories: ["WebUI"] }
+  - id: 8
+    description: "Add the offline token-contract test asserting the compiled app.css declares every design token."
+    verify: "dotnet test src/Tests/Weather.WebUI.UnitTests --filter Category=DesignTokens"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["WebUI", "unit", "Design System"] }

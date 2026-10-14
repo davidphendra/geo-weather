@@ -1,21 +1,53 @@
 id: e06
-title: WebUI Front-End
-wsjf: 6.5
-total_bcps: 10
+title: WebUI Front-End (Telemetry Slate)
+wsjf: 7.5
+total_bcps: 37
 status: todo
-note: Reshape the scaffolded Blazor Weather.WebUI into a real client that consumes only the API HTTP contract.
+note: >
+  Reshape the scaffolded Blazor Weather.WebUI into the Telemetry Slate client defined by specs/designs.
+  Tailwind v3.4 token build with committed CSS (Node-free dotnet build), a same-origin API client (origin
+  from NavigationManager.BaseUri; ADR-0012), the two designed pages, a Playwright computed-style CSS-parity
+  gate, and a CSP Level 3 header on all responses. Plan: specs/tech-architecture/UI_DESIGN_PLAN_LATEST.md.
 stories:
   - id: e06s01
-    title: Country & city dropdowns wired to the API
-    bcps: 5
+    title: Telemetry Slate design system + app shell
+    bcps: 8
     status: todo
-    spec: e06s01-dropdowns.md
+    spec: e06s01-design-system-shell.md
     tasks: e06s01-tasks.yaml
     delta: ADDED
   - id: e06s02
-    title: Weather render + save-note form with feedback
+    title: WeatherApiClient + country→city cascade
     bcps: 5
     status: todo
-    spec: e06s02-weather-note.md
+    spec: e06s02-api-client-cascade.md
     tasks: e06s02-tasks.yaml
+    delta: ADDED
+  - id: e06s03
+    title: Weather Explorer page
+    bcps: 7
+    status: todo
+    spec: e06s03-weather-explorer.md
+    tasks: e06s03-tasks.yaml
+    delta: ADDED
+  - id: e06s04
+    title: Favorites & Saved Notes page
+    bcps: 7
+    status: todo
+    spec: e06s04-favorites-notes.md
+    tasks: e06s04-tasks.yaml
+    delta: ADDED
+  - id: e06s05
+    title: Visual-parity verification
+    bcps: 5
+    status: todo
+    spec: e06s05-visual-parity.md
+    tasks: e06s05-tasks.yaml
+    delta: ADDED
+  - id: e06s06
+    title: Content Security Policy Level 3
+    bcps: 5
+    status: todo
+    spec: e06s06-csp.md
+    tasks: e06s06-tasks.yaml
     delta: ADDED

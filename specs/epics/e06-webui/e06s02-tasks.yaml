@@ -1,35 +1,37 @@
 story_id: e06s02
-title: Weather render + save-note form with feedback
+title: WeatherApiClient + country→city cascade
 status: failing
 bcps: 5
+standards: docs/engineering/csharp-standards.md
+prerequisites: [e06s01, e02s01, e02s02, e03s03, e04s01]
 tasks:
   - id: 1
-    description: "Add WeatherApiClient.GetWeatherAsync and trigger on city selection"
-    verify: "dotnet build src/Weather.WebUI"
+    description: "Add client DTO mirrors (CountryModel, CityModel, WeatherReportModel, LocationModel, TemperatureModel, WindModel, FavoriteCityModel, AddFavoriteModel, AddNoteModel, ApiProblem)."
+    verify: "dotnet build src/Weather.WebUI/Weather.WebUI.csproj --warnaserror"
     risk: P1
     status: failing
-    allure: { severity: high, categories: ["WebUI"] }
+    allure: { severity: high, categories: ["WebUI", "unit"] }
   - id: 2
-    description: "Render metric cards for location, UTC time, temp C/F, dew point C/F, humidity, wind, visibility, pressure, sky"
-    verify: "dotnet build src/Weather.WebUI"
+    description: "Add WeatherApiClient with absolute URIs built from NavigationManager.BaseUri and ProblemDetails-aware failures (WeatherApiException)."
+    verify: "dotnet test src/Tests/Weather.WebUI.UnitTests --filter Category=WeatherApiClient"
     risk: P1
     status: failing
-    allure: { severity: high, categories: ["WebUI"] }
+    allure: { severity: high, categories: ["WebUI", "unit"] }
   - id: 3
-    description: "Add validated save-note form using WeatherApiClient.AddNoteAsync"
-    verify: "dotnet build src/Weather.WebUI"
+    description: "Register AddHttpClient<WeatherApiClient>() with no Api:BaseAddress configuration (same-origin, D7)."
+    verify: "! grep -rn 'Api:BaseAddress' src/Weather.WebUI"
     risk: P1
     status: failing
-    allure: { severity: high, categories: ["WebUI"] }
+    allure: { severity: high, categories: ["WebUI", "integration"] }
   - id: 4
-    description: "Add success (created id) and error feedback; disable button while posting"
-    verify: "dotnet build src/Weather.WebUI"
-    risk: P2
+    description: "Add the WeatherExplorerModel cascade/loading/error state (country → cities → weather) as testable state."
+    verify: "dotnet test src/Tests/Weather.WebUI.UnitTests --filter Category=WeatherExplorerModel"
+    risk: P1
     status: failing
-    allure: { severity: normal, categories: ["WebUI"] }
+    allure: { severity: high, categories: ["WebUI", "unit"] }
   - id: 5
-    description: "Unit test WeatherApiClient.GetWeatherAsync/AddNoteAsync with stubbed handler"
-    verify: "dotnet test src/Tests/IntegrationTests --filter Category=ApiClient"
+    description: "Add WeatherApiClient tests with a stubbed HttpMessageHandler covering success, 404 and 502."
+    verify: "dotnet test src/Tests/Weather.WebUI.UnitTests --filter Category=WeatherApiClient"
     risk: P1
     status: failing
     allure: { severity: high, categories: ["WebUI", "unit"] }

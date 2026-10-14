@@ -7,8 +7,8 @@ project_cycle:
   completed_phases: [1, 2]
   mode: standard
 
-active_epic: e10
-active_story: e10s01
+active_epic: e06
+active_story: e06s01
 active_flow: develop-tdd
 
 epic_cycle:
@@ -18,9 +18,14 @@ epic_cycle:
   fast_mode: false
 
 handoff:
-  next_skill: audit-code
+  next_skill: kickoff-branch
   context: >
-    COMPLETED: e11s02 SQLite location is config-driven — new "Database" section in WebUI appsettings.json
+    PLANNED: e06 WebUI Front-End (Telemetry Slate) — 6 stories written to specs/epics/e06-webui/
+    (e06s01 design system + shell, e06s02 API client + cascade, e06s03 Weather Explorer, e06s04 Favorites &
+    Saved Notes, e06s05 visual-parity gate, e06s06 CSP Level 3). Decisions D1–D8 + Q1–Q12 recorded in
+    specs/tech-architecture/UI_DESIGN_PLAN_LATEST.md. No application code written; nothing committed.
+    Next: kickoff-branch (feature/e06-webui off feature/e10-single-host), then develop-tdd per story.
+    PRIOR: COMPLETED: e11s02 SQLite location is config-driven — new "Database" section in WebUI appsettings.json
     (DataDirectory + Files) bound by DatabaseOptions; Program.cs composes ConnectionStrings defaults from it
     (absolute or content-root-relative dir) with no hardcoded DB names; ConnectionStrings still override.
     DatabaseConfiguration tests prove relocation + override precedence. Preflight green (179 tests).

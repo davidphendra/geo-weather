@@ -50,11 +50,14 @@ epics:
     capsule_dir: epics/e02-geography
     note: Self-contained read side (full ISO-3166 catalog). Schema + seed via EF Core migrations. Controller-based API + OpenAPI. Weather naming aligned to I<Module>Service. CityAddedIntegrationEvent (e02s03) deferred.
   - id: e06
-    title: WebUI Front-End
-    wsjf: 6.5
-    bcps: 10
+    title: WebUI Front-End (Telemetry Slate)
+    wsjf: 7.5
+    bcps: 37
     capsule_dir: epics/e06-webui
-    note: Consumes the API HTTP contract only.
+    note: >
+      Telemetry Slate redesign of the WebUI: Tailwind token build (committed CSS), same-origin API client,
+      Weather Explorer + Favorites & Saved Notes pages, Playwright CSS-parity gate, and a CSP Level 3 header.
+      Plan: specs/tech-architecture/UI_DESIGN_PLAN_LATEST.md.
   - id: e04
     title: Favorites Module
     wsjf: 6.0

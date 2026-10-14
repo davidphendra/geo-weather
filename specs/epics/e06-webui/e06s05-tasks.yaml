@@ -1,0 +1,43 @@
+story_id: e06s05
+title: Visual-parity verification
+status: failing
+bcps: 5
+standards: docs/engineering/csharp-standards.md
+prerequisites: [e06s01, e06s03, e06s04]
+tasks:
+  - id: 1
+    description: "Add @playwright/test as a devDependency of src/Weather.WebUI."
+    verify: "npm --prefix src/Weather.WebUI install"
+    risk: P2
+    status: failing
+    allure: { severity: normal, categories: ["WebUI", "visual"] }
+  - id: 2
+    description: "Add a harness that boots the app on a fixed port and waits for readiness before measuring."
+    verify: "npm --prefix src/Weather.WebUI run parity:styles"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["WebUI", "visual"] }
+  - id: 3
+    description: "Add computed-style assertions comparing matched elements against the prototypes at 390/768/1600px."
+    verify: "npm --prefix src/Weather.WebUI run parity:styles"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["WebUI", "visual"] }
+  - id: 4
+    description: "Add geometry assertions (container widths, 7/5 and 8/4 column splits, 64px header)."
+    verify: "npm --prefix src/Weather.WebUI run parity:styles"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["WebUI", "visual"] }
+  - id: 5
+    description: "Capture screenshots at the three viewports as review artifacts."
+    verify: "test -d src/Weather.WebUI/tests/visual/artifacts"
+    risk: P2
+    status: failing
+    allure: { severity: normal, categories: ["WebUI", "visual"] }
+  - id: 6
+    description: "Record the parity result in specs/verifications/e06s05.md."
+    verify: "test -f specs/verifications/e06s05.md"
+    risk: P3
+    status: failing
+    allure: { severity: minor, categories: ["WebUI", "docs"] }
