@@ -69,9 +69,7 @@ internal sealed class GlobalExceptionHandler(
             ApiProblemTypes.ValidationError,
             "Request validation failed",
             "One or more fields are invalid.",
-            validation.Errors
-                .Select(failure => new FieldError(failure.PropertyName, failure.ErrorCode, failure.ErrorMessage))
-                .ToArray()),
+            [.. validation.Errors.Select(failure => new FieldError(failure.PropertyName, failure.ErrorCode, failure.ErrorMessage))]),
 
         CountryNotFoundException or WeatherNotFoundException or CityNotFoundException
             or global::Weather.Modules.Notes.Application.Abstractions.CityNotFoundException => new Problem(

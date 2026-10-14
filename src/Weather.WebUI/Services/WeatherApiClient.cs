@@ -107,7 +107,7 @@ public sealed class WeatherApiClient(HttpClient http, NavigationManager navigati
         HttpResponseMessage response,
         CancellationToken cancellationToken)
     {
-        string body = await response.Content.ReadAsStringAsync(cancellationToken);
+        var body = await response.Content.ReadAsStringAsync(cancellationToken);
 
         try
         {

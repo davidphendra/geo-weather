@@ -6,14 +6,18 @@ namespace Weather.WebUI.Hosting;
 /// Receives browser CSP violation reports. Unauthenticated; the body is capped and only metadata is
 /// logged. Bodies are no-cors POSTs, so no CORS policy is required.
 /// </summary>
-internal static class CspReportEndpoint
+internal sealed class CspReportEndpoint
 {
     private const long MaxReportBytes = 16 * 1024;
 
-    public static IResult Handle(HttpRequest request, ILoggerFactory loggerFactory)
+    private CspReportEndpoint()
+    {
+    }
+
+    public static IResult Handle(HttpRequest request, ILogger<CspReportEndpoint> logger)
     {
         ArgumentNullException.ThrowIfNull(request);
-        ArgumentNullException.ThrowIfNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(logger);
 
         if (request.ContentLength is > MaxReportBytes)
         {
@@ -23,7 +27,7 @@ internal static class CspReportEndpoint
                 statusCode: StatusCodes.Status413PayloadTooLarge);
         }
 
-        loggerFactory.CreateLogger("CspReport").LogWarning(
+        logger.LogWarning(
             "CSP violation reported: contentType={ContentType} length={Length}",
             request.ContentType,
             request.ContentLength);

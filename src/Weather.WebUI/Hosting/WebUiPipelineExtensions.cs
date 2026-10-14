@@ -27,7 +27,7 @@ internal static class WebUiPipelineExtensions
 
         // API requests get the RFC 9457 Problem Details handler; UI requests fall through to /Error.
         app.UseWhen(
-            context => context.Request.Path.StartsWithSegments("/api"),
+            context => context.Request.Path.StartsWithSegments("/api", StringComparison.Ordinal),
             api => api.UseExceptionHandler());
 
         // Re-execute the Blazor not-found page for unmatched UI routes. It must run in the main pipeline:

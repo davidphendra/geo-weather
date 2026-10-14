@@ -25,7 +25,7 @@ internal static class ModuleDatabaseExtensions
                 ? database.DataDirectory
                 : Path.Combine(builder.Environment.ContentRootPath, database.DataDirectory);
 
-            Dictionary<string, string?> defaultSqliteConnections = database.Files
+            var defaultSqliteConnections = database.Files
                 .Where(file => string.IsNullOrWhiteSpace(builder.Configuration.GetConnectionString(file.Key)))
                 .ToDictionary(
                     file => $"ConnectionStrings:{file.Key}",

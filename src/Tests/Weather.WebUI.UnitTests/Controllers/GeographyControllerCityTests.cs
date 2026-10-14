@@ -19,7 +19,7 @@ public sealed class GeographyControllerCityTests
             .Returns([new CityDto("00000001-0000-0000-0000-000000000000", "London", "GB", 51.5074m, -0.1278m)]);
         var controller = new GeographyController(service);
 
-        ActionResult<IReadOnlyList<CityDto>> result = await controller.GetCitiesByCountry("GB", CancellationToken.None);
+        ActionResult<IReadOnlyList<CityDto>> result = await controller.GetCitiesByCountryAsync("GB", CancellationToken.None);
 
         OkObjectResult ok = Assert.IsType<OkObjectResult>(result.Result);
         IReadOnlyList<CityDto> cities = Assert.IsAssignableFrom<IReadOnlyList<CityDto>>(ok.Value);

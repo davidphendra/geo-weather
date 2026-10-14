@@ -17,7 +17,7 @@ public sealed class NotesController(INotesModule notesModule) : ApiControllerBas
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<WeatherNoteDto>> AddNote(
+    public async Task<ActionResult<WeatherNoteDto>> AddNoteAsync(
         [FromBody] AddNoteRequest request,
         CancellationToken cancellationToken)
     {
@@ -28,13 +28,6 @@ public sealed class NotesController(INotesModule notesModule) : ApiControllerBas
             request.TemperatureCelsius,
             cancellationToken);
 
-        return Created($"/api/weather/notes/{note.Id}", note);
+        return Created(new Uri($"/api/weather/notes/{note.Id}", UriKind.Relative), note);
     }
 }
-
-/// <summary>Request body for saving a weather note.</summary>
-public sealed record AddNoteRequest(
-    string CityName,
-    string CountryCode,
-    string Note,
-    decimal? TemperatureCelsius);

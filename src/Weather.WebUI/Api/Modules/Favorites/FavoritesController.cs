@@ -18,7 +18,7 @@ public sealed class FavoritesController(IFavoritesService favoritesService) : Ap
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<FavoriteCityDto>> AddFavorite(
+    public async Task<ActionResult<FavoriteCityDto>> AddFavoriteAsync(
         [FromBody] AddFavoriteRequest request,
         CancellationToken cancellationToken)
     {
@@ -27,16 +27,14 @@ public sealed class FavoritesController(IFavoritesService favoritesService) : Ap
             request.CountryCode,
             cancellationToken);
 
-        return Created($"/api/cities/favorites/{favorite.Id}", favorite);
+        return Created(new Uri($"/api/cities/favorites/{favorite.Id}", UriKind.Relative), favorite);
     }
 
     /// <summary>Lists the favorites.</summary>
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<FavoriteCityDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<IReadOnlyList<FavoriteCityDto>>> GetFavorites(CancellationToken cancellationToken)
+    public async Task<ActionResult<IReadOnlyList<FavoriteCityDto>>> GetFavoritesAsync(
+        CancellationToken cancellationToken)
         => Ok(await favoritesService.GetFavoritesAsync(cancellationToken));
 }
-
-/// <summary>Request body for saving a favorite.</summary>
-public sealed record AddFavoriteRequest(string CityName, string CountryCode);

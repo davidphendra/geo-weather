@@ -17,7 +17,7 @@ public sealed class WeatherController(IWeatherService weatherService) : ApiContr
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status502BadGateway)]
-    public async Task<ActionResult<WeatherReportDto>> GetCurrentWeather(
+    public async Task<ActionResult<WeatherReportDto>> GetCurrentWeatherAsync(
         [FromRoute] string cityName,
         [FromQuery] string? countryCode,
         CancellationToken cancellationToken)

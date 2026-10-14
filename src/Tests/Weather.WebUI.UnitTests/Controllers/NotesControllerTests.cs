@@ -27,7 +27,7 @@ public sealed class NotesControllerTests
         module.AddNoteAsync("London", "GB", "Chilly", 12.5m, Arg.Any<CancellationToken>()).Returns(note);
         var controller = new NotesController(module);
 
-        ActionResult<WeatherNoteDto> result = await controller.AddNote(
+        ActionResult<WeatherNoteDto> result = await controller.AddNoteAsync(
             new AddNoteRequest("London", "GB", "Chilly", 12.5m),
             CancellationToken.None);
 

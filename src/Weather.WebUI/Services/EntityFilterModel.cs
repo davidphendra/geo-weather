@@ -15,16 +15,20 @@ public sealed class EntityFilterModel
 
     public EntityTypeFilter Type { get; set; } = EntityTypeFilter.All;
 
-    public IReadOnlyList<string> Countries => All
-        .Select(favorite => favorite.CountryCode)
-        .Distinct(StringComparer.OrdinalIgnoreCase)
-        .Order(StringComparer.OrdinalIgnoreCase)
-        .ToArray();
+    public IReadOnlyList<string> Countries =>
+    [
+        .. All
+            .Select(favorite => favorite.CountryCode)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Order(StringComparer.OrdinalIgnoreCase),
+    ];
 
-    public IReadOnlyList<FavoriteCityModel> Visible => All
-        .Where(MatchesCountry)
-        .Where(MatchesSearch)
-        .ToArray();
+    public IReadOnlyList<FavoriteCityModel> Visible =>
+    [
+        .. All
+            .Where(MatchesCountry)
+            .Where(MatchesSearch),
+    ];
 
     public void Set(IReadOnlyList<FavoriteCityModel> rows) => All = rows;
 

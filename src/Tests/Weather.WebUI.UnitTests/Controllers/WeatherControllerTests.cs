@@ -29,7 +29,7 @@ public sealed class WeatherControllerTests
         service.GetCurrentWeatherAsync("London", "GB", Arg.Any<CancellationToken>()).Returns(Report());
         var controller = new WeatherController(service);
 
-        ActionResult<WeatherReportDto> result = await controller.GetCurrentWeather("London", "GB", CancellationToken.None);
+        ActionResult<WeatherReportDto> result = await controller.GetCurrentWeatherAsync("London", "GB", CancellationToken.None);
 
         OkObjectResult ok = Assert.IsType<OkObjectResult>(result.Result);
         Assert.Equal(Report(), ok.Value);

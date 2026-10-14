@@ -32,7 +32,7 @@ public sealed class CspMiddleware(RequestDelegate next, IHostEnvironment environ
         // A nonce must never be replayed from a cache, so HTML responses are made uncacheable.
         context.Response.OnStarting(static state =>
         {
-            HttpContext responseContext = (HttpContext)state;
+            var responseContext = (HttpContext)state;
             if (responseContext.Response.ContentType?.StartsWith("text/html", StringComparison.OrdinalIgnoreCase) == true)
             {
                 responseContext.Response.Headers.CacheControl = "no-store";

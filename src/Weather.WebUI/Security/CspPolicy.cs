@@ -3,13 +3,15 @@ namespace Weather.WebUI.Security;
 /// <summary>Builds the CSP Level 3 policy header value for a request.</summary>
 public static class CspPolicy
 {
+    private static readonly string[] SelfSource = ["'self'"];
+
     /// <summary>Builds the policy. The nonce authorises the Blazor bootstrap script and the import map.</summary>
     public static string Build(string nonce, CspOptions options)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(nonce);
         ArgumentNullException.ThrowIfNull(options);
 
-        string styleSources = string.Join(' ', new[] { "'self'" }.Concat(options.StyleOrigins));
+        string styleSources = string.Join(' ', SelfSource.Concat(options.StyleOrigins));
         string fontSources = string.Join(' ', options.FontOrigins);
         string scriptSources = $"'self' 'nonce-{nonce}'";
 

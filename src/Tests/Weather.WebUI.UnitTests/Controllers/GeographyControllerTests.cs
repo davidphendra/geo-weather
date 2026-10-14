@@ -19,7 +19,7 @@ public sealed class GeographyControllerTests
             .Returns([new CountryDto("GB", "United Kingdom")]);
         var controller = new GeographyController(service);
 
-        ActionResult<IReadOnlyList<CountryDto>> result = await controller.GetCountries(null, CancellationToken.None);
+        ActionResult<IReadOnlyList<CountryDto>> result = await controller.GetCountriesAsync(null, CancellationToken.None);
 
         OkObjectResult ok = Assert.IsType<OkObjectResult>(result.Result);
         IReadOnlyList<CountryDto> countries = Assert.IsAssignableFrom<IReadOnlyList<CountryDto>>(ok.Value);
@@ -34,7 +34,7 @@ public sealed class GeographyControllerTests
         service.GetCountriesAsync(Arg.Any<string?>(), Arg.Any<CancellationToken>()).Returns([]);
         var controller = new GeographyController(service);
 
-        await controller.GetCountries("united", CancellationToken.None);
+        await controller.GetCountriesAsync("united", CancellationToken.None);
 
         await service.Received(1).GetCountriesAsync("united", Arg.Any<CancellationToken>());
     }

@@ -11,12 +11,3 @@ public sealed record WeatherReportModel(
     decimal VisibilityMeters,
     decimal PressureHectopascals,
     string SkyCondition);
-
-/// <summary>City and country the observation belongs to.</summary>
-public sealed record LocationModel(string City, string Country);
-
-/// <summary>A temperature in both units.</summary>
-public sealed record TemperatureModel(decimal Celsius, decimal Fahrenheit);
-
-/// <summary>Wind speed, direction and cardinal label.</summary>
-public sealed record WindModel(decimal SpeedMetersPerSecond, int? DirectionDegrees, string Cardinal);

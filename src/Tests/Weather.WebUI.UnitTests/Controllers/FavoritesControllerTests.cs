@@ -26,7 +26,7 @@ public sealed class FavoritesControllerTests
         service.AddFavoriteAsync("London", "GB", Arg.Any<CancellationToken>()).Returns(favorite);
         var controller = new FavoritesController(service);
 
-        ActionResult<FavoriteCityDto> result = await controller.AddFavorite(
+        ActionResult<FavoriteCityDto> result = await controller.AddFavoriteAsync(
             new AddFavoriteRequest("London", "GB"),
             CancellationToken.None);
 
@@ -42,7 +42,7 @@ public sealed class FavoritesControllerTests
         service.GetFavoritesAsync(Arg.Any<CancellationToken>()).Returns([Favorite()]);
         var controller = new FavoritesController(service);
 
-        ActionResult<IReadOnlyList<FavoriteCityDto>> result = await controller.GetFavorites(CancellationToken.None);
+        ActionResult<IReadOnlyList<FavoriteCityDto>> result = await controller.GetFavoritesAsync(CancellationToken.None);
 
         OkObjectResult ok = Assert.IsType<OkObjectResult>(result.Result);
         IReadOnlyList<FavoriteCityDto> favorites = Assert.IsAssignableFrom<IReadOnlyList<FavoriteCityDto>>(ok.Value);
