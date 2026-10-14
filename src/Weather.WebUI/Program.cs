@@ -10,6 +10,7 @@ using Weather.Modules.Weather.Infrastructure;
 using Weather.WebUI.Api.ErrorHandling;
 using Weather.WebUI.Components;
 using Weather.WebUI.Configuration;
+using Weather.WebUI.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,7 @@ builder.Services.AddRazorComponents()
 // REST API.
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+builder.Services.AddCsp(builder.Configuration);
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails(options => options.CustomizeProblemDetails = context =>
 {
@@ -93,23 +95,44 @@ else
 
 app.UseHttpsRedirection();
 
+// CSP Level 3 on every response; registered before static files/endpoints so all pages are covered.
+app.UseCsp();
+
 // API requests get the RFC 9457 Problem Details handler; UI requests fall through
 // to the Blazor /Error handler above.
 app.UseWhen(
     context => context.Request.Path.StartsWithSegments("/api"),
     api => api.UseExceptionHandler());
 
-// Keep the Blazor not-found page off the API surface so API 404s stay JSON.
+// Keep the Blazor not-found page off the API and CSP-report surfaces so their non-HTML responses stay intact.
 app.UseWhen(
-    context => !context.Request.Path.StartsWithSegments("/api"),
+    context => !context.Request.Path.StartsWithSegments("/api")
+               && !context.Request.Path.StartsWithSegments("/_csp"),
     ui => ui.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true));
 
 app.UseAntiforgery();
 
 app.MapStaticAssets();
 app.MapControllers();
+
+// CSP violation sink (unauthenticated). Report bodies are no-cors POSTs; no CORS policy is needed.
+app.MapPost("/_csp/report", (HttpRequest request, ILoggerFactory loggerFactory) =>
+{
+    const long maxReportBytes = 16 * 1024;
+    if (request.ContentLength is > maxReportBytes)
+    {
+        return Results.StatusCode(StatusCodes.Status413PayloadTooLarge);
+    }
+
+    loggerFactory.CreateLogger("CspReport").LogWarning(
+        "CSP violation reported: contentType={ContentType} length={Length}",
+        request.ContentType,
+        request.ContentLength);
+
+    return Results.NoContent();
+}).DisableAntiforgery();
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+    .AddInteractiveServerRenderMode(o => o.ContentSecurityFrameAncestorsPolicy = "'none'");
 
 app.Run();
 
