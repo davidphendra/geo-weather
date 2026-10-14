@@ -28,6 +28,25 @@ Never ignore a red gate. Never leave a discovered defect unlogged.
 | "not introduced by my changes" | Ownership follows the gate, not the diff. |
 | "out of scope" | Log it or fix it; do not wave it away. |
 
+## C# Standards
+
+All C# code MUST follow `docs/engineering/csharp-standards.md` (mandatory) in addition to SOLID, DRY, and KISS.
+Machine-enforced by `Directory.Build.props` (`Nullable`, `TreatWarningsAsErrors`, `AnalysisLevel=latest`,
+`EnforceCodeStyleInBuild`) and `.editorconfig`.
+
+Highlights you MUST apply:
+
+- `net10.0` with the framework's default language version — NEVER `<LangVersion>latest</LangVersion>`.
+- Nullable enabled; model optionals explicitly; NEVER use the null-forgiving operator to hide uncertainty.
+- File-scoped namespaces; one type per file; `sealed` classes not meant for inheritance.
+- Records for value data/DTOs; classes for identity/lifecycle; interfaces only at real boundaries.
+- Guard clauses at boundaries (`ArgumentNullException.ThrowIfNull`, `ArgumentException.ThrowIfNullOrWhiteSpace`,
+  `ArgumentOutOfRangeException.ThrowIfNegative`); enforce invariants in the domain; do not duplicate validation.
+- `ILogger<T>` structured logging; NEVER log secrets, tokens, or API keys.
+- Async for I/O with `CancellationToken`; no `.Result`/`.Wait()`; no `async void`; no blind `ConfigureAwait(false)`.
+- External I/O: timeouts, cancellation, bounded transient retries with jitter (`Microsoft.Extensions.Http.Resilience`).
+- `decimal` for exact arithmetic; UTC/`DateTimeOffset` for instants.
+
 ## Modular Monolith Conventions
 
 One deployable unit. A **module = bounded context = its own assembly set** + its own composition root + its own

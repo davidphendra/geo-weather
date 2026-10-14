@@ -48,6 +48,26 @@ Modular monolith sliced by bounded context (reference: kgrzybek/modular-monolith
 - One clarifying question beats a wrong assumption baked into 200 lines.
 <!-- END bigpowers:project -->
 
+<!-- BEGIN bigpowers:csharp-standards -->
+## C# Engineering Standards (mandatory)
+Full reference: `docs/engineering/csharp-standards.md`. Enforced by `Directory.Build.props` (`Nullable`, `TreatWarningsAsErrors`, `AnalysisLevel=latest`, `EnforceCodeStyleInBuild`) and `.editorconfig`.
+
+- Target `net10.0` with the framework's default language version. NEVER set `<LangVersion>latest</LangVersion>`.
+- Enable nullable reference types. Model optional data explicitly. NEVER use the null-forgiving operator to hide uncertainty.
+- Use `sealed` on classes not designed for inheritance. One type per file. File-scoped namespaces.
+- Use records for value-oriented data/DTOs; classes for identity or mutable lifecycle; interfaces only at real boundaries.
+- Naming: PascalCase types/members, camelCase locals/params, `_camelCase` private fields, `I` interfaces, `Async` suffix.
+- Validate untrusted input at boundaries with guard clauses (`ArgumentNullException.ThrowIfNull`, `ArgumentException.ThrowIfNullOrWhiteSpace`, `ArgumentOutOfRangeException.ThrowIfNegative`). Enforce invariants in the domain. Do not duplicate validation across layers.
+- Exceptions: specific types, never swallowed, never for expected control flow; preserve inner exceptions; `ProblemDetails` at the API; no stack traces or secrets to clients.
+- Async: `async`/`await` for all I/O; propagate `CancellationToken`; no `.Result`/`.Wait()`; no `Task.Run` over I/O; no `async void`; no unbounded fire-and-forget; no blind `ConfigureAwait(false)` in ASP.NET Core.
+- DI: correct lifetimes; never capture scoped in singleton; `IHttpClientFactory` for HTTP; dispose what you own.
+- Logging: `ILogger<T>` with structured properties; NEVER log secrets, tokens, or API keys; use appropriate levels.
+- EF Core: async + cancellation; parameterized only; project only needed columns; `AsNoTracking()` for reads; no N+1.
+- External I/O: timeouts, cancellation, retry only transient failures with bounded backoff + jitter; prefer `Microsoft.Extensions.Http.Resilience`.
+- Tests: behaviour-focused, deterministic, isolated; cover boundaries and failure paths; never weaken a test to get green.
+- Do not refactor unrelated code. Report commands run and results honestly; never claim a build/test passed unless it was actually run.
+<!-- END bigpowers:csharp-standards -->
+
 <!-- BEGIN bigpowers:context-routing -->
 ## Context routing
 | Path | Read first |
