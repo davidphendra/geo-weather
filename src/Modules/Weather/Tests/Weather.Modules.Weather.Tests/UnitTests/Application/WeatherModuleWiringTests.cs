@@ -3,8 +3,11 @@ using global::Weather.Modules.Weather.Infrastructure;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+
+using NSubstitute;
 
 namespace Weather.Modules.Weather.Tests.UnitTests.Application;
 
@@ -22,9 +25,13 @@ public sealed class WeatherModuleWiringTests
             })
             .Build();
 
+        IHostEnvironment environment = Substitute.For<IHostEnvironment>();
+        environment.EnvironmentName.Returns("Development");
+
         var services = new ServiceCollection();
         services.AddSingleton<ILoggerFactory>(NullLoggerFactory.Instance);
         services.AddSingleton(typeof(ILogger<>), typeof(NullLogger<>));
+        services.AddSingleton(environment);
         services.AddWeatherModule(configuration);
 
         using ServiceProvider provider = services.BuildServiceProvider();

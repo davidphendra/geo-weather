@@ -27,6 +27,8 @@ public static class WeatherModuleExtensions
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
+        services.AddSingleton<IValidateOptions<OpenWeatherOptions>, OpenWeatherOptionsValidator>();
+
         services.AddTransient<OpenWeatherApiKeyHandler>();
 
         services.AddHttpClient<IWeatherProvider, OpenWeatherMapService>((serviceProvider, httpClient) =>

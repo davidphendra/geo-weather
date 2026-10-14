@@ -9,6 +9,6 @@ public sealed class OpenWeatherOptions
     [Required]
     public Uri BaseUrl { get; init; } = new("https://api.openweathermap.org/");
 
-    [Required]
+    // Never committed. Required outside Development — enforced by OpenWeatherOptionsValidator (SECURITY_PLAN).
     public string ApiKey { get; init; } = string.Empty;
 }

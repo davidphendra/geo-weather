@@ -34,6 +34,20 @@ Full runbook: `docs/operations/observability.md`. Metric catalog: `specs/tech-ar
 Rules: instruments live once in `Weather.BuildingBlocks.Application`; modules never reference an OpenTelemetry
 package; metric attributes are bounded (no city names, ids, URLs, or PII); never log secrets.
 
+## Local setup — OpenWeather API key
+
+The key is never committed. `OpenWeather:BaseUrl` has a default in `appsettings.json`; supply the key per
+environment:
+
+| Environment | How |
+|-------------|-----|
+| Development | `dotnet user-secrets set "OpenWeather:ApiKey" "<key>" --project src/Weather.WebUI` |
+| Any | environment variable `OpenWeather__ApiKey=<key>` |
+| Deployed | App Service configuration / Key Vault reference (`OpenWeather__ApiKey`) |
+
+Outside Development the host **fails fast** at startup when the key is missing. In Development it starts and
+weather requests return `502 DEPENDENCY_UNAVAILABLE`, so UI work needs no key.
+
 ## Architecture
 Modular monolith sliced by bounded context (reference: kgrzybek/modular-monolith-with-ddd). BuildingBlocks (`Weather.BuildingBlocks.{Domain,Application,Infrastructure}`) hold shared DDD/infra primitives. Each module is a full assembly set: `Weather.Modules.<Module>.{Domain, Application, Infrastructure, IntegrationEvents}` with its own composition root and data. Modules: **Geography**, **Weather** (core), **Favorites**, **Notes**. Each module is internally Onion-layered and uses CQRS (MediatR). A single thin `Weather.WebUI` host serves both the Blazor UI and one REST endpoint area per module, and calls each module through its `I<Module>Service` interface. The UI consumes that API over HTTP. See `specs/adr/0005`, `0006`, and `0012`.
 

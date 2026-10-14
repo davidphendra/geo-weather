@@ -5,6 +5,8 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
+        <!-- Enables `dotnet user-secrets` for OpenWeather:ApiKey in Development. No secret is committed. -->
+        <UserSecretsId>0f3c9b2e-7d41-4a8c-9e2b-6c5f1a8d3b74</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>

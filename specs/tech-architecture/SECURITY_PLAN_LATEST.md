@@ -10,9 +10,13 @@
 | SQLite file | Local | Parameterized EF queries only (no raw SQL string concatenation) |
 
 ## Key handling
-- `OpenWeather:ApiKey` is read from configuration. In development, `dotnet user-secrets`.
+- `OpenWeather:ApiKey` is read from configuration. In development, `dotnet user-secrets`
+  (`Weather.WebUI.csproj` carries a `UserSecretsId`); any environment can use `OpenWeather__ApiKey`;
+  deployed environments use an App Service setting / Key Vault reference.
 - The key is never logged and never returned by any endpoint.
-- `appsettings.json` ships an empty placeholder.
+- `appsettings.json` ships `OpenWeather:BaseUrl` only — no key, not even an empty one.
+- `OpenWeatherOptionsValidator` requires the key outside Development (fail fast); Development starts and
+  degrades weather calls to `502 DEPENDENCY_UNAVAILABLE` so UI work needs no key.
 
 ## Dependency risks
 - Third-party runtime packages: MediatR, FluentValidation, EF Core providers, OpenAPI, ArchUnitNET (test-only).
