@@ -1,0 +1,21 @@
+id: e06
+title: WebUI Front-End
+wsjf: 6.5
+total_bcps: 10
+status: todo
+note: Reshape the scaffolded Blazor Weather.WebUI into a real client that consumes only the API HTTP contract.
+stories:
+  - id: e06s01
+    title: Country & city dropdowns wired to the API
+    bcps: 5
+    status: todo
+    spec: e06s01-dropdowns.md
+    tasks: e06s01-tasks.yaml
+    delta: ADDED
+  - id: e06s02
+    title: Weather render + save-note form with feedback
+    bcps: 5
+    status: todo
+    spec: e06s02-weather-note.md
+    tasks: e06s02-tasks.yaml
+    delta: ADDED

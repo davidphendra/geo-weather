@@ -1,0 +1,16 @@
+phase: discover
+steps:
+  survey-context: done
+  seed-conventions: done
+  scope-work: done
+  research-first: pending
+  elaborate-spec: done            # requirement text is detailed and unambiguous in intent
+  plan-release: done
+  slice-tasks: done
+  plan-work: done                 # detailed per-story steps written into capsules
+next_skill: kickoff-branch
+blocked_on:
+  - decisions_to_confirm in specs/product/SCOPE_LATEST.yaml (5 open decisions)
+notes: >
+  Planning artifacts complete. Implementation MUST NOT begin until the five decisions in
+  SCOPE_LATEST.yaml constraints.decisions_to_confirm are confirmed by the user.

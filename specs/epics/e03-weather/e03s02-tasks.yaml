@@ -1,0 +1,37 @@
+story_id: e03s02
+title: OpenWeatherMap provider behind IWeatherService port
+status: failing
+bcps: 4
+module: M2
+tasks:
+  - id: 1
+    description: "Add IWeatherService port and WeatherProviderException in Weather.Application.Abstractions"
+    verify: "dotnet build Weather.sln --warnaserror"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["Weather", "unit"] }
+  - id: 2
+    description: "Add provider DTOs + OpenWeatherMapper (imperial -> domain, mph -> m/s)"
+    verify: "dotnet test src/Modules/Weather/Tests --filter Category=WeatherMapping"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Weather", "unit"] }
+  - id: 3
+    description: "Add OpenWeatherMapService typed HttpClient with options, 10s timeout, bounded retry"
+    verify: "dotnet test src/Modules/Weather/Tests --filter Category=WeatherProvider"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Weather", "integration"] }
+  - id: 4
+    description: "Add HttpMessageHandler-stub tests: success, non-200, malformed JSON, timeout"
+    verify: "dotnet test src/Modules/Weather/Tests --filter Category=WeatherProvider"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Weather", "integration"] }
+  - id: 5
+    description: "Assert API key never appears in exception messages; register typed client in WeatherModule"
+    verify: "dotnet test src/Modules/Weather/Tests --filter Category=WeatherProviderSecrets"
+    risk: P0
+    security: medium
+    status: failing
+    allure: { severity: critical, categories: ["Weather", "Security Review"] }

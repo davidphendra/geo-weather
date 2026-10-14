@@ -1,0 +1,19 @@
+id: e00
+title: Repository Layout Scaffolding
+wsjf: 10.0
+total_bcps: 8
+status: done
+reference: kgrzybek/modular-monolith-with-ddd
+note: >
+  LAYOUT ONLY. Create every project, folder, project reference, build config file, and test project
+  for the modular monolith, plus a compile/test gate. No feature code, no domain types, no DbContexts,
+  no handlers, no endpoints. This epic unblocks all others.
+  Scope boundary: an empty project builds; a business type belongs to e01+.
+stories:
+  - id: e00s01
+    title: Scaffold the modular-monolith repository layout (projects, references, solution, build config)
+    bcps: 8
+    status: done
+    spec: e00s01-repo-layout.md
+    tasks: e00s01-tasks.yaml
+    delta: ADDED

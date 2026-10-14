@@ -1,0 +1,23 @@
+id: e07
+title: Architecture & Offline Test Gates
+wsjf: 5.0
+total_bcps: 8
+status: todo
+note: >
+  Cross-cutting. Completes the executable architecture suite (per-module layers + cross-module isolation +
+  API isolation + domain immutability) and the offline end-to-end harness + coverage gate.
+stories:
+  - id: e07s01
+    title: Per-module + cross-module architecture test suite
+    bcps: 5
+    status: todo
+    spec: e07s01-architecture-tests.md
+    tasks: e07s01-tasks.yaml
+    delta: ADDED
+  - id: e07s02
+    title: Offline end-to-end harness (per-module contexts) + coverage gate
+    bcps: 3
+    status: todo
+    spec: e07s02-offline-harness.md
+    tasks: e07s02-tasks.yaml
+    delta: ADDED

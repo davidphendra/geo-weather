@@ -1,0 +1,84 @@
+story_id: e00s01
+title: Scaffold the modular-monolith repository layout (projects, references, solution, build config)
+status: done
+bcps: 8
+scope: layout-only
+tasks:
+  - id: 1
+    description: "Add root build config: global.json (SDK 10.0.401), Directory.Build.props (Nullable, ImplicitUsings, TreatWarningsAsErrors, LangVersion), Directory.Packages.props (central package management), .editorconfig"
+    verify: "dotnet build Weather.sln --warnaserror"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["RepoLayout"] }
+  - id: 2
+    description: "Create Weather.BuildingBlocks.{Domain,Application,Infrastructure} empty projects with references App->Domain, Infra->App+Domain"
+    verify: "dotnet build src/BuildingBlocks/Weather.BuildingBlocks.Infrastructure --warnaserror"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["RepoLayout", "BuildingBlocks"] }
+  - id: 3
+    description: "Create the Geography module assembly set (Domain/Application/Infrastructure/IntegrationEvents) with the standard intra-module references"
+    verify: "dotnet build src/Modules/Geography/Weather.Modules.Geography.Infrastructure/Weather.Modules.Geography.Infrastructure.csproj --warnaserror"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["RepoLayout", "ModularMonolith"] }
+  - id: 4
+    description: "Create the Weather module assembly set with the standard intra-module references"
+    verify: "dotnet build src/Modules/Weather/Weather.Modules.Weather.Infrastructure/Weather.Modules.Weather.Infrastructure.csproj --warnaserror"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["RepoLayout", "ModularMonolith"] }
+  - id: 5
+    description: "Create the Favorites module assembly set and reference Weather.Modules.Geography.IntegrationEvents from Favorites.Application (only cross-module ref)"
+    verify: "dotnet build src/Modules/Favorites/Weather.Modules.Favorites.Infrastructure/Weather.Modules.Favorites.Infrastructure.csproj --warnaserror"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["RepoLayout", "ModularMonolith"] }
+  - id: 6
+    description: "Create the Notes module assembly set and reference Weather.Modules.Geography.IntegrationEvents from Notes.Application (only cross-module ref)"
+    verify: "dotnet build src/Modules/Notes/Weather.Modules.Notes.Infrastructure/Weather.Modules.Notes.Infrastructure.csproj --warnaserror"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["RepoLayout", "ModularMonolith"] }
+  - id: 7
+    description: "Create the Weather.Api host project with a bare Program.cs and references to each module's Application + Infrastructure and BuildingBlocks.Infrastructure"
+    verify: "dotnet build src/Weather.Api/Weather.Api.csproj --warnaserror"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["RepoLayout", "Host"] }
+  - id: 8
+    description: "Move Weather.WebUI under src/Weather.WebUI and repair its project references"
+    verify: "dotnet build src/Weather.WebUI/Weather.WebUI.csproj --warnaserror"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["RepoLayout"] }
+  - id: 9
+    description: "Create the 7 test projects — Weather.Modules.<M>.Tests (4, with UnitTests/IntegrationTests/ArchTests folders), Weather.ArchTests, Weather.IntegrationTests, Weather.BuildingBlocks.Tests — with references and one placeholder smoke test each"
+    verify: "dotnet test Weather.sln"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["RepoLayout", "Testing"] }
+  - id: 10
+    description: "Add every project to Weather.sln (28 projects: 21 source + 7 test)"
+    verify: "dotnet sln Weather.sln list | wc -l"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["RepoLayout"] }
+  - id: 11
+    description: "Add scripts/check-layout.sh guard: no module references another module's Domain/Application/Infrastructure; only IntegrationEvents may cross"
+    verify: "bash scripts/check-layout.sh"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["RepoLayout", "ModularMonolith"] }
+  - id: 12
+    description: "Full layout gate: build + format + placeholder tests all green"
+    verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["RepoLayout"] }
+  - id: 13
+    description: "Confirm no feature code was added (BuildingBlocks/modules contain no domain types, DbContexts, handlers, or endpoints)"
+    verify: "! grep -rEl 'class .*(DbContext|Handler|AggregateRoot|ICommand|IQuery)' src/BuildingBlocks src/Modules --include=*.cs"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["RepoLayout"] }

@@ -1,0 +1,35 @@
+# Build
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+artifacts/
+
+# Test results
+TestResults/
+*.trx
+coverage*.json
+coverage*.xml
+
+# EF / SQLite local data
+*.db
+*.db-shm
+*.db-wal
+App_Data/
+
+# Secrets
+appsettings.*.local.json
+*.user
+.env
+
+# IDE
+.vs/
+.idea/
+.vscode/
+*.user
+
+# OS
+.DS_Store
+
+# Node (WebUI tooling, if any)
+node_modules/

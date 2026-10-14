@@ -1,0 +1,13 @@
+id: e08
+title: Documentation & Repository Tooling
+wsjf: 3.0
+total_bcps: 3
+status: todo
+stories:
+  - id: e08s01
+    title: README (modular monolith), AI instructions finalization, GitHub-ready repo
+    bcps: 3
+    status: todo
+    spec: e08s01-readme.md
+    tasks: e08s01-tasks.yaml
+    delta: ADDED

@@ -1,0 +1,15 @@
+vision:
+  name: Weather
+  statement: >
+    A small, production-grade weather application that lets a user choose a country and
+    city, see trustworthy current-weather details, and save personal notes or favorite
+    cities — built on an Onion + CQRS foundation that demonstrates clean boundaries,
+    offline-testable behavior, and clear documentation.
+  users:
+    - A person who wants a quick, readable current-weather snapshot for a chosen city.
+    - A developer/evaluator assessing architecture, CQRS, EF Core usage, and test quality.
+  north_star_metric: All four read endpoints and both write endpoints pass offline integration tests with zero live network calls.
+  guiding_principles:
+    - Correctness at the domain boundary (temperature conversion, dew point) is unit-tested.
+    - External providers are hidden behind interfaces and never called in tests.
+    - Architecture boundaries are enforced by executable tests, not convention alone.

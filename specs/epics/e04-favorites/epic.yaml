@@ -1,0 +1,24 @@
+id: e04
+title: Favorites Module
+wsjf: 6.0
+total_bcps: 8
+status: todo
+module: M3
+note: >
+  Bounded context for saved cities. Own schema (favorites.db) and own composition root. Consumes
+  CityAddedIntegrationEvent from Geography into a local City projection — the only legal coupling.
+stories:
+  - id: e04s01
+    title: Favorites — FavoriteCity aggregate + AddFavoriteCity + POST endpoint
+    bcps: 4
+    status: todo
+    spec: e04s01-favorite-city.md
+    tasks: e04s01-tasks.yaml
+    delta: ADDED
+  - id: e04s02
+    title: Favorites — consume CityAddedIntegrationEvent into a local City projection
+    bcps: 4
+    status: todo
+    spec: e04s02-city-projection.md
+    tasks: e04s02-tasks.yaml
+    delta: ADDED

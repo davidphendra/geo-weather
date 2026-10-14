@@ -1,0 +1,47 @@
+story_id: e01s02
+title: Module template + InMemory Events Bus + Outbox + cross-module arch tests
+status: failing
+bcps: 5
+tasks:
+  - id: 1
+    description: "Create the Geography module skeleton (Domain/Application/Infrastructure/IntegrationEvents) with IGeographyModule, GeographyModule, GeographyContext"
+    verify: "dotnet build Weather.sln --warnaserror"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["ModularMonolith"] }
+  - id: 2
+    description: "Add IInMemoryEventsBus + InMemoryEventsBus to BuildingBlocks.Infrastructure"
+    verify: "dotnet test src/Tests/ArchTests --filter Category=EventsBus"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["ModularMonolith", "unit"] }
+  - id: 3
+    description: "Add per-module Outbox + domain-event dispatcher + background publisher"
+    verify: "dotnet test src/Modules/Geography/Tests --filter Category=Outbox"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["ModularMonolith", "integration"] }
+  - id: 4
+    description: "Host initializes modules; add GET /api/health/modules"
+    verify: "dotnet test src/Tests/IntegrationTests --filter Category=ModuleInit"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["Host", "integration"] }
+  - id: 5
+    description: "ModuleTests: a module must not depend on another module except IntegrationEvents"
+    verify: "dotnet test src/Tests/ArchTests --filter Category=ModuleIsolation"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Architecture", "ModularMonolith"] }
+  - id: 6
+    description: "ApiTests: each API area is isolated to one module"
+    verify: "dotnet test src/Tests/ArchTests --filter Category=ApiIsolation"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Architecture", "ModularMonolith"] }
+  - id: 7
+    description: "Commit specs/tech-architecture/modules.map matching the implemented modules"
+    verify: "test -f specs/tech-architecture/modules.map && grep -q 'M1 Geography' specs/tech-architecture/modules.map"
+    risk: P3
+    status: failing
+    allure: { severity: minor, categories: ["Docs", "ModularMonolith"] }

@@ -1,0 +1,108 @@
+feature_name: Weather application (ASP.NET Core API + Blazor client)
+core_value: >
+  A user picks a country and city, sees current weather (C and F, wind, visibility,
+  pressure, sky, dew point, humidity), and can persist a weather note or favorite city.
+
+summary: >
+  This initiative delivers a production-grade ASP.NET Core Web API plus a lightweight Blazor
+  WebUI client. The backend is a modular monolith: one deployable unit divided into four bounded
+  contexts — Geography, Weather, Favorites, Notes — each implemented as a full assembly set
+  (Domain / Application / Infrastructure / IntegrationEvents) with its own composition root and
+  its own data schema, following kgrzybek/modular-monolith-with-ddd. Each module is internally
+  Onion-layered and uses CQRS via MediatR. Modules communicate only asynchronously through an
+  in-memory Events Bus using integration events; a module may reference another module only
+  through its IntegrationEvents assembly. Weather is proxied from OpenWeatherMap behind an
+  IWeatherService abstraction, with Fahrenheit-to-Celsius conversion and dew-point derivation
+  owned by the Weather domain. All automated tests run offline with zero live network calls. The
+  repository also ships an AI instructions file and a README explaining architecture and decisions.
+
+in_scope:
+  - id: S0
+    description: Repository layout scaffolding — all projects, folders, project references, build config, solution wiring, and test projects. LAYOUT ONLY, no feature code.
+    maps_to: e00
+  - id: S1
+    description: BuildingBlocks (Domain/Application/Infrastructure) + thin API host + module template + InMemory Events Bus + Outbox.
+    maps_to: e01
+  - id: S2
+    description: Geography module — countries and cities catalog, its own schema, publishes CityAddedIntegrationEvent.
+    maps_to: e02
+  - id: S3
+    description: Weather module — weather domain (F->C conversion, dew point), OpenWeatherMap IWeatherService, GET /api/weather/{cityName}.
+    maps_to: e03
+  - id: S4
+    description: Favorites module — save favorite cities, own schema, consumes CityAddedIntegrationEvent into a local City projection.
+    maps_to: e04
+  - id: S5
+    description: Notes module — save weather notes, own schema, consumes CityAddedIntegrationEvent into a local City projection.
+    maps_to: e05
+  - id: S6
+    description: Blazor WebUI — country dropdown, city dropdown, weather render, and a save action with feedback.
+    maps_to: e06
+  - id: S7
+    description: Automated tests — domain unit tests per module, CQRS handler tests, offline API integration tests, per-module + cross-module architecture tests.
+    maps_to: e07
+  - id: S8
+    description: Documentation & tooling — README, CLAUDE.md/CONVENTIONS.md AI instructions, module map, .gitignore, GitHub-ready repo.
+    maps_to: e08
+
+out_of_scope:
+  - item: User accounts, authentication, and authorization (a UserAccess module).
+    reason: Deferred — the reference has UserAccess because it authenticates; this app has no login requirement.
+  - item: Alerts / Notifications module.
+    reason: Not in requirements.
+  - item: Forecast / WeatherHistory module.
+    reason: Current conditions only.
+  - item: Caching layer for weather responses.
+    reason: Deferred — invalidation complexity with no requirement.
+  - item: External message broker (RabbitMQ/Kafka) for the Events Bus.
+    reason: Deferred — the reference uses an in-memory Events Bus inside the monolith; a broker is only needed on extraction.
+  - item: Physical extraction of any module into a separate service or database.
+    reason: Deferred — per-module files and IntegrationEvents preserve the path, but no deployment need exists.
+  - item: Rate limiting and circuit breaker for the upstream provider.
+    reason: Deferred — single provider, low volume; timeout + bounded retry suffice.
+  - item: Production deployment, containers, CI/CD beyond a green build.
+    reason: Deferred — out of the assessment's build/test focus.
+
+constraints:
+  tech:
+    - .NET 10 (SDK 10.0.401 present), ASP.NET Core, Blazor.
+    - Modular monolith sliced by bounded context: modules are assembly sets with their own composition roots.
+    - MediatR for CQRS inside each module.
+    - FluentValidation for request validation.
+    - EF Core with SQLite, one database file per persisting module.
+    - In-memory Events Bus + per-module Outbox for async module integration.
+    - NetArchTest/ArchUnitNET enforces per-module layers and cross-module isolation.
+    - OpenWeatherMap as the only live weather provider; key via configuration/user-secrets.
+    - Automated tests must run offline with zero live network calls.
+  time: Assessment-scoped; small sequential delivery.
+  resources: Single developer with an AI agent.
+  decisions_to_confirm:
+    - Module slicing: adopt the reference module-per-assembly structure (recommended) vs keep modules as folders inside shared layer projects.
+    - Module set: four bounded contexts — Geography, Weather, Favorites, Notes (recommended) vs merging Favorites+Notes into one WeatherJournal context.
+    - Granularity fallback: one assembly per module with Domain/Application/Infrastructure as folders + a separate IntegrationEvents assembly (fewer projects) vs the reference's four assemblies per module.
+    - Test granularity: LOCKED — 7 test projects (one per module with UnitTests/IntegrationTests/ArchTests folders + Weather.ArchTests + Weather.IntegrationTests + Weather.BuildingBlocks.Tests).
+    - Front-end: keep the existing Blazor WebUI (recommended) vs replace with plain JS/React.
+    - Persistence: one SQLite file per module (recommended) vs a single shared SQLite file.
+    - Dew point source: derive from temperature + humidity via the Magnus formula (recommended, offline-testable) vs require OpenWeatherMap One Call 3.0.
+    - MediatR version: pin 12.x (recommended, Apache-2.0) vs v13 (commercial license change).
+
+success_criteria:
+  - Each module is a separate assembly set with its own composition root and its own DbContext; no module references another module except through IntegrationEvents.
+  - Modules communicate only asynchronously via the Events Bus; a cross-module direct call fails an architecture test.
+  - Read endpoints (countries, cities, weather) return correct data; Geography/Favorites/Notes reads use AsNoTracking.
+  - POST endpoints persist in the owning module's context and return the created identifier (HTTP 201 + id).
+  - Temperature conversion is correct at freezing, boiling, negative, and -40 equilibrium points.
+  - Weather payload includes location, UTC time, wind speed/direction, visibility, pressure, sky condition, temperature in F and C, dew point, relative humidity.
+  - Domain assemblies have no reference to EF Core, ASP.NET Core, or Infrastructure.
+  - All tests pass with network disabled.
+  - README explains the modular monolith (bounded contexts, module slicing, integration events) and setup/build/run/test; AI instructions file exists at repo root.
+
+references:
+  - specs/product/VISION_LATEST.yaml
+  - specs/adr/0002-sqlite-and-inmemory-persistence.md
+  - specs/adr/0003-weather-provider-and-dew-point.md
+  - specs/adr/0004-mediatr-version-and-licensing.md
+  - specs/adr/0005-modular-monolith-and-modules.md
+  - specs/adr/0006-per-module-data-isolation.md
+  - specs/tech-architecture/modules.map
+  - specs/tech-architecture/TEST_PLAN_LATEST.md

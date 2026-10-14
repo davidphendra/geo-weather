@@ -1,0 +1,82 @@
+session:
+  workflow_mode: solo-git
+  updated_at: "2025-10-13T00:00:00Z"
+
+project_cycle:
+  current_phase: 3               # PLAN complete; BUILD not started
+  completed_phases: [1, 2]
+  mode: standard
+
+active_epic: null
+active_story: null
+active_flow: null
+
+epic_cycle:
+  step: null
+  story_bcps: null
+  audit_result: null
+  fast_mode: false
+
+handoff:
+  next_skill: build-epic
+  context: >
+    e00s01 Repository Layout Scaffolding is DONE and green (28 projects, build/format/test pass,
+    check-layout.sh clean, no feature code). Next: e01s01 (BuildingBlocks Domain/Application/
+    Infrastructure content) — but only when the user says go. No git operations (user asked not to
+    commit). 7 decisions still pending confirmation (SCOPE_LATEST.yaml
+    constraints.decisions_to_confirm).
+
+architecture:
+  style: "Modular monolith (bounded contexts) + CQRS + Onion-per-module"
+  reference: "kgrzybek/modular-monolith-with-ddd"
+  modules:
+    - { id: M1, name: Geography, assemblies: 4, dbcontext: GeographyContext, db: geography.db, publishes: [CityAddedIntegrationEvent] }
+    - { id: M2, name: Weather,   assemblies: 4, dbcontext: null,              db: null,         consumes: [] }
+    - { id: M3, name: Favorites, assemblies: 4, dbcontext: FavoritesContext,  db: favorites.db, consumes: [CityAddedIntegrationEvent] }
+    - { id: M4, name: Notes,     assemblies: 4, dbcontext: NotesContext,      db: notes.db,     consumes: [CityAddedIntegrationEvent] }
+  building_blocks: [Domain, Application, Infrastructure]
+  async_edges: ["M1->M3", "M1->M4"]
+  integration_style: "async integration events + in-memory Events Bus + Outbox"
+  data_isolation: "one SQLite file per persisting module (effectively level 3)"
+  enforcement: ["compiler (assembly-per-module)", "NetArchTest: ModuleTests + LayersTests + ApiTests"]
+  deviations:
+    - "No per-module Autofac container; Microsoft DI with per-module Add<Module>Module()."
+    - "In-memory Events Bus (no broker)."
+    - "SQLite instead of SQL Server."
+
+decisions:
+  - { id: ADR-0001, title: "Onion layout (SUPERSEDED by ADR-0005)", status: superseded }
+  - { id: ADR-0002, title: SQLite for the app, EF Core InMemory for tests, status: proposed }
+  - { id: ADR-0003, title: OpenWeatherMap integration and dew-point derivation, status: proposed }
+  - { id: ADR-0004, title: MediatR version and licensing posture, status: proposed }
+  - { id: ADR-0005, title: "Modular monolith: bounded contexts, modules, and repo slicing", status: proposed }
+  - { id: ADR-0006, title: "Per-module data isolation and schemas", status: proposed }
+
+risks:
+  - id: R1
+    description: OWM Current Weather 2.5 payload lacks dew point.
+    mitigation: Derive via the Magnus formula in the Weather domain (ADR-0003).
+  - id: R2
+    description: OWM API key required for live runs; tests must stay offline.
+    mitigation: Stub IWeatherService + HttpMessageHandler(JSON fixtures); user-secrets for live runs.
+  - id: R3
+    description: Existing WebUI is a default Blazor template.
+    mitigation: e06 reshapes Components/Pages/Weather.razor; e01 moves it under src/.
+  - id: R4
+    description: MediatR v13 licensing change.
+    mitigation: Pin MediatR 12.x (ADR-0004).
+  - id: R5
+    description: Project count grows (~24 src projects).
+    mitigation: Documented fallback in ADR-0005 (merge Domain/Application/Infrastructure per module).
+  - id: R6
+    description: Integration-event plumbing (outbox + background publisher) adds real work.
+    mitigation: Scoped in e01s02, e02s03, e04s02, e05s02; in-memory bus keeps it testable.
+  - id: R7
+    description: Seeded reference data and integration-event timing.
+    mitigation: Seed writes CityAddedIntegrationEvent to the Geography outbox; background publisher delivers after startup; direct-projection seeding documented as a pragmatic alternative.
+  - id: R8
+    description: Weather independence assumes OWM resolves city names.
+    mitigation: Call q={city},{country}; fall back to a Weather-local city projection only if provider resolution proves unreliable.
+
+release:
+  last_tag: null

@@ -1,0 +1,30 @@
+# Security Plan
+
+## Surface area
+| Surface | Exposure | Mitigation |
+|---------|----------|------------|
+| `GET /api/*` | Public read | Input validation on route params; no secrets in responses |
+| `POST /api/weather/notes` | Public write | FluentValidation (max length, non-empty); ProblemDetails on rejection |
+| `POST /api/cities/favorites` | Public write | Uniqueness constraint (city, country); idempotent conflict → 409 |
+| Upstream OpenWeatherMap call | Outbound | API key from config/user-secrets; timeout; bounded retry |
+| SQLite file | Local | Parameterized EF queries only (no raw SQL string concatenation) |
+
+## Key handling
+- `OpenWeather:ApiKey` is read from configuration. In development, `dotnet user-secrets`.
+- The key is never logged and never returned by any endpoint.
+- `appsettings.json` ships an empty placeholder.
+
+## Dependency risks
+- Third-party runtime packages: MediatR, FluentValidation, EF Core providers, OpenAPI, ArchUnitNET (test-only).
+- Slopcheck tags recorded in `tech-stack.md`; no `[SUS]`/`[SLOP]` runtime packages.
+
+## OWASP quick pass
+- **Injection:** EF Core parameterizes; no dynamic SQL.
+- **Broken auth:** no auth in scope; documented as a deferred item.
+- **Sensitive data exposure:** no PII stored; notes are user text with length limits.
+- **XXE/Deserialization:** `System.Text.Json` with explicit DTOs; no polymorphic deserialization.
+- **SSRF:** outbound URL is fixed by configuration, not user input.
+
+## Verification
+- `security-review` runs at epic start (build-epic step 0) for e03 and e04.
+- Tasks tagged `security: medium|high` must verify "no new security findings in affected paths".

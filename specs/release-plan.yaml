@@ -1,0 +1,80 @@
+release:
+  version: "0.1.0"          # non-authoritative mirror; CI/semantic-release owns the real tag
+  codename: "Bounded Contexts"
+  status: planning
+  semantic_release: true
+  bump_hint: minor
+  type: greenfield
+  style: "Modular Monolith (bounded contexts) + CQRS + Onion-per-module"
+  reference: "https://github.com/kgrzybek/modular-monolith-with-ddd"
+
+modules:
+  - { id: M1, name: Geography, kind: supporting, owns_data: true,  db: geography.db, publishes: [CityAddedIntegrationEvent] }
+  - { id: M2, name: Weather,   kind: core,       owns_data: false, db: null,         publishes: [] }
+  - { id: M3, name: Favorites, kind: supporting, owns_data: true,  db: favorites.db, publishes: [], consumes: [CityAddedIntegrationEvent] }
+  - { id: M4, name: Notes,     kind: supporting, owns_data: true,  db: notes.db,     publishes: [], consumes: [CityAddedIntegrationEvent] }
+  # async edges only: M1 -> M3, M1 -> M4. Weather is independent (provider geocodes by name).
+
+epics:
+  # WSJF order (highest first). score = (BV + TC + RR) / JobSize
+  - id: e00
+    title: Repository Layout Scaffolding
+    wsjf: 10.0
+    bcps: 8
+    capsule_dir: epics/e00-repo-layout
+    note: LAYOUT ONLY — projects, references, solution, build config, test projects. No feature code. Unblocks all others.
+  - id: e01
+    title: BuildingBlocks & Modular Host Skeleton
+    wsjf: 9.5
+    bcps: 10
+    capsule_dir: epics/e01-building-blocks
+    note: Shared DDD/infra primitives, thin API host, module template, InMemory Events Bus + Outbox, cross-module arch tests. Depends on the e00 layout.
+  - id: e03
+    title: Weather Module (core)
+    wsjf: 8.5
+    bcps: 13
+    capsule_dir: epics/e03-weather
+    note: Highest business value; independent of other modules.
+  - id: e02
+    title: Geography Module
+    wsjf: 7.5
+    bcps: 11
+    capsule_dir: epics/e02-geography
+    note: Foundation module; publishes CityAddedIntegrationEvent.
+  - id: e06
+    title: WebUI Front-End
+    wsjf: 6.5
+    bcps: 10
+    capsule_dir: epics/e06-webui
+    note: Consumes the API HTTP contract only.
+  - id: e04
+    title: Favorites Module
+    wsjf: 6.0
+    bcps: 8
+    capsule_dir: epics/e04-favorites
+    note: Own schema; consumes CityAddedIntegrationEvent into a local City projection.
+  - id: e05
+    title: Notes Module
+    wsjf: 5.5
+    bcps: 8
+    capsule_dir: epics/e05-notes
+    note: Own schema; consumes CityAddedIntegrationEvent into a local City projection.
+  - id: e07
+    title: Architecture & Offline Test Gates
+    wsjf: 5.0
+    bcps: 8
+    capsule_dir: epics/e07-quality-gates
+    note: Per-module + cross-module arch tests; offline end-to-end harness; coverage.
+  - id: e08
+    title: Documentation & Repository Tooling
+    wsjf: 3.0
+    bcps: 3
+    capsule_dir: epics/e08-docs
+    note: README, AI instructions, module map, GitHub-ready repo.
+
+bugs:
+  total: 0
+  fixed: 0
+  deferred: 0
+  wontfix: 0
+  registry: specs/bugs/registry.yaml

@@ -1,0 +1,35 @@
+story_id: e06s02
+title: Weather render + save-note form with feedback
+status: failing
+bcps: 5
+tasks:
+  - id: 1
+    description: "Add WeatherApiClient.GetWeatherAsync and trigger on city selection"
+    verify: "dotnet build src/Weather.WebUI"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["WebUI"] }
+  - id: 2
+    description: "Render metric cards for location, UTC time, temp C/F, dew point C/F, humidity, wind, visibility, pressure, sky"
+    verify: "dotnet build src/Weather.WebUI"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["WebUI"] }
+  - id: 3
+    description: "Add validated save-note form using WeatherApiClient.AddNoteAsync"
+    verify: "dotnet build src/Weather.WebUI"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["WebUI"] }
+  - id: 4
+    description: "Add success (created id) and error feedback; disable button while posting"
+    verify: "dotnet build src/Weather.WebUI"
+    risk: P2
+    status: failing
+    allure: { severity: normal, categories: ["WebUI"] }
+  - id: 5
+    description: "Unit test WeatherApiClient.GetWeatherAsync/AddNoteAsync with stubbed handler"
+    verify: "dotnet test src/Tests/IntegrationTests --filter Category=ApiClient"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["WebUI", "unit"] }

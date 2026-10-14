@@ -1,0 +1,31 @@
+id: e02
+title: Geography Module
+wsjf: 7.5
+total_bcps: 11
+status: todo
+module: M1
+note: >
+  Bounded context owning the country/city catalog in its own schema (geography.db) and its own
+  composition root. Publishes CityAddedIntegrationEvent through its Outbox for Favorites and Notes.
+stories:
+  - id: e02s01
+    title: Geography — Country aggregate + GetCountries (AsNoTracking)
+    bcps: 3
+    status: todo
+    spec: e02s01-countries.md
+    tasks: e02s01-tasks.yaml
+    delta: ADDED
+  - id: e02s02
+    title: Geography — City aggregate + GetCitiesByCountry (AsNoTracking)
+    bcps: 3
+    status: todo
+    spec: e02s02-cities.md
+    tasks: e02s02-tasks.yaml
+    delta: ADDED
+  - id: e02s03
+    title: Geography — publish CityAddedIntegrationEvent via the Outbox
+    bcps: 5
+    status: todo
+    spec: e02s03-city-added-event.md
+    tasks: e02s03-tasks.yaml
+    delta: ADDED

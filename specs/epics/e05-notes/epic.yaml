@@ -1,0 +1,24 @@
+id: e05
+title: Notes Module
+wsjf: 5.5
+total_bcps: 8
+status: todo
+module: M4
+note: >
+  Bounded context for user-authored weather notes. Own schema (notes.db) and composition root. Consumes
+  CityAddedIntegrationEvent from Geography into a local City projection, mirroring Favorites.
+stories:
+  - id: e05s01
+    title: Notes — WeatherNote aggregate + AddWeatherNote + POST endpoint
+    bcps: 4
+    status: todo
+    spec: e05s01-weather-note.md
+    tasks: e05s01-tasks.yaml
+    delta: ADDED
+  - id: e05s02
+    title: Notes — consume CityAddedIntegrationEvent into a local City projection
+    bcps: 4
+    status: todo
+    spec: e05s02-city-projection.md
+    tasks: e05s02-tasks.yaml
+    delta: ADDED

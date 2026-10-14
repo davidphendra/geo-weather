@@ -1,0 +1,41 @@
+story_id: e01s01
+title: BuildingBlocks (Domain/Application/Infrastructure) + thin API host + walking skeleton
+status: failing
+bcps: 5
+tasks:
+  - id: 1
+    description: "Create Weather.BuildingBlocks.Domain with Entity, AggregateRoot, ValueObject, TypedIdValueBase, DomainEventBase, IDomainEvent, IBusinessRule, BusinessRuleValidationException, IAggregateRoot"
+    verify: "dotnet build Weather.sln --warnaserror"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["BuildingBlocks", "unit"] }
+  - id: 2
+    description: "Create Weather.BuildingBlocks.Application with ICommand/IQuery/CommandBase/QueryBase and validation abstractions"
+    verify: "dotnet build Weather.sln --warnaserror"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["BuildingBlocks"] }
+  - id: 3
+    description: "Create Weather.BuildingBlocks.Infrastructure with EF base, UnitOfWork, Clock, domain-event dispatcher placeholder"
+    verify: "dotnet build Weather.sln --warnaserror"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["BuildingBlocks", "infra"] }
+  - id: 4
+    description: "Create Weather.Api host with Program.cs, ProblemDetails, OpenAPI and GET /api/ping"
+    verify: "dotnet test src/Tests/IntegrationTests --filter Category=Ping"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["Host", "integration"] }
+  - id: 5
+    description: "Move Weather.WebUI under src/ and repair Weather.sln"
+    verify: "dotnet build Weather.sln --warnaserror"
+    risk: P2
+    status: failing
+    allure: { severity: normal, categories: ["Host"] }
+  - id: 6
+    description: "Arch test: BuildingBlocks.Domain references only System.*"
+    verify: "dotnet test src/Tests/ArchTests --filter Category=BuildingBlocksBoundary"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Architecture", "BuildingBlocks"] }

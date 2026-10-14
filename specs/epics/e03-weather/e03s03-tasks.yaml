@@ -1,0 +1,42 @@
+story_id: e03s03
+title: GetCurrentWeather query + GET /api/weather/{cityName} + error handling
+status: failing
+bcps: 4
+module: M2
+tasks:
+  - id: 1
+    description: "Add WeatherReportDto + domain->DTO mapping (temp C/F, dew point, wind, visibility, pressure, sky)"
+    verify: "dotnet test src/Modules/Weather/Tests --filter Category=WeatherDto"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["Weather", "unit"] }
+  - id: 2
+    description: "Add WeatherReports/GetCurrentWeather query + validator + handler with IWeatherService"
+    verify: "dotnet test src/Modules/Weather/Tests --filter Category=GetWeather"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Weather", "unit"] }
+  - id: 3
+    description: "Implement IWeatherModule.GetCurrentWeatherAsync"
+    verify: "dotnet test src/Modules/Weather/Tests --filter Category=WeatherModule"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Weather", "ModularMonolith"] }
+  - id: 4
+    description: "Add GET /api/weather/{cityName} in the host Weather area"
+    verify: "dotnet test src/Tests/IntegrationTests --filter Category=Weather"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Weather", "integration"] }
+  - id: 5
+    description: "Map not-found -> 404, provider failure -> 502, validation -> 400"
+    verify: "dotnet test src/Tests/IntegrationTests --filter Category=WeatherErrors"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Weather", "integration"] }
+  - id: 6
+    description: "Assert every required metric field is present and non-null"
+    verify: "dotnet test src/Tests/IntegrationTests --filter Category=WeatherPayload"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Weather", "integration"] }

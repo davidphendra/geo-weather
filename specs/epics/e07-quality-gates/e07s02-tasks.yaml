@@ -1,0 +1,35 @@
+story_id: e07s02
+title: Offline end-to-end harness (per-module contexts) + coverage gate
+status: failing
+bcps: 3
+tasks:
+  - id: 1
+    description: "Extract WeatherHostFactory with overridden DI (stub IWeatherService, per-module test contexts)"
+    verify: "dotnet test src/Tests/IntegrationTests"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Testing", "integration"] }
+  - id: 2
+    description: "Add per-module SQLite :memory: contexts + inline outbox publisher"
+    verify: "dotnet test src/Tests/IntegrationTests --filter Category=Stubs"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Testing", "integration"] }
+  - id: 3
+    description: "Add offline guard test asserting OpenWeatherMapService is never resolved in tests"
+    verify: "dotnet test src/Tests/IntegrationTests --filter Category=OfflineGuard"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Testing", "integration"] }
+  - id: 4
+    description: "Wire coverage collection and report per-module coverage"
+    verify: "dotnet test Weather.sln --collect:\"XPlat Code Coverage\""
+    risk: P2
+    status: failing
+    allure: { severity: normal, categories: ["Testing"] }
+  - id: 5
+    description: "Confirm the full suite passes offline"
+    verify: "dotnet test Weather.sln"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Testing"] }

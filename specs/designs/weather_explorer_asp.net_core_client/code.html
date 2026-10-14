@@ -1,0 +1,701 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_standard" name="shell-type"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=JetBrains+Mono:wght@100..900&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "on-tertiary-fixed": "#001e2c",
+          "surface": "#f8f9ff",
+          "on-tertiary-fixed-variant": "#004c69",
+          "error-container": "#ffdad6",
+          "surface-container-highest": "#d3e4fe",
+          "inverse-surface": "#213145",
+          "error": "#ba1a1a",
+          "tertiary-container": "#001e2c",
+          "on-tertiary": "#ffffff",
+          "inverse-primary": "#bec6e0",
+          "on-primary-fixed": "#131b2e",
+          "surface-variant": "#d3e4fe",
+          "tertiary-fixed-dim": "#7bd0ff",
+          "surface-container": "#e5eeff",
+          "surface-tint": "#565e74",
+          "on-error-container": "#93000a",
+          "primary-fixed-dim": "#bec6e0",
+          "surface-dim": "#cbdbf5",
+          "tertiary": "#000000",
+          "on-primary": "#ffffff",
+          "on-error": "#ffffff",
+          "surface-bright": "#f8f9ff",
+          "primary-fixed": "#dae2fd",
+          "secondary-fixed": "#cce5ff",
+          "on-secondary-fixed-variant": "#004b73",
+          "background": "#f8f9ff",
+          "on-secondary-container": "#00476e",
+          "surface-container-lowest": "#ffffff",
+          "outline": "#76777d",
+          "on-secondary-fixed": "#001d31",
+          "surface-container-high": "#dce9ff",
+          "on-primary-container": "#7c839b",
+          "primary": "#000000",
+          "surface-container-low": "#eff4ff",
+          "on-secondary": "#ffffff",
+          "inverse-on-surface": "#eaf1ff",
+          "on-surface": "#0b1c30",
+          "secondary-fixed-dim": "#93ccff",
+          "on-primary-fixed-variant": "#3f465c",
+          "secondary": "#006398",
+          "on-background": "#0b1c30",
+          "primary-container": "#131b2e",
+          "secondary-container": "#5bb8fe",
+          "on-tertiary-container": "#008ebf",
+          "on-surface-variant": "#45464d",
+          "tertiary-fixed": "#c4e7ff",
+          "outline-variant": "#c6c6cd"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.125rem",
+          "lg": "0.25rem",
+          "xl": "0.5rem",
+          "full": "0.75rem"
+        },
+        "spacing": {
+          "space-xs": "0.25rem",
+          "gutter": "1rem",
+          "space-sm": "0.5rem",
+          "gutter-desktop": "1.5rem",
+          "margin": "1rem",
+          "space-xl": "1.5rem",
+          "margin-desktop": "2rem",
+          "space-lg": "1rem",
+          "space-md": "0.75rem"
+        },
+        "fontFamily": {
+          "code-sm": ["JetBrains Mono"],
+          "headline-sm": ["Geist"],
+          "label-md": ["JetBrains Mono"],
+          "code-md": ["JetBrains Mono"],
+          "code-lg": ["JetBrains Mono"],
+          "headline-lg": ["Geist"],
+          "label-sm": ["JetBrains Mono"],
+          "headline-xl-mobile": ["Geist"],
+          "headline-lg-mobile": ["Geist"],
+          "headline-md": ["Geist"],
+          "headline-xl": ["Geist"],
+          "body-sm": ["Geist"],
+          "body-md": ["Geist"],
+          "body-lg": ["Geist"]
+        },
+        "fontSize": {
+          "code-sm": ["11px", {"lineHeight": "14px", "fontWeight": "400"}],
+          "headline-sm": ["16px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+          "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "500"}],
+          "code-md": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+          "code-lg": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+          "headline-lg": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+          "label-sm": ["10px", {"lineHeight": "12px", "letterSpacing": "0.06em", "fontWeight": "500"}],
+          "headline-xl-mobile": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+          "headline-lg-mobile": ["22px", {"lineHeight": "30px", "letterSpacing": "-0.015em", "fontWeight": "600"}],
+          "headline-md": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600"}],
+          "headline-xl": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.025em", "fontWeight": "600"}],
+          "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+          "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+          "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+        }
+      }
+    }
+  }</script></head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased min-h-screen flex flex-col"><header class="fixed top-0 w-full z-50 bg-primary-container shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 w-full px-gutter-desktop flex items-center justify-between gap-space-lg"><div class="flex items-center gap-space-md"><img alt="GeoWeather Core Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WhHwuNAkud58TzpFR_D0_DvrbX5xxRn99WAnuBlSEX_yGkpBd-yFtdI_NdHI9rcJswT6YdcIjCx9OsHKitxPhYkuERVdNRg3KJFm3CGi2OGJkiDPstQSq3RVstT686W1pKX6pqiCFFjH2S3fP3CAKpnX4gJ9wUTO34QNozWgl_L1hlK9GC4-a6wHVPZdCVkyvF1lrEIXy9bCVfRsAsdgmwYfM7qNlR37sKw8sX8bH9vclk6kdlHNP4nLNX"><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-on-primary tracking-tight font-semibold">GeoWeather</span><span class="font-code-sm text-code-sm px-1.5 py-0.5 rounded bg-tertiary-container text-tertiary-fixed font-medium">.NET 8</span></div><span class="font-code-sm text-code-sm text-on-primary-container">v8.0.4-preview.telemetry</span></div></div><nav class="flex items-center gap-space-xs" data-active-classes="bg-surface/15 text-on-primary font-medium rounded-lg"><a aria-current="page" class="px-3 py-1.5 transition-colors bg-surface/15 text-on-primary font-medium rounded-lg" data-path="weather-explorer" href="#">Weather Explorer</a><a class="px-3 py-1.5 rounded-lg text-on-primary-container hover:text-on-primary hover:bg-surface/10 transition-colors font-body-sm text-body-sm" data-path="favorites-and-saved-notes" href="#">Favorites &amp; Saved Notes</a></nav></div></header><main class="w-full pt-16 flex-1 bg-surface"><div class="flex flex-col w-full">
+<div class="w-full px-gutter md:px-margin-desktop py-space-xl space-y-space-xl max-w-[1600px] mx-auto">
+<!-- Top Query Controller & Telemetry Pipeline Panel -->
+<section class="bg-surface-container-lowest shadow-sm rounded-xl p-space-lg md:p-space-xl flex flex-col gap-space-lg">
+<div class="flex flex-col xl:flex-row xl:items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md flex-wrap">
+<div class="flex items-center gap-space-xs px-2.5 py-1 rounded bg-secondary-fixed/20 text-on-secondary-fixed font-code-sm text-code-sm">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-bold">CQRS QUERY PIPELINE</span>
+</div>
+<span class="font-code-sm text-code-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-secondary">memory</span>
+            Pipeline: PipelineBehavior<trequest, tresponse="">
+          </trequest,></span>
+<div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-container text-on-surface font-code-sm text-code-sm">
+<span class="text-secondary font-bold">L1</span>
+<span class="">MemoryCache: <strong class="text-secondary" id="cache-status-tag">HIT (TTL 118s)</strong></span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm flex-wrap font-code-sm text-code-sm">
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container text-on-surface">
+<span class="material-symbols-outlined text-[14px] text-secondary">speed</span>
+<span class="">Query Latency:</span>
+<span class="font-bold text-secondary" id="query-latency-display">48ms</span>
+</div>
+<div class="flex items-center gap-1 px-2.5 py-1 rounded bg-surface-container text-on-surface">
+<span class="w-2 h-2 rounded-full bg-secondary-container"></span>
+<span class="">HTTP Status: <strong class="text-on-surface" id="query-status-code">200 OK</strong></span>
+</div>
+</div>
+</div>
+<!-- Dependent Dynamic Selectors -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-space-md items-end">
+<div class="md:col-span-5 flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface uppercase tracking-wider font-semibold flex items-center gap-1" for="country-selector">
+<span class="material-symbols-outlined text-[15px] text-secondary">public</span>
+              Target Jurisdiction (Country)
+            </label>
+<span class="font-code-sm text-code-sm text-secondary">GET /api/v1/countries</span>
+</div>
+<div class="relative">
+<select class="w-full h-10 px-3 bg-surface-container-low text-on-surface font-body-md text-body-md rounded-lg appearance-none cursor-pointer focus:outline-none focus:bg-surface-container transition-all" id="country-selector">
+<option selected="" value="US">United States (USA)</option>
+<option value="JP">Japan (JPN)</option>
+<option value="DE">Germany (DEU)</option>
+<option value="GB">United Kingdom (GBR)</option>
+<option value="CA">Canada (CAN)</option>
+<option value="AU">Australia (AUS)</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-2.5 pointer-events-none text-on-surface-variant text-[20px]">expand_more</span>
+</div>
+</div>
+<div class="md:col-span-5 flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface uppercase tracking-wider font-semibold flex items-center gap-1" for="city-selector">
+<span class="material-symbols-outlined text-[15px] text-secondary">location_city</span>
+              Dependent Region (City)
+            </label>
+<span class="font-code-sm text-code-sm text-secondary" id="city-endpoint-label">GET /api/v1/countries/US/cities</span>
+</div>
+<div class="relative">
+<select class="w-full h-10 px-3 bg-surface-container-low text-on-surface font-body-md text-body-md rounded-lg appearance-none cursor-pointer focus:outline-none focus:bg-surface-container transition-all" id="city-selector"><option value="us-sea-01">Seattle, WA, United States</option><option value="us-nyc-02">New York, NY, United States</option><option value="us-atx-03">Austin, TX, United States</option><option value="us-chi-04">Chicago, IL, United States</option></select>
+<span class="material-symbols-outlined absolute right-3 top-2.5 pointer-events-none text-on-surface-variant text-[20px]">expand_more</span>
+</div>
+</div>
+<div class="md:col-span-2">
+<button class="w-full h-10 flex items-center justify-center gap-2 bg-primary text-on-primary font-body-sm text-body-sm rounded-lg hover:bg-surface-container-highest hover:text-on-surface transition-all active:scale-[0.98]" id="refresh-telemetry-btn">
+<span class="material-symbols-outlined text-[18px]">sync</span>
+<span class="">Fetch Query</span>
+</button>
+</div>
+</div>
+<!-- MediatR Active Expression Bar -->
+<div class="p-space-sm bg-primary-container text-on-primary font-code-sm text-code-sm rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs">
+<div class="flex items-center gap-2 overflow-x-auto whitespace-nowrap">
+<span class="px-1.5 py-0.5 rounded bg-secondary text-on-secondary font-bold text-[10px]">C# MEDIATR</span>
+<span class="text-tertiary-fixed-dim" id="mediatr-signature">Mediator.Send(new GetCityWeatherQuery("us-sea-01", Units.Metric))</span>
+</div>
+<div class="flex items-center gap-space-md text-on-primary-container shrink-0">
+<span class="">Thread: WorkerPool#04</span>
+<span class="">Alloc: 0.84 KB</span>
+</div>
+</div>
+</section>
+<!-- Main Grid: Real-time Telemetry + Forecast vs Command Mutation Panel -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
+<!-- Left Column: Real-Time Weather Observation & 5-Day Outlook (7 Cols) -->
+<div class="lg:col-span-7 flex flex-col gap-space-xl">
+<!-- Live Station Hero Telemetry Card -->
+<div class="bg-surface-container-lowest shadow-sm rounded-xl p-space-lg md:p-space-xl relative overflow-hidden">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md mb-space-lg">
+<div>
+<div class="flex items-center gap-space-xs mb-1">
+<span class="material-symbols-outlined text-secondary text-[22px]">radar</span>
+<span class="font-label-sm text-label-sm text-secondary uppercase font-semibold tracking-wider">Live Surface Observation Station</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface font-semibold" id="station-name">Seattle, WA, United States</h2>
+<p class="font-code-sm text-code-sm text-on-surface-variant flex items-center gap-2 mt-1" id="station-coords"><span class="">Lat: 47.6062° N</span> • <span class="">Lon: 122.3321° W</span> • <span class="text-secondary font-bold">Station: KSEA-METAR</span></p>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="px-2.5 py-1 rounded-full bg-secondary-fixed/20 text-secondary font-code-sm text-code-sm font-semibold flex items-center gap-1.5" id="station-weather-pill">
+<span class="w-2 h-2 rounded-full bg-secondary animate-ping"></span>
+<span class="">LIVE TELEMETRY</span>
+</span>
+</div>
+</div>
+<!-- Hero Metrics Display -->
+<div class="p-space-lg rounded-xl bg-surface-container-low flex flex-col md:flex-row items-center justify-between gap-space-lg mb-space-lg">
+<div class="flex items-center gap-space-lg">
+<div class="w-16 h-16 rounded-2xl bg-secondary text-on-secondary flex items-center justify-center shadow-md shrink-0">
+<span class="material-symbols-outlined text-[36px]" id="current-weather-icon">partly_cloudy_day</span>
+</div>
+<div>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-xl text-headline-xl text-on-surface font-bold tracking-tight" id="temp-celsius">17°C</span>
+<span class="font-headline-md text-headline-md text-on-surface-variant font-normal" id="temp-fahrenheit">/ 63°F</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface font-medium capitalize" id="current-condition-text">Partly Cloudy Conditions</p>
+</div>
+</div>
+<!-- Dynamic Atmospheric Sparkline (SVG) -->
+<div class="w-full md:w-48 flex flex-col gap-1 items-end">
+<div class="flex items-center justify-between w-full font-code-sm text-code-sm text-on-surface-variant">
+<span class="">24h Gradient</span>
+<span class="text-secondary font-semibold">Trend: +1.2°</span>
+</div>
+<svg class="w-full h-12 text-secondary" fill="none" preserveAspectRatio="none" viewBox="0 0 160 40">
+<path d="M0,28 Q20,18 40,24 T80,14 T120,20 T160,8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2.5"></path>
+<path d="M0,28 Q20,18 40,24 T80,14 T120,20 T160,8 L160,40 L0,40 Z" fill="currentColor" fill-opacity="0.12"></path>
+<circle cx="160" cy="8" fill="currentColor" r="3.5"></circle>
+</svg>
+</div>
+</div>
+<!-- Diagnostic Metrics Quad-Grid -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-space-md">
+<div class="p-space-md rounded-lg bg-surface-container flex flex-col gap-1">
+<span class="font-code-sm text-code-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-secondary">water_drop</span>
+                Humidity
+              </span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold" id="humidity-val">72%</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">Dew Pt: 11.8°C</span>
+</div>
+<div class="p-space-md rounded-lg bg-surface-container flex flex-col gap-1">
+<span class="font-code-sm text-code-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-secondary">air</span>
+                Wind Vector
+              </span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold" id="wind-val">14 km/h SW</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">Gusts: 22 km/h</span>
+</div>
+<div class="p-space-md rounded-lg bg-surface-container flex flex-col gap-1">
+<span class="font-code-sm text-code-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-secondary">compress</span>
+                Pressure
+              </span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold" id="pressure-val">1014 hPa</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">Steady +0.2</span>
+</div>
+<div class="p-space-md rounded-lg bg-surface-container flex flex-col gap-1">
+<span class="font-code-sm text-code-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-secondary">wb_sunny</span>
+                UV Index
+              </span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold" id="uv-val">4 Moderate</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">Solar: 480 W/m²</span>
+</div>
+</div>
+</div>
+<!-- 5-Day Predictive Outlook Strip -->
+<div class="bg-surface-container-lowest shadow-sm rounded-xl p-space-lg md:p-space-xl">
+<div class="flex items-center justify-between mb-space-md">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px]">calendar_view_week</span>
+              5-Day Predictive Ensemble Forecast
+            </h3>
+<span class="font-code-sm text-code-sm text-on-surface-variant">NWP Model: GFS-0.25°</span>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-5 gap-space-sm" id="forecast-cards-container">
+<!-- Day 1 -->
+<div class="p-space-md bg-surface-container-low rounded-lg flex flex-col items-center text-center gap-space-xs">
+<span class="font-code-sm text-code-sm font-bold text-on-surface">THU (TODAY)</span>
+<span class="material-symbols-outlined text-secondary text-[26px]">partly_cloudy_day</span>
+<div class="flex items-baseline gap-1 mt-1">
+<span class="font-body-md text-body-md font-bold text-on-surface">19°</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">/ 11°</span>
+</div>
+<div class="flex items-center gap-1 text-[11px] text-secondary font-code-sm">
+<span class="material-symbols-outlined text-[12px]">umbrella</span>
+<span class="">20%</span>
+</div>
+</div>
+<!-- Day 2 -->
+<div class="p-space-md bg-surface-container-low rounded-lg flex flex-col items-center text-center gap-space-xs">
+<span class="font-code-sm text-code-sm font-bold text-on-surface">FRI</span>
+<span class="material-symbols-outlined text-secondary text-[26px]">rainy</span>
+<div class="flex items-baseline gap-1 mt-1">
+<span class="font-body-md text-body-md font-bold text-on-surface">16°</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">/ 10°</span>
+</div>
+<div class="flex items-center gap-1 text-[11px] text-secondary font-code-sm">
+<span class="material-symbols-outlined text-[12px]">umbrella</span>
+<span class="">75%</span>
+</div>
+</div>
+<!-- Day 3 -->
+<div class="p-space-md bg-surface-container-low rounded-lg flex flex-col items-center text-center gap-space-xs">
+<span class="font-code-sm text-code-sm font-bold text-on-surface">SAT</span>
+<span class="material-symbols-outlined text-secondary text-[26px]">cloud</span>
+<div class="flex items-baseline gap-1 mt-1">
+<span class="font-body-md text-body-md font-bold text-on-surface">18°</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">/ 12°</span>
+</div>
+<div class="flex items-center gap-1 text-[11px] text-secondary font-code-sm">
+<span class="material-symbols-outlined text-[12px]">umbrella</span>
+<span class="">35%</span>
+</div>
+</div>
+<!-- Day 4 -->
+<div class="p-space-md bg-surface-container-low rounded-lg flex flex-col items-center text-center gap-space-xs">
+<span class="font-code-sm text-code-sm font-bold text-on-surface">SUN</span>
+<span class="material-symbols-outlined text-secondary text-[26px]">sunny</span>
+<div class="flex items-baseline gap-1 mt-1">
+<span class="font-body-md text-body-md font-bold text-on-surface">22°</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">/ 13°</span>
+</div>
+<div class="flex items-center gap-1 text-[11px] text-secondary font-code-sm">
+<span class="material-symbols-outlined text-[12px]">umbrella</span>
+<span class="">10%</span>
+</div>
+</div>
+<!-- Day 5 -->
+<div class="p-space-md bg-surface-container-low rounded-lg flex flex-col items-center text-center gap-space-xs col-span-2 sm:col-span-1">
+<span class="font-code-sm text-code-sm font-bold text-on-surface">MON</span>
+<span class="material-symbols-outlined text-secondary text-[26px]">air</span>
+<div class="flex items-baseline gap-1 mt-1">
+<span class="font-body-md text-body-md font-bold text-on-surface">20°</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">/ 11°</span>
+</div>
+<div class="flex items-center gap-1 text-[11px] text-secondary font-code-sm">
+<span class="material-symbols-outlined text-[12px]">umbrella</span>
+<span class="">15%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: CQRS Command Mutation Dispatcher & Database State (5 Cols) -->
+<div class="lg:col-span-5 flex flex-col gap-space-xl">
+<!-- Command Dispatch Box -->
+<div class="bg-surface-container-lowest shadow-sm rounded-xl p-space-lg md:p-space-xl flex flex-col gap-space-lg">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded bg-secondary-fixed/30 text-secondary font-code-sm text-code-sm font-bold">CQRS COMMAND</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">POST /api/v1/weather/notes</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold mt-1">Dispatch Command: Save Favorite City</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Mutate repository state through MediatR pipeline to persist favorite city telemetry context.</p>
+</div>
+<form class="space-y-space-md" id="weather-command-form" onsubmit="event.preventDefault(); window.dispatchWeatherCommand();">
+<!-- Type Selector Toggle -->
+<div class="flex flex-col gap-space-xs">
+<span class="font-label-md text-label-md text-on-surface font-semibold uppercase">Mutation Intent</span>
+<div class="flex items-center justify-center gap-2 py-2 px-3 bg-surface-container-lowest text-on-surface rounded-lg font-body-sm font-semibold shadow-sm border border-secondary/20"><span class="material-symbols-outlined text-[18px] text-secondary">bookmark</span><span class="">Save Favorite</span><input type="hidden" name="mutation-type" value="Favorite"></div>
+</div>
+<!-- Target City Locked Display -->
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md text-on-surface font-semibold uppercase">Target City Context (Readonly)</label>
+<div class="flex items-center justify-between px-3 h-10 bg-surface-container-low rounded-lg text-on-surface font-code-sm text-code-sm">
+<span id="form-target-city-display" class="">Seattle, WA, United States (ID: us-sea-01)</span>
+<span class="material-symbols-outlined text-[18px] text-secondary">lock</span>
+</div>
+</div>
+<!-- Note Title / Tag -->
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md text-on-surface font-semibold uppercase" for="command-title">Favorite Alias / Label</label>
+<input class="w-full h-10 px-3 bg-surface-container-low text-on-surface font-body-md text-body-md rounded-lg focus:outline-none focus:bg-surface-container transition-all" id="command-title" placeholder="e.g. Puget Sound High Shear Warning" required="" type="text" value="Primary Regional Monitoring Node">
+</div>
+<!-- Note Body / Observation -->
+
+<!-- Submit Button -->
+<button class="w-full h-11 bg-primary text-on-primary font-body-md text-body-md font-medium rounded-lg flex items-center justify-center gap-2 hover:bg-surface-container-highest hover:text-on-surface transition-all active:scale-[0.99] shadow-sm" id="submit-command-btn" type="submit"><span class="material-symbols-outlined text-[20px]">bookmark_add</span><span class="">Save to Favorites [CreateFavoriteCommand]</span></button>
+</form>
+<!-- Real-Time POST Feedback & EF Core ChangeTracker Diagnostic -->
+<div class="flex flex-col gap-space-sm pt-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase font-semibold">EF Core ChangeTracker &amp; Command Response</span>
+<span class="font-code-sm text-code-sm text-secondary font-bold" id="post-status-pill">HTTP 201 Created</span>
+</div>
+<!-- Inset Response Well -->
+<div class="p-space-md rounded-lg bg-primary-container text-on-primary font-code-sm text-code-sm space-y-2 relative overflow-hidden">
+<div class="flex items-center justify-between text-on-primary-container text-[11px] pb-1">
+<span class="">UnitOfWork.SaveChangesAsync()</span>
+<span id="response-timestamp" class="">2024-10-24T14:28:44.891Z</span>
+</div>
+<pre class="font-code-sm text-code-sm overflow-x-auto text-secondary-fixed leading-relaxed" id="post-response-json">{
+  "id": "7e92b8d0-25e4-4d8b-90f7-d7d8e6a3901b",
+  "command": "CreateWeatherNoteCommand",
+  "cityId": "us-sea-01",
+  "type": "Favorite",
+  "tag": "Puget Sound Barometric Shift",
+  "changeTracker": {
+    "state": "Unchanged",
+    "entitiesWritten": 1,
+    "databaseProvider": "Npgsql.EntityFrameworkCore.PostgreSQL"
+  },
+  "executionDuration": "18.4ms"
+}</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Architectural Deep Dive & Developer Drawer (CQRS & Minimal API Specs) -->
+<section class="bg-surface-container-lowest shadow-sm rounded-xl p-space-lg md:p-space-xl flex flex-col gap-space-md">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
+<div>
+<span class="font-label-sm text-label-sm text-secondary uppercase font-semibold">Under the Hood Architecture</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">ASP.NET Core 8 Minimal API &amp; MediatR CQRS Execution Map</h3>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="px-3 py-1.5 rounded font-code-sm text-code-sm bg-surface-container text-on-surface font-semibold" id="tab-curl-btn" onclick="window.switchArchTab('curl')">cURL Command</button>
+<button class="px-3 py-1.5 rounded font-code-sm text-code-sm bg-transparent text-on-surface-variant hover:text-on-surface" id="tab-csharp-btn" onclick="window.switchArchTab('csharp')">C# Handler &amp; Minimal API</button>
+</div>
+</div>
+<!-- Tab Content 1: cURL -->
+<div class="p-space-md rounded-lg bg-primary-container text-on-primary font-code-sm text-code-sm relative" id="tab-content-curl">
+<button class="absolute top-3 right-3 px-2 py-1 rounded bg-surface/10 hover:bg-surface/20 text-on-primary text-[11px] flex items-center gap-1 font-code-sm transition-all" onclick="navigator.clipboard.writeText(document.getElementById('curl-text').innerText); window.toastCopy();">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+<span id="copy-btn-text" class="">Copy</span>
+</button>
+<pre class="overflow-x-auto text-secondary-fixed pt-1 font-code-sm" id="curl-text">curl -X POST "https://telemetry.geoweather.internal/api/v1/weather/notes" \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "X-Correlation-ID: 99f430ca-22e7-497d" \
+  -d '{
+    "cityId": "us-sea-01",
+    "type": "Favorite",
+    "title": "Puget Sound Barometric Shift",
+    "notes": "Approaching cold front detected from Puget Sound estuary..."
+  }'</pre>
+</div>
+<!-- Tab Content 2: C# Code -->
+<div class="p-space-md rounded-lg bg-primary-container text-on-primary font-code-sm text-code-sm hidden relative" id="tab-content-csharp">
+<pre class="overflow-x-auto text-tertiary-fixed-dim font-code-sm">app.MapPost("/api/v1/weather/notes", async (
+    [FromBody] CreateWeatherNoteCommand command, 
+    IMediator mediator, 
+    CancellationToken ct) =&gt;
+{
+    var result = await mediator.Send(command, ct);
+    return Results.Created($"/api/v1/weather/notes/{result.Id}", result);
+})
+.WithName("CreateWeatherNote")
+.WithTags("WeatherCommands")
+.Produces<weathernoteresponse>(StatusCodes.Status201Created);
+
+// MediatR Handler
+public sealed class CreateWeatherNoteHandler(AppDbContext db, ILogger<createweathernotehandler> logger) 
+    : IRequestHandler<createweathernotecommand, weathernoteresponse="">
+{
+    public async Task<weathernoteresponse> Handle(CreateWeatherNoteCommand cmd, CancellationToken ct)
+    {
+        var entity = new WeatherAnnotationEntity(cmd.CityId, cmd.Title, cmd.Notes);
+        db.WeatherAnnotations.Add(entity);
+        await db.SaveChangesAsync(ct);
+        return WeatherNoteResponse.FromEntity(entity);
+    }
+}</weathernoteresponse></createweathernotecommand,></createweathernotehandler></weathernoteresponse></pre>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-space-sm pt-space-xs">
+<div class="p-space-sm bg-surface-container rounded-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px]">layers</span>
+<div class="flex flex-col">
+<span class="font-code-sm text-code-sm text-on-surface font-semibold">Strict CQRS Separation</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Isolated Read Queries from State Mutators</span>
+</div>
+</div>
+<div class="p-space-sm bg-surface-container rounded-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px]">cached</span>
+<div class="flex flex-col">
+<span class="font-code-sm text-code-sm text-on-surface font-semibold">Tiered ResponseCache</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">L1 MemoryCache + Redis Distributed fallback</span>
+</div>
+</div>
+<div class="p-space-sm bg-surface-container rounded-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px]">database</span>
+<div class="flex flex-col">
+<span class="font-code-sm text-code-sm text-on-surface font-semibold">EF Core Interceptor</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Audit telemetry tracked via SaveChangesInterceptor</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+<script>
+  (function () {
+    // City Database Repository
+    const cityDatabase = {
+      US: [
+        { id: "us-sea-01", name: "Seattle, WA, United States", lat: "47.6062° N", lon: "122.3321° W", station: "KSEA-METAR", c: "17°C", f: "/ 63°F", condition: "Partly Cloudy", icon: "partly_cloudy_day", hum: "72%", wind: "14 km/h SW", pres: "1014 hPa", uv: "4 Moderate" },
+        { id: "us-nyc-02", name: "New York, NY, United States", lat: "40.7128° N", lon: "74.0060° W", station: "KJFK-METAR", c: "21°C", f: "/ 70°F", condition: "Sunny & Clear", icon: "wb_sunny", hum: "54%", wind: "19 km/h NE", pres: "1018 hPa", uv: "6 High" },
+        { id: "us-atx-03", name: "Austin, TX, United States", lat: "30.2672° N", lon: "97.7431° W", station: "KAUS-METAR", c: "31°C", f: "/ 88°F", condition: "Scattered Clouds", icon: "sunny", hum: "48%", wind: "11 km/h S", pres: "1011 hPa", uv: "8 Very High" },
+        { id: "us-chi-04", name: "Chicago, IL, United States", lat: "41.8781° N", lon: "87.6298° W", station: "KORD-METAR", c: "15°C", f: "/ 59°F", condition: "Breezy Overcast", icon: "air", hum: "68%", wind: "28 km/h W", pres: "1009 hPa", uv: "3 Moderate" }
+      ],
+      JP: [
+        { id: "jp-tyo-01", name: "Tokyo, Kanto, Japan", lat: "35.6762° N", lon: "139.6503° E", station: "RJTT-METAR", c: "22°C", f: "/ 72°F", condition: "Clear Sky", icon: "sunny", hum: "58%", wind: "9 km/h ESE", pres: "1020 hPa", uv: "5 Moderate" },
+        { id: "jp-osa-02", name: "Osaka, Kansai, Japan", lat: "34.6937° N", lon: "135.5023° E", station: "RJOO-METAR", c: "24°C", f: "/ 75°F", condition: "Hazy Sun", icon: "wb_sunny", hum: "63%", wind: "8 km/h S", pres: "1017 hPa", uv: "5 Moderate" },
+        { id: "jp-sap-03", name: "Sapporo, Hokkaido, Japan", lat: "43.0618° N", lon: "141.3545° E", station: "RJCC-METAR", c: "12°C", f: "/ 54°F", condition: "Showers", icon: "rainy", hum: "81%", wind: "16 km/h NW", pres: "1012 hPa", uv: "2 Low" }
+      ],
+      DE: [
+        { id: "de-ber-01", name: "Berlin, Brandenburg, Germany", lat: "52.5200° N", lon: "13.4050° E", station: "EDDB-METAR", c: "14°C", f: "/ 57°F", condition: "Overcast", icon: "cloud", hum: "78%", wind: "18 km/h NW", pres: "1016 hPa", uv: "2 Low" },
+        { id: "de-muc-02", name: "Munich, Bavaria, Germany", lat: "48.1351° N", lon: "11.5820° E", station: "EDDM-METAR", c: "13°C", f: "/ 55°F", condition: "Light Rain", icon: "rainy", hum: "84%", wind: "10 km/h W", pres: "1015 hPa", uv: "1 Low" },
+        { id: "de-ham-03", name: "Hamburg, Germany", lat: "53.5511° N", lon: "9.9937° E", station: "EDDH-METAR", c: "12°C", f: "/ 54°F", condition: "Gusty Clouds", icon: "air", hum: "80%", wind: "24 km/h WNW", pres: "1010 hPa", uv: "2 Low" }
+      ],
+      GB: [
+        { id: "gb-lon-01", name: "London, England, United Kingdom", lat: "51.5074° N", lon: "0.1278° W", station: "EGLL-METAR", c: "16°C", f: "/ 61°F", condition: "Drizzle & Mist", icon: "rainy", hum: "82%", wind: "15 km/h SW", pres: "1013 hPa", uv: "3 Moderate" },
+        { id: "gb-edi-02", name: "Edinburgh, Scotland, United Kingdom", lat: "55.9533° N", lon: "3.1883° W", station: "EGPH-METAR", c: "11°C", f: "/ 52°F", condition: "Windy Clouds", icon: "air", hum: "86%", wind: "29 km/h W", pres: "1006 hPa", uv: "2 Low" }
+      ],
+      CA: [
+        { id: "ca-van-01", name: "Vancouver, BC, Canada", lat: "49.2827° N", lon: "123.1207° W", station: "CYVR-METAR", c: "15°C", f: "/ 59°F", condition: "Pacific Marine Layer", icon: "cloud", hum: "79%", wind: "12 km/h S", pres: "1015 hPa", uv: "3 Moderate" },
+        { id: "ca-tor-02", name: "Toronto, ON, Canada", lat: "43.6532° N", lon: "79.3832° W", station: "CYYZ-METAR", c: "18°C", f: "/ 64°F", condition: "Clear Sky", icon: "sunny", hum: "61%", wind: "17 km/h N", pres: "1020 hPa", uv: "5 Moderate" }
+      ],
+      AU: [
+        { id: "au-syd-01", name: "Sydney, NSW, Australia", lat: "33.8688° S", lon: "151.2093° E", station: "YSSY-METAR", c: "23°C", f: "/ 73°F", condition: "Coastal Breeze", icon: "partly_cloudy_day", hum: "62%", wind: "20 km/h NE", pres: "1019 hPa", uv: "7 High" },
+        { id: "au-mel-02", name: "Melbourne, VIC, Australia", lat: "37.8136° S", lon: "144.9631° E", station: "YMML-METAR", c: "19°C", f: "/ 66°F", condition: "Changing Clouds", icon: "cloud", hum: "65%", wind: "22 km/h S", pres: "1016 hPa", uv: "5 Moderate" }
+      ]
+    };
+
+    const countrySelect = document.getElementById("country-selector");
+    const citySelect = document.getElementById("city-selector");
+    const cityEndpointLabel = document.getElementById("city-endpoint-label");
+    const mediatrSignature = document.getElementById("mediatr-signature");
+    const latencyDisplay = document.getElementById("query-latency-display");
+    const formTargetCityDisplay = document.getElementById("form-target-city-display");
+
+    let currentCityObject = cityDatabase.US[0];
+
+    function populateCities(countryCode) {
+      cityEndpointLabel.innerText = "GET /api/v1/countries/" + countryCode + "/cities";
+      const cities = cityDatabase[countryCode] || [];
+      citySelect.innerHTML = "";
+      cities.forEach(function (c) {
+        const opt = document.createElement("option");
+        opt.value = c.id;
+        opt.textContent = c.name;
+        citySelect.appendChild(opt);
+      });
+      if (cities.length > 0) {
+        updateWeatherView(cities[0]);
+      }
+    }
+
+    function updateWeatherView(city) {
+      currentCityObject = city;
+      document.getElementById("station-name").innerText = city.name;
+      document.getElementById("station-coords").innerHTML = 
+        "<span>Lat: " + city.lat + "</span> • <span>Lon: " + city.lon + "</span> • <span class='text-secondary font-bold'>Station: " + city.station + "</span>";
+      document.getElementById("temp-celsius").innerText = city.c;
+      document.getElementById("temp-fahrenheit").innerText = city.f;
+      document.getElementById("current-condition-text").innerText = city.condition + " Conditions";
+      document.getElementById("current-weather-icon").innerText = city.icon;
+      document.getElementById("humidity-val").innerText = city.hum;
+      document.getElementById("wind-val").innerText = city.wind;
+      document.getElementById("pressure-val").innerText = city.pres;
+      document.getElementById("uv-val").innerText = city.uv;
+
+      mediatrSignature.innerText = 'Mediator.Send(new GetCityWeatherQuery("' + city.id + '", Units.Metric))';
+      formTargetCityDisplay.innerText = city.name + " (ID: " + city.id + ")";
+
+      // Random realistic telemetry latency
+      const lat = Math.floor(Math.random() * 25) + 28;
+      latencyDisplay.innerText = lat + "ms";
+      document.getElementById("cache-status-tag").innerText = "HIT (TTL " + (120 - Math.floor(Math.random() * 15)) + "s)";
+    }
+
+    countrySelect.addEventListener("change", function () {
+      populateCities(this.value);
+    });
+
+    citySelect.addEventListener("change", function () {
+      const countryCode = countrySelect.value;
+      const found = (cityDatabase[countryCode] || []).find(c => c.id === this.value);
+      if (found) {
+        updateWeatherView(found);
+      }
+    });
+
+    document.getElementById("refresh-telemetry-btn").addEventListener("click", function () {
+      const btn = this;
+      btn.classList.add("opacity-60");
+      setTimeout(function () {
+        btn.classList.remove("opacity-60");
+        updateWeatherView(currentCityObject);
+      }, 150);
+    });
+
+    // Form Intent State
+    window.currentIntent = "Favorite";
+    window.updateFormIntent = function (val) {
+      window.currentIntent = val;
+      const titleInput = document.getElementById("command-title");
+      if (val === "Favorite") {
+        titleInput.value = "Primary Regional Monitoring Node";
+      } else {
+        titleInput.value = "Localized Atmospheric Inversion Observed";
+      }
+    };
+
+    // Dispatch Command Simulation
+    window.dispatchWeatherCommand = function () {
+      const submitBtn = document.getElementById("submit-command-btn");
+      submitBtn.classList.add("opacity-50");
+      submitBtn.innerText = "Dispatching to MediatR Pipeline...";
+
+      setTimeout(function () {
+        submitBtn.classList.remove("opacity-50");
+        submitBtn.innerHTML = '<span class="material-symbols-outlined text-[20px]">send</span><span>Execute POST Command [MediatR: CreateWeatherNoteCommand]</span>';
+
+        const rawGuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+          const r = Math.random() * 16 | 0;
+          const v = c === "x" ? r : (r & 0x3 | 0x8);
+          return v.toString(16);
+        });
+
+        const isoNow = new Date().toISOString();
+        const titleVal = document.getElementById("command-title").value;
+        const bodyVal = document.getElementById("command-body").value;
+
+        const payload = {
+          id: rawGuid,
+          command: "CreateWeatherNoteCommand",
+          cityId: currentCityObject.id,
+          cityName: currentCityObject.name,
+          type: window.currentIntent,
+          tag: titleVal,
+          telemetryNote: bodyVal.substring(0, 45) + "...",
+          changeTracker: {
+            state: "Unchanged",
+            entitiesWritten: 1,
+            databaseProvider: "Npgsql.EntityFrameworkCore.PostgreSQL"
+          },
+          executionDuration: (Math.random() * 8 + 12).toFixed(1) + "ms"
+        };
+
+        document.getElementById("post-response-json").innerText = JSON.stringify(payload, null, 2);
+        document.getElementById("response-timestamp").innerText = isoNow;
+        
+        const pill = document.getElementById("post-status-pill");
+        pill.innerText = "HTTP 201 Created (ID: " + rawGuid.substring(0, 8) + ")";
+        pill.classList.add("text-secondary-fixed");
+      }, 240);
+    };
+
+    // Architecture Code Switcher
+    window.switchArchTab = function (tab) {
+      const curlBtn = document.getElementById("tab-curl-btn");
+      const csharpBtn = document.getElementById("tab-csharp-btn");
+      const curlContent = document.getElementById("tab-content-curl");
+      const csharpContent = document.getElementById("tab-content-csharp");
+
+      if (tab === "curl") {
+        curlBtn.className = "px-3 py-1.5 rounded font-code-sm text-code-sm bg-surface-container text-on-surface font-semibold";
+        csharpBtn.className = "px-3 py-1.5 rounded font-code-sm text-code-sm bg-transparent text-on-surface-variant hover:text-on-surface";
+        curlContent.classList.remove("hidden");
+        csharpContent.classList.add("hidden");
+      } else {
+        csharpBtn.className = "px-3 py-1.5 rounded font-code-sm text-code-sm bg-surface-container text-on-surface font-semibold";
+        curlBtn.className = "px-3 py-1.5 rounded font-code-sm text-code-sm bg-transparent text-on-surface-variant hover:text-on-surface";
+        csharpContent.classList.remove("hidden");
+        curlContent.classList.add("hidden");
+      }
+    };
+
+    window.toastCopy = function () {
+      const copyText = document.getElementById("copy-btn-text");
+      copyText.innerText = "Copied!";
+      setTimeout(function () {
+        copyText.innerText = "Copy";
+      }, 1500);
+    };
+
+    // Initialize initial default state
+    populateCities("US");
+  })();
+</script></main><footer class="w-full bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="w-full px-gutter-desktop py-space-md flex flex-col md:flex-row items-center justify-between gap-space-md font-code-sm text-code-sm text-on-surface-variant"><div class="flex items-center gap-space-md"><span class="">Kestrel WebHost [x64-linux]</span><span class="">GC Server: Enabled</span><span class="">Latency: ~1.8ms</span></div><div class="flex items-center gap-space-lg"><span class="">ASP.NET Core 8.0 Minimal APIs</span><span class="">OpenAPI Spec 3.0.1</span><span class="">© 2024 GeoWeather Telemetry Console</span></div></div></footer>
+
+
+
+
+
+
+
+</body></html>

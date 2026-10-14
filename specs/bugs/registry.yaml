@@ -1,0 +1,3 @@
+# Defect registry. One entry per discovered defect.
+# status: open | fixed | deferred | wontfix
+bugs: []

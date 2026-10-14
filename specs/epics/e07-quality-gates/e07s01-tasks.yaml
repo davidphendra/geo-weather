@@ -1,0 +1,35 @@
+story_id: e07s01
+title: Per-module + cross-module architecture test suite
+status: failing
+bcps: 5
+tasks:
+  - id: 1
+    description: "Cross-module ModuleTests: no dependency on another module except IntegrationEvents (all four modules)"
+    verify: "dotnet test src/Tests/ArchTests --filter Category=ModuleIsolation"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Architecture", "ModularMonolith"] }
+  - id: 2
+    description: "ApiTests: each API area isolated to one module"
+    verify: "dotnet test src/Tests/ArchTests --filter Category=ApiIsolation"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Architecture", "ModularMonolith"] }
+  - id: 3
+    description: "Per-module LayersTests: Domain !-> Application/Infrastructure; Application !-> Infrastructure"
+    verify: "dotnet test src/Modules/Geography/Tests --filter Category=Layers"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Architecture"] }
+  - id: 4
+    description: "Per-module DomainTests: value objects/domain events immutable; non-root entities encapsulated; no cross-aggregate references"
+    verify: "dotnet test src/Modules/Weather/Tests --filter Category=DomainRules"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Architecture", "unit"] }
+  - id: 5
+    description: "BuildingBlocks.Domain purity + size guard"
+    verify: "dotnet test src/Tests/ArchTests --filter Category=BuildingBlocksBoundary"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Architecture", "BuildingBlocks"] }

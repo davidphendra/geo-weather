@@ -1,0 +1,32 @@
+id: e03
+title: Weather Module (core)
+wsjf: 8.5
+total_bcps: 13
+status: todo
+module: M2
+note: >
+  Core bounded context: weather domain (F->C conversion, dew point), OpenWeatherMap provider behind
+  IWeatherService, and GetCurrentWeather exposed through IWeatherModule. Independent of other modules —
+  the provider geocodes q={city},{country}, so no cross-module edge is needed.
+stories:
+  - id: e03s01
+    title: Weather domain — WeatherReport, Temperature conversion, dew point
+    bcps: 5
+    status: todo
+    spec: e03s01-domain.md
+    tasks: e03s01-tasks.yaml
+    delta: ADDED
+  - id: e03s02
+    title: OpenWeatherMap provider behind IWeatherService port
+    bcps: 4
+    status: todo
+    spec: e03s02-provider.md
+    tasks: e03s02-tasks.yaml
+    delta: ADDED
+  - id: e03s03
+    title: GetCurrentWeather query + GET /api/weather/{cityName} + error handling
+    bcps: 4
+    status: todo
+    spec: e03s03-query.md
+    tasks: e03s03-tasks.yaml
+    delta: ADDED

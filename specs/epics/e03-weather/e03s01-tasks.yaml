@@ -1,0 +1,36 @@
+story_id: e03s01
+title: Weather domain — WeatherReport, Temperature conversion, dew point
+status: failing
+bcps: 5
+module: M2
+tasks:
+  - id: 1
+    description: "Add Temperature value object with FromFahrenheit/FromCelsius and 1-decimal rounding"
+    verify: "dotnet test src/Modules/Weather/Tests --filter Category=Temperature"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Weather", "unit"] }
+  - id: 2
+    description: "Add RelativeHumidity + Magnus-formula DewPoint.Derive"
+    verify: "dotnet test src/Modules/Weather/Tests --filter Category=DewPoint"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Weather", "unit"] }
+  - id: 3
+    description: "Add WindInfo with degrees + cardinal direction derivation"
+    verify: "dotnet test src/Modules/Weather/Tests --filter Category=Wind"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["Weather", "unit"] }
+  - id: 4
+    description: "Add SkyCondition, Visibility, Pressure, Location, WeatherReport aggregate"
+    verify: "dotnet test src/Modules/Weather/Tests --filter Category=WeatherReport"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["Weather", "unit"] }
+  - id: 5
+    description: "Add business rules and guard clauses (humidity 0-100, non-negative speed, coordinate ranges)"
+    verify: "dotnet test src/Modules/Weather/Tests --filter Category=Invariants"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["Weather", "unit"] }

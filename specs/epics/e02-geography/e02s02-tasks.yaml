@@ -1,0 +1,36 @@
+story_id: e02s02
+title: Geography — City aggregate + GetCitiesByCountry (AsNoTracking)
+status: failing
+bcps: 3
+module: M1
+tasks:
+  - id: 1
+    description: "Add GeoCoordinate value object with range validation"
+    verify: "dotnet test src/Modules/Geography/Tests --filter Category=GeoCoordinate"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["Geography", "unit"] }
+  - id: 2
+    description: "Add City aggregate + CityConfiguration + seed"
+    verify: "dotnet test src/Modules/Geography/Tests --filter Category=CityConfig"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["Geography", "integration"] }
+  - id: 3
+    description: "Add Cities/GetCitiesByCountry query + validator + handler (AsNoTracking)"
+    verify: "dotnet test src/Modules/Geography/Tests --filter Category=GetCities"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["Geography", "unit"] }
+  - id: 4
+    description: "Extend IGeographyModule with GetCitiesAsync"
+    verify: "dotnet test src/Modules/Geography/Tests --filter Category=GeographyModule"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Geography", "ModularMonolith"] }
+  - id: 5
+    description: "Add GET /api/countries/{countryCode}/cities with 404 for unknown"
+    verify: "dotnet test src/Tests/IntegrationTests --filter Category=Cities"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["Geography", "integration"] }

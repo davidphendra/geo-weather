@@ -1,0 +1,36 @@
+story_id: e04s02
+title: Favorites — consume CityAddedIntegrationEvent into a local City projection
+status: failing
+bcps: 4
+module: M3
+tasks:
+  - id: 1
+    description: "Add Cities/City projection entity + CityProjectionConfiguration to FavoritesContext"
+    verify: "dotnet test src/Modules/Favorites/Tests --filter Category=CityProjectionConfig"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["Favorites", "integration"] }
+  - id: 2
+    description: "Add CityAddedIntegrationEventHandler with idempotent upsert"
+    verify: "dotnet test src/Modules/Favorites/Tests --filter Category=CityAddedHandler"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Favorites", "ModularMonolith", "integration"] }
+  - id: 3
+    description: "Reference Geography.IntegrationEvents only; assert no other Geography reference"
+    verify: "dotnet test src/Tests/ArchTests --filter Category=ModuleIsolation"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Architecture", "ModularMonolith"] }
+  - id: 4
+    description: "Use the local projection in AddFavoriteCityValidator to reject unknown cities"
+    verify: "dotnet test src/Modules/Favorites/Tests --filter Category=UnknownCity"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["Favorites", "unit"] }
+  - id: 5
+    description: "Integration: seeded CityAdded events populate the projection; known city accepted, unknown rejected"
+    verify: "dotnet test src/Tests/IntegrationTests --filter Category=FavoritesProjection"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Favorites", "integration"] }

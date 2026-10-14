@@ -1,0 +1,36 @@
+story_id: e02s01
+title: Geography — Country aggregate + GetCountries (AsNoTracking)
+status: failing
+bcps: 3
+module: M1
+tasks:
+  - id: 1
+    description: "Add Country aggregate (Code, Name) to Geography.Domain/Countries"
+    verify: "dotnet test src/Modules/Geography/Tests --filter Category=Country"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["Geography", "unit"] }
+  - id: 2
+    description: "Add CountryConfiguration + seed to GeographyContext (geography.db)"
+    verify: "dotnet test src/Modules/Geography/Tests --filter Category=CountryConfig"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["Geography", "integration"] }
+  - id: 3
+    description: "Add Countries/GetCountries query + handler using .AsNoTracking()"
+    verify: "dotnet test src/Modules/Geography/Tests --filter Category=GetCountries"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["Geography", "unit"] }
+  - id: 4
+    description: "Expose IGeographyModule.GetCountriesAsync and implement it in GeographyModule"
+    verify: "dotnet test src/Modules/Geography/Tests --filter Category=GeographyModule"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Geography", "ModularMonolith"] }
+  - id: 5
+    description: "Add GET /api/countries in the host Geography area"
+    verify: "dotnet test src/Tests/IntegrationTests --filter Category=Countries"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["Geography", "integration"] }

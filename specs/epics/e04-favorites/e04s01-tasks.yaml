@@ -1,0 +1,44 @@
+story_id: e04s01
+title: Favorites — FavoriteCity aggregate + AddFavoriteCity + POST endpoint
+status: failing
+bcps: 4
+module: M3
+tasks:
+  - id: 1
+    description: "Add FavoriteCity aggregate + uniqueness rule in Favorites.Domain/FavoriteCities"
+    verify: "dotnet test src/Modules/Favorites/Tests --filter Category=FavoriteCity"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["Favorites", "unit"] }
+  - id: 2
+    description: "Add FavoriteCityConfiguration (unique index) + FavoritesContext (favorites.db) + migration"
+    verify: "dotnet test src/Modules/Favorites/Tests --filter Category=FavoritesContext"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["Favorites", "integration"] }
+  - id: 3
+    description: "Add FavoriteCities/AddFavoriteCity command + validator + handler"
+    verify: "dotnet test src/Modules/Favorites/Tests --filter Category=AddFavorite"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Favorites", "unit"] }
+  - id: 4
+    description: "Implement IFavoritesModule.AddFavoriteAsync"
+    verify: "dotnet test src/Modules/Favorites/Tests --filter Category=FavoritesModule"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Favorites", "ModularMonolith"] }
+  - id: 5
+    description: "Add POST /api/cities/favorites returning 201 + id"
+    verify: "dotnet test src/Tests/IntegrationTests --filter Category=Favorites"
+    risk: P0
+    security: medium
+    status: failing
+    allure: { severity: critical, categories: ["Favorites", "integration", "Security Review"] }
+  - id: 6
+    description: "Assert 400 on invalid input and 409 on duplicate; row lands in FavoritesContext"
+    verify: "dotnet test src/Tests/IntegrationTests --filter Category=FavoritesValidation"
+    risk: P0
+    security: medium
+    status: failing
+    allure: { severity: critical, categories: ["Favorites", "integration", "Security Review"] }

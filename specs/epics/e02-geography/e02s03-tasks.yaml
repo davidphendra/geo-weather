@@ -1,0 +1,36 @@
+story_id: e02s03
+title: Geography — publish CityAddedIntegrationEvent via the Outbox
+status: failing
+bcps: 5
+module: M1
+tasks:
+  - id: 1
+    description: "Add CityAddedIntegrationEvent (CityId, CountryCode, Name, Latitude, Longitude) to Geography.IntegrationEvents"
+    verify: "dotnet build Weather.sln --warnaserror"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Geography", "ModularMonolith"] }
+  - id: 2
+    description: "Raise a domain event when a city is registered; map it to the integration event"
+    verify: "dotnet test src/Modules/Geography/Tests --filter Category=CityAddedEvent"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Geography", "unit"] }
+  - id: 3
+    description: "Persist integration events to the Geography Outbox on SaveChanges"
+    verify: "dotnet test src/Modules/Geography/Tests --filter Category=OutboxWrite"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Geography", "integration"] }
+  - id: 4
+    description: "Run the background publisher so Outbox events reach the InMemory Events Bus"
+    verify: "dotnet test src/Modules/Geography/Tests --filter Category=OutboxPublish"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Geography", "integration"] }
+  - id: 5
+    description: "Seed writes CityAddedIntegrationEvent for each seeded city"
+    verify: "dotnet test src/Modules/Geography/Tests --filter Category=SeedEvents"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["Geography", "integration"] }
