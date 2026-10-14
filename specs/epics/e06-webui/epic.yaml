@@ -33,7 +33,7 @@ stories:
   - id: e06s04
     title: Favorites & Saved Notes page
     bcps: 7
-    status: todo
+    status: done
     spec: e06s04-favorites-notes.md
     tasks: e06s04-tasks.yaml
     delta: ADDED

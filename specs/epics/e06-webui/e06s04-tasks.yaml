@@ -1,49 +1,52 @@
 story_id: e06s04
 title: Favorites & Saved Notes page
-status: failing
+status: passing
 bcps: 7
 standards: docs/engineering/csharp-standards.md
 prerequisites: [e06s01, e06s02, e04s01]
 tasks:
   - id: 1
-    description: "Build MetricsStrip/MetricsCard derived from real loads (notes count shows em dash)."
+    description: "Build MetricsStrip/MetricsCard derived from real loads (notes count shows an em dash)."
     verify: "dotnet build src/Weather.WebUI/Weather.WebUI.csproj --warnaserror"
     risk: P2
-    status: failing
+    status: passing
     allure: { severity: normal, categories: ["WebUI"] }
   - id: 2
     description: "Build EntityControlBar (search, country filter, All | Favorites segmented control, New Command) as a testable filter model."
     verify: "dotnet test src/Tests/Weather.WebUI.UnitTests --filter Category=EntityFilter"
     risk: P1
-    status: failing
+    status: passing
     allure: { severity: high, categories: ["WebUI", "unit"] }
   - id: 3
     description: "Build EntityTable/EntityRow/TypeBadge/SnapshotCell with D3 'Not available' cells for note data."
     verify: "dotnet build src/Weather.WebUI/Weather.WebUI.csproj --warnaserror"
     risk: P1
-    status: failing
+    status: passing
     allure: { severity: high, categories: ["WebUI"] }
   - id: 4
     description: "Build QuickAddCommandForm (Favorite default, Note toggle) posting to the matching endpoint."
     verify: "dotnet test src/Tests/Weather.WebUI.UnitTests --filter Category=CommandDispatch"
     risk: P1
-    status: failing
+    status: passing
     allure: { severity: high, categories: ["WebUI", "unit"] }
   - id: 5
     description: "Build CqrsMutationFeed (real requests) and PipelineTopologyCard (static)."
     verify: "dotnet build src/Weather.WebUI/Weather.WebUI.csproj --warnaserror"
     risk: P2
-    status: failing
+    status: passing
     allure: { severity: normal, categories: ["WebUI"] }
   - id: 6
     description: "Build RawJsonInspectorModal with focus trap, Esc to close and focus restore."
     verify: "dotnet build src/Weather.WebUI/Weather.WebUI.csproj --warnaserror"
     risk: P2
-    status: failing
+    status: passing
     allure: { severity: normal, categories: ["WebUI", "a11y"] }
   - id: 7
     description: "Wire Favorites.razor and add an integration test for GET /favorites."
     verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=FavoritesPage"
     risk: P1
-    status: failing
+    status: passing
     allure: { severity: high, categories: ["WebUI", "integration"] }
+notes: >
+  Only favorites are listable (Notes is POST-only); the type filter keeps its two real states. Evidence:
+  specs/verifications/e06s04.md.
