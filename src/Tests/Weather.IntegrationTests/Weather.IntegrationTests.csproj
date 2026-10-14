@@ -26,4 +26,8 @@
     <ProjectReference Include="..\..\Modules\Notes\Weather.Modules.Notes.Infrastructure\Weather.Modules.Notes.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="NSubstitute" />
+  </ItemGroup>
 </Project>
