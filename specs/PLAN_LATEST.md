@@ -1,6 +1,6 @@
 # Weather App — Implementation Plan (Modular Monolith · CQRS · Onion-per-module)
 
-Status: **PLANNING COMPLETE — immediate work is the e02 Geography module read side (self-contained).**
+Status: **PLANNING COMPLETE — immediate work is e09 API Response Contract, then e04 Favorites.**
 Model: `kgrzybek/modular-monolith-with-ddd` — a module = a bounded context = its own assembly set + own
 composition root + own schema; modules integrate **only** asynchronously via integration events.
 
@@ -112,15 +112,21 @@ e00s01 (layout) → e01s01 → e01s02 → e02s01 → e02s02 → e02s03 → e03s0
 e05s01 → e05s02 → e06s01 → e06s02 → e07s01 → e07s02 → e08s01.
 Per story: `develop-tdd` → `verify-work` → `audit-code` → `commit-message` → `release-branch`.
 
-## Immediate scope — e02 Geography module (read side)
-Build the Geography module (M1) read side and nothing else. It is self-contained per ADR-0008 — no
-BuildingBlocks; plain sealed domain types; MediatR `IRequest<T>`; a module-local `ValidationBehavior`; EF Core
-in the module's own Infrastructure with `geography.db`. Scope: `e02s01` (Country + `GET /api/countries`) and
-`e02s02` (City + `GET /api/countries/{countryCode}/cities`), both `AsNoTracking()`.
+## Immediate scope — e09 API Response Contract, then e04 Favorites (+ prerequisites)
+**e09 (do first):** implement the REST response contract (ADR-0011 / `docs/engineering/rest-api-standards.md`) —
+RFC 9457 Problem Details with stable `code`, `traceId` and field-level `errors`; direct-resource success;
+create → `201` + `Location`; validation → `422`. One central `AddProblemDetails` customization + `IExceptionHandler`.
+Retrofits the built Weather/Geography endpoints and is the contract Favorites and later modules build to.
 
-The **`CityAddedIntegrationEvent` (e02s03) is deferred** — it needs the shared Outbox + In-memory Events Bus,
-which belongs with the write-side modules (Favorites/Notes). No cross-module reference is introduced.
-BuildingBlocks (e01) and every other module remain out of scope.
+**e04 Favorites (ADR-0010):** `FavoriteCity` keyed on `CityId` (unique index), own `favorites.db` via EF
+migrations, `POST /api/cities/favorites` (`201` + created resource / `409` duplicate / `404` unknown / `422`
+validation) and `GET /api/cities/favorites`, exposed through `IFavoritesService` and `FavoritesController`.
+Favorites is **event-driven** (F1): it upserts a local `City` projection from `CityAddedIntegrationEvent`.
+
+Prerequisites for e04 (in order): **e09** (response contract) → **e01s01** + **e01s02** (BuildingBlocks + shared
+Outbox/In-memory Events Bus) → **e02s03** (Geography publishes `CityAddedIntegrationEvent`, un-deferred).
+Stories: `e04s01` (FavoriteCity + AddFavoriteCity + GET + controller, 5 BCPs), `e04s02` (consume the event into
+`CityProjections`, 3 BCPs).
 
 ## Requirement coverage map
 

@@ -8,17 +8,24 @@ note: >
   Shared DDD/infra primitives, a thin API host, the module template (Geography slice as the first
   full module), the InMemory Events Bus + per-module Outbox, and the cross-module architecture tests.
 stories:
+  - id: e01s03
+    title: Shared event infrastructure (IIntegrationEvent + IIntegrationEventHandler + InMemoryEventsBus)
+    bcps: 2
+    status: done
+    note: Delivered for the Favorites event flow. Outbox deferred.
   - id: e01s01
     title: BuildingBlocks (Domain/Application/Infrastructure) + thin API host + walking skeleton
     bcps: 5
-    status: todo
+    status: deferred
+    note: "Host + project scaffold delivered in e00. DDD primitives (Entity/AggregateRoot/ValueObject/ICommand/IQuery) deferred — self-contained modules do not use them (YAGNI)."
     spec: e01s01-building-blocks.md
     tasks: e01s01-tasks.yaml
     delta: ADDED
   - id: e01s02
     title: Module template + InMemory Events Bus + Outbox + cross-module arch tests
     bcps: 5
-    status: todo
+    status: deferred
+    note: "Module template + arch tests delivered in e00. Outbox deferred (no runtime writes; reference-data bootstrap uses the in-memory bus)."
     spec: e01s02-module-template.md
     tasks: e01s02-tasks.yaml
     delta: ADDED

@@ -1,0 +1,62 @@
+story_id: e09s01
+title: API response contract (Problem Details + code + traceId + errors)
+status: done
+bcps: 5
+kind: cross-cutting
+standards: docs/engineering/rest-api-standards.md
+tasks:
+  - id: 1
+    description: >
+      Add ErrorHandling/ApiErrorCodes.cs and ApiProblemTypes.cs with the stable catalog
+      (MALFORMED_REQUEST, VALIDATION_FAILED, RESOURCE_NOT_FOUND, DUPLICATE_RESOURCE,
+      DEPENDENCY_UNAVAILABLE, INTERNAL_ERROR) and stable problem type URIs.
+    verify: "dotnet build src/Weather.Api/Weather.Api.csproj --warnaserror"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["ApiContract", "WebApi"] }
+  - id: 2
+    description: >
+      Configure AddProblemDetails with CustomizeProblemDetails adding traceId (Activity.Current?.Id fallback
+      HttpContext.TraceIdentifier) and an X-Correlation-ID response header.
+    verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=ProblemDetails"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["ApiContract", "WebApi", "integration"] }
+  - id: 3
+    description: >
+      Rewrite GlobalExceptionHandler to emit Problem Details via IProblemDetailsService with code (and errors for
+      validation); map not-found -> 404 RESOURCE_NOT_FOUND, conflict -> 409 DUPLICATE_RESOURCE,
+      provider -> 502 DEPENDENCY_UNAVAILABLE, unhandled -> 500 INTERNAL_ERROR; log the exception once.
+    verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=ProblemDetails"
+    risk: P0
+    security: medium
+    status: passing
+    allure: { severity: critical, categories: ["ApiContract", "Security Review", "integration"] }
+  - id: 4
+    description: >
+      Map FluentValidation failures to 422 VALIDATION_FAILED with field-level errors[] (field, code, message) and
+      ModelState binding to 400 MALFORMED_REQUEST via ApiBehaviorOptions.InvalidModelStateResponseFactory.
+    verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=Validation"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["ApiContract", "integration"] }
+  - id: 5
+    description: >
+      Retrofit Weather and Geography actions with [ProducesResponseType] (success + error schemas) and assert
+      success returns the resource directly (no envelope).
+    verify: "dotnet test Weather.sln"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["ApiContract", "WebApi"] }
+  - id: 6
+    description: "Contract tests: assert status code, application/problem+json, and presence/stability of code + traceId (+ errors)."
+    verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=ProblemDetails"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["ApiContract", "integration"] }
+  - id: 7
+    description: "Standards gate: Weather.Api compiles under analyzers and passes formatting."
+    verify: "dotnet format src/Weather.Api/Weather.Api.csproj --verify-no-changes"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["ApiContract", "Standards"] }

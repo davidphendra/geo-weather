@@ -2,23 +2,36 @@ id: e04
 title: Favorites Module
 wsjf: 6.0
 total_bcps: 8
-status: todo
+status: done
 module: M3
+kind: supporting
+owns_data: true
+persistence:
+  provider: EF Core SQLite
+  database: favorites.db
+  context: FavoritesContext
+  schema: EF Core migrations
+publishes: []
+consumes:
+  - CityAddedIntegrationEvent
+contract: IFavoritesService
 note: >
-  Bounded context for saved cities. Own schema (favorites.db) and own composition root. Consumes
-  CityAddedIntegrationEvent from Geography into a local City projection — the only legal coupling.
+  Bounded context for saved cities. Own schema (favorites.db) and composition root. Upserts a local City
+  projection from CityAddedIntegrationEvent (ADR-0010 F1); favorites are keyed on CityId (F2); a GET list
+  endpoint is included (F3); duplicates return 409 (F4); favorites are global (F5). PREREQUISITES: the API response contract (e09),
+  the shared Outbox + In-memory Events Bus (e01s01/e01s02), and Geography publishing CityAddedIntegrationEvent (e02s03).
 stories:
   - id: e04s01
-    title: Favorites — FavoriteCity aggregate + AddFavoriteCity + POST endpoint
-    bcps: 4
-    status: todo
+    title: Favorites — FavoriteCity aggregate + AddFavoriteCity + GET + FavoritesController
+    bcps: 5
+    status: done
     spec: e04s01-favorite-city.md
     tasks: e04s01-tasks.yaml
     delta: ADDED
   - id: e04s02
     title: Favorites — consume CityAddedIntegrationEvent into a local City projection
-    bcps: 4
-    status: todo
+    bcps: 3
+    status: done
     spec: e04s02-city-projection.md
     tasks: e04s02-tasks.yaml
     delta: ADDED

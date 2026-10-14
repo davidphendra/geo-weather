@@ -1,36 +1,44 @@
 story_id: e04s02
 title: Favorites — consume CityAddedIntegrationEvent into a local City projection
-status: failing
-bcps: 4
+status: done
+bcps: 3
 module: M3
+standards: docs/engineering/csharp-standards.md
+prerequisites: [e04s01, e09s01, e01s02, e02s03]
 tasks:
   - id: 1
-    description: "Add Cities/City projection entity + CityProjectionConfiguration to FavoritesContext"
-    verify: "dotnet test src/Modules/Favorites/Tests --filter Category=CityProjectionConfig"
-    risk: P1
-    status: failing
-    allure: { severity: high, categories: ["Favorites", "integration"] }
+    description: "Reference Weather.Modules.Geography.IntegrationEvents from Favorites.Application (the only cross-module reference)."
+    verify: "dotnet build src/Modules/Favorites/Weather.Modules.Favorites.Application/Weather.Modules.Favorites.Application.csproj --warnaserror"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["Favorites", "ModularMonolith"] }
   - id: 2
-    description: "Add CityAddedIntegrationEventHandler with idempotent upsert"
-    verify: "dotnet test src/Modules/Favorites/Tests --filter Category=CityAddedHandler"
+    description: "Add CityAddedIntegrationEventHandler upserting CityProjections idempotently (keyed by CityId)."
+    verify: "dotnet test src/Modules/Favorites/Tests/Weather.Modules.Favorites.Tests --filter Category=CityAddedHandler"
     risk: P0
-    status: failing
-    allure: { severity: critical, categories: ["Favorites", "ModularMonolith", "integration"] }
+    status: passing
+    allure: { severity: critical, categories: ["Favorites", "ModularMonolith", "unit"] }
   - id: 3
-    description: "Reference Geography.IntegrationEvents only; assert no other Geography reference"
-    verify: "dotnet test src/Tests/ArchTests --filter Category=ModuleIsolation"
-    risk: P0
-    status: failing
-    allure: { severity: critical, categories: ["Architecture", "ModularMonolith"] }
-  - id: 4
-    description: "Use the local projection in AddFavoriteCityValidator to reject unknown cities"
-    verify: "dotnet test src/Modules/Favorites/Tests --filter Category=UnknownCity"
+    description: "Wire the event subscription in AddFavoritesModule via the shared Events Bus."
+    verify: "dotnet build src/Modules/Favorites/Weather.Modules.Favorites.Infrastructure/Weather.Modules.Favorites.Infrastructure.csproj --warnaserror"
     risk: P1
-    status: failing
-    allure: { severity: high, categories: ["Favorites", "unit"] }
-  - id: 5
-    description: "Integration: seeded CityAdded events populate the projection; known city accepted, unknown rejected"
-    verify: "dotnet test src/Tests/IntegrationTests --filter Category=FavoritesProjection"
+    status: passing
+    allure: { severity: high, categories: ["Favorites", "ModularMonolith"] }
+  - id: 4
+    description: "Arch test: Favorites references Geography only through IntegrationEvents."
+    verify: "dotnet test src/Tests/Weather.ArchTests --filter Category=ModuleIsolation"
     risk: P0
-    status: failing
+    status: passing
+    allure: { severity: critical, categories: ["Architecture", "ModularMonolith"] }
+  - id: 5
+    description: "Integration: publishing CityAddedIntegrationEvent populates CityProjections and enables POST 201."
+    verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=FavoritesProjection"
+    risk: P0
+    status: passing
     allure: { severity: critical, categories: ["Favorites", "integration"] }
+  - id: 6
+    description: "Standards gate: Favorites compiles under analyzers and passes formatting."
+    verify: "dotnet format src/Modules/Favorites/Weather.Modules.Favorites.Infrastructure/Weather.Modules.Favorites.Infrastructure.csproj --verify-no-changes"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Favorites", "Standards"] }

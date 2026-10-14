@@ -5,32 +5,32 @@
 | ID | e04s02 |
 | Epic | e04 Favorites Module (M3) |
 | Status | todo |
-| BCPs | 4 |
+| BCPs | 3 |
 | Risk | P0 |
 | Type | feat |
 
 ## 1. Summary
-Handle `CityAddedIntegrationEvent` in the Favorites module and upsert a local `City` projection, so Favorites can
-validate cities without ever reading Geography's tables.
+Subscribe to `CityAddedIntegrationEvent` and upsert the Favorites-local `City` projection, so `AddFavoriteCity`
+can resolve cities without ever reading Geography's data.
 
 ## 2. Context
-This is the consumer half of the integration-event pattern and the only way Favorites is allowed to know about
-Geography.
+The consumer half of the integration-event pattern (ADR-0010 F1). Its prerequisites — the shared Outbox + In-memory
+Events Bus and Geography's `e02s03` — must be live before this story yields data.
 
 ## 3. User story
 As the system, I want Favorites to keep its own city list, so the two modules stay decoupled.
 
 ## 4. Business value
-Proves the modular-monolith integration model works end-to-end.
+Proves asynchronous module integration and keeps data ownership real.
 
 ## 5. In scope
-- `CityAddedIntegrationEventHandler` in the Favorites Application layer.
-- `Cities.City` local projection entity + config (table `CityProjections`) in `FavoritesContext`.
-- Idempotent upsert on receipt.
-- `AddFavoriteCityValidator` uses the projection to reject unknown cities.
+- Reference `Geography.IntegrationEvents` from `Favorites.Application` — the **only** cross-module reference.
+- `CityAddedIntegrationEventHandler` (in `Favorites.Application/Cities`) that upserts `CityProjections` idempotently.
+- Subscription wired via the shared Events Bus.
+- Architecture isolation test (`ModuleIsolation`): only `IntegrationEvents` crosses.
 
 ## 6. Out of scope
-Other events; editing the projection manually.
+Publishing events; other Geography events; event schema versioning.
 
 ## 7. Domain concepts
 `City` (projection).
@@ -38,34 +38,35 @@ Other events; editing the projection manually.
 ## 8. Layer touchpoints
 | Assembly | Change |
 |----------|--------|
-| Favorites.Domain | `Cities/City` projection |
-| Favorites.Application | `Cities/CityAddedIntegrationEventHandler` |
-| Favorites.Infrastructure | `CityProjectionConfiguration` |
-| Favorites.IntegrationEvents | references `Geography.IntegrationEvents` (allowed) |
+| `Favorites.Application` | `Cities/CityAddedIntegrationEventHandler`; references `Geography.IntegrationEvents` |
+| `Favorites.Infrastructure` | event subscription registration in `AddFavoritesModule` |
+| `Favorites.IntegrationEvents` | (empty; consumer only) |
 
 ## 9. API contract
-None (async). Effect: unknown cities are rejected with `400`.
+None (async). Effect: `POST /api/cities/favorites` can resolve cities → 201 instead of 404.
 
 ## 10. Dependencies
-e02s03 (producer), e04s01 (module).
+e04s01; prerequisites e01s01/e01s02 and e02s03.
 
 ## 11. Risks
 | Risk | Mitigation |
 |------|-----------|
-| Event delivered before subscriber registered | Deliver after startup; test runs inline |
-| Duplicate delivery | Idempotent upsert |
+| Event delivered before subscriber registered | bus delivers after startup (outbox → background publisher) |
+| Duplicate delivery | idempotent upsert keyed by `CityId` |
+| Cross-module leak | `ModuleIsolation` arch test forbids anything but `IntegrationEvents` |
 
 ## 12. Implementation steps
-1. Add the `City` projection entity + config to `FavoritesContext` → verify: `dotnet test src/Modules/Favorites/Tests --filter Category=CityProjectionConfig`
-2. Add `CityAddedIntegrationEventHandler` with idempotent upsert → verify: `dotnet test src/Modules/Favorites/Tests --filter Category=CityAddedHandler`
-3. Reference `Geography.IntegrationEvents` only; confirm no other Geography reference → verify: `dotnet test src/Tests/ArchTests --filter Category=ModuleIsolation`
-4. Use the projection in `AddFavoriteCityValidator` → verify: `dotnet test src/Modules/Favorites/Tests --filter Category=UnknownCity`
-5. Integration: after seed events, a known city is accepted and an unknown one is rejected → verify: `dotnet test src/Tests/IntegrationTests --filter Category=FavoritesProjection`
+1. Reference `Geography.IntegrationEvents` from Favorites.Application → verify: `dotnet build …Favorites.Application.csproj --warnaserror`
+2. Add `CityAddedIntegrationEventHandler` with idempotent upsert → verify: `dotnet test src/Modules/Favorites/Tests/Weather.Modules.Favorites.Tests --filter Category=CityAddedHandler`
+3. Wire the subscription in `AddFavoritesModule` → verify: `dotnet build …Favorites.Infrastructure.csproj --warnaserror`
+4. Assert isolation (only IntegrationEvents crosses) → verify: `dotnet test src/Tests/Weather.ArchTests --filter Category=ModuleIsolation`
+5. Integration: a `CityAddedIntegrationEvent` populates `CityProjections` → verify: `dotnet test src/Tests/Weather.IntegrationTests --filter Category=FavoritesProjection`
+6. Standards gate → verify: `dotnet format …Favorites.Infrastructure.csproj --verify-no-changes`
 
 ## 13. Test plan
-- Handler upserts; re-delivery is idempotent.
-- Unknown city rejected.
-- Arch test: only IntegrationEvents crosses.
+- Unit: handler upserts a projection row; re-delivery is idempotent.
+- Arch: only `Geography.IntegrationEvents` is referenced.
+- Integration: publishing the event fills the projection and enables `POST` 201.
 
 ## 14. Acceptance criteria (Gherkin)
 ```gherkin
@@ -74,28 +75,27 @@ Scenario: Projection updates on event
   When the Favorites handler processes it
   Then FavoritesContext contains a London projection row
 
-Scenario: Unknown city rejected
-  Given no projection exists for "Nowhere"
-  When I POST a favorite for Nowhere
-  Then 400
+Scenario: Cross-module reach is limited to integration events
+  Given the Favorites assemblies
+  Then they reference only Geography.IntegrationEvents from Geography
 ```
 
 ## 15. Definition of done
-Handler tests green; isolation arch test green.
+Handler + idempotency tests green; isolation arch test green; projection populated in integration.
 
 ## 16. Verification script
-1. `dotnet test src/Modules/Favorites/Tests --filter Category=CityAddedHandler`.
-2. `dotnet test src/Tests/ArchTests --filter Category=ModuleIsolation`.
+1. `dotnet test src/Modules/Favorites/Tests/Weather.Modules.Favorites.Tests --filter Category=CityAddedHandler`.
+2. `dotnet test src/Tests/Weather.ArchTests --filter Category=ModuleIsolation`.
 
 ## 17. Out of scope
-Other integration events.
+Publishing; event versioning.
 
 ## 18. Risks / notes
-If reference data never changes at runtime, seed the projection directly (documented alternative).
+Without e02s03 the projection stays empty; tests seed/publish the event directly.
 
 ## 19. Sizing / BCP rationale
-4 BCPs — event handler + projection + validation.
+3 BCPs — event handler + projection upsert + isolation test.
 
 ## 20. References
+- `specs/adr/0010-favorites-module-decisions.md`
 - `specs/adr/0005-modular-monolith-and-modules.md`
-- `specs/adr/0006-per-module-data-isolation.md`

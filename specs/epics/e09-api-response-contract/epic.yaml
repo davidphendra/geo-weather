@@ -1,0 +1,19 @@
+id: e09
+title: API Response Contract
+wsjf: 9.0
+total_bcps: 5
+status: done
+kind: cross-cutting
+note: >
+  Adopt the RFC 9457 Problem Details contract with stable `code`, `traceId`, and field-level `errors`; return
+  resources directly on success; 201+Location on create. One central implementation (AddProblemDetails
+  customization + IExceptionHandler + error-code catalog). Retrofits the already-built Weather and Geography
+  endpoints; the contract all later modules (Favorites, Notes) build to. See ADR-0011.
+stories:
+  - id: e09s01
+    title: Problem Details contract (code + traceId + errors), validation 422, create 201+Location
+    bcps: 5
+    status: done
+    spec: e09s01-response-contract.md
+    tasks: e09s01-tasks.yaml
+    delta: MODIFIED

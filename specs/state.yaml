@@ -7,9 +7,9 @@ project_cycle:
   completed_phases: [1, 2]
   mode: standard
 
-active_epic: e02
+active_epic: e09
 active_story: null
-active_flow: geography_module
+active_flow: api_response_contract
 
 epic_cycle:
   step: null
@@ -20,10 +20,13 @@ epic_cycle:
 handoff:
   next_skill: build-epic
   context: >
-    IMMEDIATE WORK: e02 Geography module (read side) ONLY. Self-contained per ADR-0008 (no BuildingBlocks,
-    module-local ValidationBehavior, EF Core in the module's Infrastructure). Scope: e02s01 (countries) and
-    e02s02 (cities); e02s03 (CityAddedIntegrationEvent) is DEFERRED (needs shared Outbox/Events Bus).
-    Do NOT implement until the user says go; no git operations. Other modules remain out of scope.
+    IMMEDIATE WORK: e09 API Response Contract (ADR-0011) — RFC 9457 Problem Details with code + traceId +
+    errors, validation 422, create 201+Location; retrofit Weather/Geography.
+    THEN e04 Favorites (ADR-0010). PREREQUISITES for e04: e09 (response contract), e01s01 + e01s02
+    (BuildingBlocks + shared Outbox/In-memory Events Bus), e02s03 (Geography publishes CityAddedIntegrationEvent).
+    Then e04s01 (FavoriteCity + AddFavoriteCity + GET + FavoritesController) and e04s02 (consume the event).
+    Decisions: CityId key (unique), GET list included, duplicate -> 409, favorites are global (no user).
+    Do NOT implement until the user says go; no git operations.
 
 architecture:
   style: "Modular monolith (bounded contexts) + CQRS + Onion-per-module"
@@ -53,6 +56,8 @@ decisions:
   - { id: ADR-0007, title: "Weather module is read-only and self-contained", status: proposed }
   - { id: ADR-0008, title: "Geography module is self-contained (read side first)", status: proposed }
   - { id: ADR-0009, title: "Controller-based APIs (ControllerBase) for the HTTP host", status: proposed }
+  - { id: ADR-0010, title: "Favorites module decisions (event-driven, CityId key, GET, 409, global)", status: proposed }
+  - { id: ADR-0011, title: "REST API response contract (RFC 9457 Problem Details + code + traceId)", status: proposed }
 
 risks:
   - id: R1

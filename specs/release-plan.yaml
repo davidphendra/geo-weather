@@ -7,7 +7,7 @@ release:
   type: greenfield
   style: "Modular Monolith (bounded contexts) + CQRS + Onion-per-module"
   reference: "https://github.com/kgrzybek/modular-monolith-with-ddd"
-  immediate_epic: e02          # Geography read side only — self-contained, no BuildingBlocks, event deferred
+  immediate_epic: e09          # API response contract (ADR-0011); prerequisite for e04 (Favorites)
 
 modules:
   - { id: M1, name: Geography, kind: supporting, owns_data: true,  db: geography.db, publishes: [CityAddedIntegrationEvent] }
@@ -24,6 +24,12 @@ epics:
     bcps: 8
     capsule_dir: epics/e00-repo-layout
     note: LAYOUT ONLY — projects, references, solution, build config, test projects. No feature code. Unblocks all others.
+  - id: e09
+    title: API Response Contract
+    wsjf: 9.0
+    bcps: 5
+    capsule_dir: epics/e09-api-response-contract
+    note: RFC 9457 Problem Details with code + traceId + errors; direct-resource success; 201+Location. Retrofits Weather/Geography; contract for later modules (ADR-0011).
   - id: e01
     title: BuildingBlocks & Modular Host Skeleton
     wsjf: 9.5
@@ -54,7 +60,7 @@ epics:
     wsjf: 6.0
     bcps: 8
     capsule_dir: epics/e04-favorites
-    note: Own schema; consumes CityAddedIntegrationEvent into a local City projection.
+    note: "Event-driven (ADR-0010) - own schema, CityId-keyed favorites, GET list, 409 duplicate, global, RFC 9457 errors. Prerequisites: e09 (response contract), e01s01/e01s02 (EventsBus/Outbox) + e02s03."
   - id: e05
     title: Notes Module
     wsjf: 5.5

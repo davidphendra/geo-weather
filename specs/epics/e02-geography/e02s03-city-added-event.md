@@ -1,8 +1,7 @@
 # Story e02s03 — Geography publishes CityAddedIntegrationEvent via the Outbox
 
-> **DEFERRED.** This story is not part of the active Geography slice. It requires the shared Outbox +
-> In-memory Events Bus and belongs with the write-side modules (Favorites/Notes) that consume the event.
-> See `specs/adr/0008-geography-module-self-contained.md`. The spec below is retained for planning only.
+> **IN SCOPE.** Un-deferred because Favorites (e04) consumes this event (ADR-0010 F1). It requires the
+> shared Outbox + In-memory Events Bus (`e01s02`) before it can publish.
 
 | Field | Value |
 |-------|-------|

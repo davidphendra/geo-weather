@@ -1,101 +1,124 @@
-# Story e04s01 — Favorites: FavoriteCity aggregate + AddFavoriteCity + POST endpoint
+# Story e04s01 — Favorites: FavoriteCity + AddFavoriteCity + GET + FavoritesController
 
 | Field | Value |
 |-------|-------|
 | ID | e04s01 |
 | Epic | e04 Favorites Module (M3) |
 | Status | todo |
-| BCPs | 4 |
+| BCPs | 5 |
 | Risk | P0 |
 | Type | feat |
 
 ## 1. Summary
-Add the `FavoriteCity` aggregate to the Favorites module, persist it in `FavoritesContext` (`favorites.db`),
-and expose `POST /api/cities/favorites` through `IFavoritesModule`, returning `201` + id and `409` on duplicate.
+Stand up the Favorites module: the `FavoriteCity` aggregate (keyed on `CityId`), its own `favorites.db`/`FavoritesContext`
+created by migration, the `City` projection table (filled by e04s02), an `AddFavoriteCityCommand` (resolves the city,
+rejects duplicates with `409`) and a `GetFavoritesQuery` (list joined to the projection), exposed through
+`IFavoritesService` and a controller-based `FavoritesController`.
 
 ## 2. Context
-Demonstrates a write bounded context with its own schema and its own composition root.
+Favorites is the first write module (ADR-0010). It owns its data and reads city display data from its own
+projection. Self-contained persistence (ADR-0008 pattern); controller API (ADR-0009).
 
 ## 3. User story
-As a user, I want to save a city to favorites, so I can find it quickly.
+As a user, I want to save a city to favorites (and list my favorites), so I can find it quickly.
 
 ## 4. Business value
-Fulfils the write-side requirement inside a properly owned context.
+Delivers the write-side requirement and demonstrates EF Core state mutations in an owned schema.
 
 ## 5. In scope
-- `FavoriteCities.FavoriteCity` aggregate (Id, CityName, CountryCode, CreatedAtUtc) + uniqueness rule.
-- `FavoriteCityConfiguration` with a unique index; `FavoritesContext`.
-- `FavoriteCities/AddFavoriteCity` command + validator + handler.
-- `IFavoritesModule.AddFavoriteAsync`.
-- `POST /api/cities/favorites` → 201/409/400.
+- `FavoriteCityId`, `FavoriteCity` (Id, CityId, CreatedAtUtc); `FavoritesDomainException`.
+- `City` projection entity (CityId, CountryCode, Name, GeoCoordinate) — table created here (populated in e04s02).
+- `FavoritesContext` (`favorites.db`) + configs (unique index on `FavoriteCities.CityId`; FKs internal to Favorites) + design-time factory.
+- `CreateFavoritesSchema` migration.
+- `IFavoriteCityRepository`, `ICityProjectionRepository`, `IUnitOfWork`, `IDateTimeProvider`.
+- `AddFavoriteCityCommand` (+ validator + handler): resolve `CityId` from the projection (unknown → `CityNotFoundException` → 404); duplicate → `FavoriteAlreadyExistsException` → 409.
+- `GetFavoritesQuery` (+ handler) joined to `CityProjections`.
+- `FavoriteCityDto` + mapper.
+- `IFavoritesService` (`AddFavoriteAsync`, `GetFavoritesAsync`) + `FavoritesService` + `AddFavoritesModule`.
+- `FavoritesController` (`POST /api/cities/favorites` → 201/409; `GET /api/cities/favorites` → 200).
+- Module-local `ValidationBehavior`.
 
 ## 6. Out of scope
-Listing/removing favorites.
+Event consumption (e04s02); unfavorite/delete; per-user favorites; BuildingBlocks.
 
 ## 7. Domain concepts
-`FavoriteCity`.
+`FavoriteCity`, `FavoriteCityId`, `City` (projection).
 
 ## 8. Layer touchpoints
 | Assembly | Change |
 |----------|--------|
-| Favorites.Domain | `FavoriteCities/FavoriteCity` |
-| Favorites.Application | `Contracts/IFavoritesModule`, `FavoriteCities/AddFavoriteCity` |
-| Favorites.Infrastructure | `FavoritesContext`, config, migration, `FavoritesModule` |
-| Weather.Api | Favorites area |
+| `Favorites.Domain` | `FavoriteCities/FavoriteCity`, `FavoriteCities/FavoriteCityId`, `Cities/City`, `GeoCoordinate`, `FavoritesDomainException` |
+| `Favorites.Application` | `Contracts/IFavoritesService`, `Abstractions/*`, `FavoriteCities/AddFavoriteCity`, `FavoriteCities/GetFavorites`, `Configuration/ValidationBehavior` |
+| `Favorites.Infrastructure` | `FavoritesContext`, `Configurations/*`, `Migrations/*`, `Repositories/*`, `DesignTime/*`, `FavoritesService`, `FavoritesModuleExtensions` |
+| `Weather.Api` | `Modules/Favorites/FavoritesController`, `ErrorHandling/GlobalExceptionHandler` (+409/404) |
 
 ## 9. API contract
-`POST /api/cities/favorites { "cityName": "London", "countryCode": "GB" }` → `201 { "id": "..." }`; `409` duplicate; `400` invalid.
+- `POST /api/cities/favorites` `{ "cityName": "London", "countryCode": "GB" }` → `201` + `Location` + `{ "id": "…" }`; `409` if already favorited; `404` unknown city; `400` invalid.
+- `GET /api/cities/favorites` → `200 [ { "id", "cityId", "city", "countryCode" } ]`.
 
 ## 10. Dependencies
-e01s02 (module template). City validation via the projection (e04s02).
+e00s01 (scaffold). Prerequisites for the projection data: e01s01/e01s02 (Events Bus/Outbox) and e02s03.
 
 ## 11. Risks (security: medium — public write)
 | Risk | Mitigation |
 |------|-----------|
-| Duplicate | Unique index + conflict mapping |
-| Unknown city | Reject via the local projection |
+| Duplicate | unique index on `CityId` + `FavoriteAlreadyExistsException` → 409 |
+| Unknown city | resolve against `CityProjections` → 404 |
+| Unbounded input | validator: city non-empty ≤ 100, country code length 2 |
+| Race on unique index | catch DB unique violation → 409 |
 
 ## 12. Implementation steps
-1. Add `FavoriteCity` aggregate + uniqueness rule → verify: `dotnet test src/Modules/Favorites/Tests --filter Category=FavoriteCity`
-2. Add `FavoriteCityConfiguration` (unique index) + `FavoritesContext` + migration → verify: `dotnet ef migrations list --context FavoritesContext --project src/Modules/Favorites/Weather.Modules.Favorites.Infrastructure --startup-project src/Weather.Api`
-3. Add `AddFavoriteCity` command + validator + handler → verify: `dotnet test src/Modules/Favorites/Tests --filter Category=AddFavorite`
-4. Implement `IFavoritesModule.AddFavoriteAsync` → verify: `dotnet test src/Modules/Favorites/Tests --filter Category=FavoritesModule`
-5. Add `POST /api/cities/favorites` → verify: `dotnet test src/Tests/IntegrationTests --filter Category=Favorites`
-6. Assert 400/409 and that the row lands in `FavoritesContext` → verify: `dotnet test src/Tests/IntegrationTests --filter Category=FavoritesValidation`
+1. Packages (EF Core Sqlite, EF Core Design, MediatR, FluentValidation) + refs → verify: `dotnet restore Weather.sln`
+2. `FavoriteCityId` + `FavoriteCity` + `FavoritesDomainException` → verify: `dotnet test src/Modules/Favorites/Tests/Weather.Modules.Favorites.Tests --filter Category=FavoriteDomain`
+3. `GeoCoordinate` + `City` projection entity → verify: `… --filter Category=CityProjectionDomain`
+4. `FavoritesContext` + configs + design-time factory → verify: `dotnet build …Favorites.Infrastructure.csproj --warnaserror`
+5. `CreateFavoritesSchema` migration → verify: `… --filter Category=FavoritesMigrations`
+6. repositories + `AddFavoriteCityCommand` + validator + handler → verify: `… --filter Category=AddFavorite`
+7. `FavoriteCityDto` + `GetFavoritesQuery` + handler → verify: `… --filter Category=GetFavorites`
+8. `IFavoritesService` + `FavoritesService` + `AddFavoritesModule` → verify: `dotnet build …Favorites.Infrastructure.csproj --warnaserror`
+9. `FavoritesController` + `GlobalExceptionHandler` (409/404) → verify: `dotnet test src/Tests/Weather.IntegrationTests --filter Category=Favorites`
+10. Standards gate → verify: `dotnet format …Favorites.Infrastructure.csproj --verify-no-changes`
 
 ## 13. Test plan
-- Unit: handler persists (EF InMemory) and returns a Guid; validator rejects blanks.
-- Integration: 201 + id; row exists in FavoritesContext; duplicate → 409; invalid → 400.
+- Domain: `FavoriteCity.Create` invariants; `FavoriteCityId`.
+- Application: validator rejects bad input; handler resolves `CityId` and persists (mocked repos); unknown → `CityNotFoundException`; duplicate → `FavoriteAlreadyExistsException`.
+- Integration: `FavoritesContext` unique index; `AsNoTracking`.
+- Host: `POST` 201; duplicate 409; unknown 404; invalid 400; `GET` 200.
 
 ## 14. Acceptance criteria (Gherkin)
 ```gherkin
 Scenario: Save a favorite
-  Given a valid city
+  Given the city projection contains London/GB
   When I POST /api/cities/favorites
-  Then 201 and the body contains a non-empty id
-  And the row exists in FavoritesContext
+  Then the response is 201 with a non-empty id
 
 Scenario: Duplicate favorite
-  Given London/GB is already saved
-  Then a second POST returns 409
+  Given London/GB is already a favorite
+  When I POST /api/cities/favorites again
+  Then the response is 409
+
+Scenario: Unknown city
+  Given the projection has no "Nowhere"
+  When I POST it as a favorite
+  Then the response is 404
 ```
 
 ## 15. Definition of done
-Tasks green; 201/409/400 covered; data written only in `favorites.db`.
+Tasks green; 201/409/404/400 covered; favorites written only in `favorites.db`.
 
 ## 16. Verification script
 1. `curl -X POST localhost:5000/api/cities/favorites -d '{"cityName":"London","countryCode":"GB"}'`.
-2. `dotnet test src/Modules/Favorites/Tests`.
+2. `curl localhost:5000/api/cities/favorites`.
 
 ## 17. Out of scope
-Listing/removing.
+Delete/unfavorite; per-user.
 
 ## 18. Risks / notes
-Uses the local City projection to reject unknown cities (cross-module asynchrony preserved).
+Until e04s02 fills the projection, POSTs resolve to 404; tests seed the projection directly.
 
 ## 19. Sizing / BCP rationale
-4 BCPs — aggregate + command + own context + endpoint.
+5 BCPs — aggregate + context/migration + command + query + contract + controller.
 
 ## 20. References
-- `specs/adr/0006-per-module-data-isolation.md`
-- `specs/tech-architecture/SECURITY_PLAN_LATEST.md`
+- `specs/adr/0010-favorites-module-decisions.md`
+- `specs/adr/0009-controller-based-apis.md`

@@ -18,7 +18,7 @@ note: >
   Infrastructure. Read side only — countries and cities (AsNoTracking, SQL-filtered). The catalog is the full
   ISO-3166 country list plus a handful of major cities each, seeded by EF Core migration scripts (C1-C4).
   The host exposes it via controller-based APIs (ADR-0009), with OpenAPI enabled. The
-  CityAddedIntegrationEvent (e02s03) is DEFERRED: it needs the shared Outbox + In-memory Events Bus.
+  CityAddedIntegrationEvent (e02s03) is now IN SCOPE — Favorites (e04) consumes it (ADR-0010 F1).
 stories:
   - id: e02s01
     title: Geography — Country catalog + EF migrations + GeographyController + OpenAPI + Weather naming
@@ -35,11 +35,10 @@ stories:
     tasks: e02s02-tasks.yaml
     delta: ADDED
   - id: e02s03
-    title: Geography — publish CityAddedIntegrationEvent (DEFERRED)
+    title: Geography — publish CityAddedIntegrationEvent (catalog bootstrap; Outbox deferred)
     bcps: 5
-    status: deferred
-    deferred: true
-    reason: Needs the shared Outbox + In-memory Events Bus; belongs with the write-side modules that consume it.
+    status: done
+    reason: Now in scope — Favorites (e04) consumes it (ADR-0010 F1).
     spec: e02s03-city-added-event.md
     tasks: e02s03-tasks.yaml
     delta: ADDED

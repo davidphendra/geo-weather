@@ -68,6 +68,19 @@ Full reference: `docs/engineering/csharp-standards.md`. Enforced by `Directory.B
 - Do not refactor unrelated code. Report commands run and results honestly; never claim a build/test passed unless it was actually run.
 <!-- END bigpowers:csharp-standards -->
 
+<!-- BEGIN bigpowers:rest-api-standards -->
+## REST API Response Standards (mandatory)
+Full reference: `docs/engineering/rest-api-standards.md` (ADR-0011).
+- HTTP status code is the primary outcome signal. NEVER return 200 for a failed operation.
+- Success returns the resource directly — no `success: true` envelope. Create → `201` + `Location` + the created resource; delete → `204`.
+- Errors use RFC 9457 Problem Details (`application/problem+json`) with `type`, `title`, `status`, `detail`, `instance` plus `code` and `traceId`.
+- Validation: FluentValidation → `422` `VALIDATION_FAILED` with field-level `errors[]`; model binding/ModelState → `400` `MALFORMED_REQUEST`.
+- Stable error codes: `MALFORMED_REQUEST`, `VALIDATION_FAILED`, `RESOURCE_NOT_FOUND`, `DUPLICATE_RESOURCE`, `DEPENDENCY_UNAVAILABLE`, `INTERNAL_ERROR`.
+- Entity mapping: not found → `404 RESOURCE_NOT_FOUND`; duplicate → `409 DUPLICATE_RESOURCE`; upstream failure → `502 DEPENDENCY_UNAVAILABLE`; unhandled → `500 INTERNAL_ERROR`.
+- `traceId` from `Activity.Current?.Id` (fallback `HttpContext.TraceIdentifier`), added centrally; never return stack traces, SQL, or secrets.
+- `[ProducesResponseType]` on every action (success + errors); document the contract with OpenAPI.
+<!-- END bigpowers:rest-api-standards -->
+
 <!-- BEGIN bigpowers:context-routing -->
 ## Context routing
 | Path | Read first |

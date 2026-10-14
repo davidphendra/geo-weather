@@ -28,6 +28,18 @@ Never ignore a red gate. Never leave a discovered defect unlogged.
 | "not introduced by my changes" | Ownership follows the gate, not the diff. |
 | "out of scope" | Log it or fix it; do not wave it away. |
 
+## REST API Response Contract (ADR-0011)
+
+All HTTP endpoints follow `docs/engineering/rest-api-standards.md`.
+
+- Status code is the primary outcome; never `200` for a failure.
+- Success returns the resource directly (no envelope); create → `201` + `Location` + created resource; delete → `204`.
+- Errors are RFC 9457 Problem Details (`application/problem+json`) with `type`, `title`, `status`, `detail`, `instance`, `code`, `traceId`.
+- FluentValidation → `422` `VALIDATION_FAILED` + `errors[]`; model binding → `400` `MALFORMED_REQUEST`.
+- Stable codes: `MALFORMED_REQUEST`, `VALIDATION_FAILED`, `RESOURCE_NOT_FOUND`, `DUPLICATE_RESOURCE`, `DEPENDENCY_UNAVAILABLE`, `INTERNAL_ERROR`.
+- `traceId` on every error; never leak stack traces, SQL, or secrets.
+- `[ProducesResponseType]` on every action; one central `IExceptionHandler` (no per-endpoint error formatting).
+
 ## C# Standards
 
 All C# code MUST follow `docs/engineering/csharp-standards.md` (mandatory) in addition to SOLID, DRY, and KISS.
