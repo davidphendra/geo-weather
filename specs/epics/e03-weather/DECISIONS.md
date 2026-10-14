@@ -58,6 +58,7 @@ product questions.
 | DD2 | `ObservedAtUtc` is `DateTimeOffset` (an instant), not `DateTime` | §15 |
 | DD3 | "City not found" is an **expected outcome** → `IWeatherProvider`/`IWeatherService` return `WeatherReport?` / `WeatherReportDto?`; the endpoint maps `null` → 404. Provider failure stays exceptional (`WeatherProviderException`) | §5 |
 | DD4 | Resilience via `Microsoft.Extensions.Http.Resilience` (timeout + bounded transient retry with jitter) instead of a bare `http.Timeout` | §10 |
+| DD4a | **Superseded the implementation only:** the original `AddStandardResilienceHandler()` also enabled a circuit breaker + rate limiter (deferred by `SCOPE_LATEST.yaml`) and fixed the retry count. Replaced by an explicit `AddResilienceHandler` pipeline bound from `OpenWeather:Resilience` — see e03s04 / ADR-0015. The DD4 intent (timeout + bounded retry with jitter) is unchanged. | §10, ADR-0015 |
 | DD5 | Boundary guards use framework helpers (`ArgumentException.ThrowIfNullOrWhiteSpace`, `ArgumentOutOfRangeException.ThrowIfNegative`); domain invariant violations use `WeatherDomainException` | §5 |
 | DD6 | `ILogger<T>` structured logging in the provider adapter; never log the URL, query string, or `appid` | §10 |
 | DD7 | File-scoped namespaces, one type per file, `sealed` records/classes, primary constructors for simple DI, `CancellationToken` propagated | §3, §4, §6 |

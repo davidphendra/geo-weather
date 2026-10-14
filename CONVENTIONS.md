@@ -137,10 +137,15 @@ Boundary rules — a violation is a build-breaking defect:
 
 ## Defensive Code Categories
 
-- **Retry:** transient HTTP failures to OpenWeatherMap (bounded, e.g. 3 attempts).
-- **Timeout:** outbound weather calls bounded (e.g. 10s).
+- **Retry:** transient HTTP failures to OpenWeatherMap. Bounded and **configurable** via `OpenWeather:Resilience`
+  (`MaxRetryAttempts` = retries after the first attempt, default 3; exponential backoff with jitter). Implemented
+  with an explicit `AddResilienceHandler` pipeline (ADR-0015).
+- **Timeout:** outbound weather calls bounded — attempt timeout `AttemptTimeoutSeconds` (default 10s) and a total
+  cap `TotalTimeoutSeconds` (default 30s).
 - **Graceful degradation:** weather endpoint returns `502` ProblemDetails when upstream is unavailable.
 - Not used in this project: rate limit, circuit breaker (single external provider, in-process cache is out of scope).
+  Do not use `AddStandardResilienceHandler()` for the OpenWeatherMap client — it enables a circuit breaker and a
+  rate limiter that this project defers.
 
 ## Observability & Telemetry
 

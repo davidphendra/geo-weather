@@ -130,7 +130,7 @@ Geography ──CityAddedIntegrationEvent──► InMemoryEventsBus ──► F
 | `Microsoft.AspNetCore.OpenApi` | [OK] | First-party. |
 | `Microsoft.OpenTelemetry` 1.1.0 | [OK] | Microsoft OpenTelemetry Distro (GA) — one-call OTel with the Azure Monitor exporter, ASP.NET Core/HttpClient instrumentation, and resource detectors (ADR-0014). |
 | `OpenTelemetry.Instrumentation.Runtime` | [OK] | Official OTel .NET; adds `dotnet.*` GC/thread-pool/process metrics the distro omits. |
-| `Microsoft.Extensions.Http.Resilience` | [OK] | First-party resilience for the OpenWeatherMap client (timeout + bounded retry with jitter). |
+| `Microsoft.Extensions.Http.Resilience` | [OK] | First-party resilience for the OpenWeatherMap client. Used explicitly (`AddResilienceHandler`) for a configurable total timeout + bounded retry with jitter + attempt timeout bound from `OpenWeather:Resilience`; no circuit breaker/rate limiter (ADR-0015, deferred by `SCOPE_LATEST.yaml`). |
 | `xunit` + runner | [OK] | Reference uses NUnit; xUnit is our existing choice. |
 | ~~Autofac / per-module IoC container~~ | [SUS] | Reference does it; catalog marks it contested (ADR-0005 deviation). Not used. |
 | ~~FluentAssertions~~ | [SLOP] | v8 commercial license — avoid. |

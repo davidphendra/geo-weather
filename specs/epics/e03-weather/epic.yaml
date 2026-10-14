@@ -1,7 +1,7 @@
 id: e03
 title: Weather Module (core)
 wsjf: 8.5
-total_bcps: 13
+total_bcps: 16
 status: done
 module: M2
 kind: core
@@ -16,6 +16,9 @@ note: >
   Design decisions are LOCKED — see DECISIONS.md (clamp dew point, decimal, no coordinates, nullable wind
   direction, key hygiene via handler + log level, typesafe SkyCondition). C# standards:
   docs/engineering/csharp-standards.md. Final task lists: e03s01 (6), e03s02 (7), e03s03 (7) — 20 tasks.
+  POST-SHIP CHANGE REQUEST: e03s04 replaces the over-broad AddStandardResilienceHandler (which also enabled a
+  circuit breaker + rate limiter that SCOPE_LATEST deferred) with an explicit configurable
+  total -> retry -> attempt-timeout pipeline bound from OpenWeather:Resilience (ADR-0015).
 stories:
   - id: e03s01
     title: Weather domain — value objects + WeatherReport
@@ -38,3 +41,10 @@ stories:
     spec: e03s03-query.md
     tasks: e03s03-tasks.yaml
     delta: ADDED
+  - id: e03s04
+    title: Configurable retry resilience for the OpenWeatherMap client
+    bcps: 3
+    status: todo
+    spec: e03s04-resilience-config.md
+    tasks: e03s04-tasks.yaml
+    delta: MODIFIED

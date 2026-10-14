@@ -6,7 +6,7 @@
 | `GET /api/*` | Public read | Input validation on route params; no secrets in responses |
 | `POST /api/weather/notes` | Public write | FluentValidation (max length, non-empty); ProblemDetails on rejection |
 | `POST /api/cities/favorites` | Public write | Uniqueness constraint (city, country); idempotent conflict → 409 |
-| Upstream OpenWeatherMap call | Outbound | API key from config/user-secrets; timeout; bounded retry |
+| Upstream OpenWeatherMap call | Outbound | API key from config/user-secrets; timeout; bounded retry configured by `OpenWeather:Resilience` (ADR-0015). Retries must never log the request URI/query string (the key rides in `appid`); `AddResilienceHandler` does not enable Polly telemetry by default. |
 | SQLite file | Local | Parameterized EF queries only (no raw SQL string concatenation) |
 
 ## Key handling

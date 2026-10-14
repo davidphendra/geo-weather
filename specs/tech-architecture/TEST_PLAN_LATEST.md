@@ -51,6 +51,12 @@ Each API endpoint area (`Weather.WebUI.Api.Modules.<Module>`) must not depend on
 | SC-e03s01-P0-02 | Dew point bounded by temperature | P0 |
 | SC-e03s02-P0-01 | OWM payload maps to domain without leaking provider types | P0 |
 | SC-e03s02-P0-02 | Upstream timeout / non-success → `WeatherProviderException` | P0 |
+| SC-e03s04-P0-01 | Transient 5xx is retried up to `MaxRetryAttempts` then succeeds (call count = retries + 1) | P0 |
+| SC-e03s04-P0-02 | Persistent 5xx exhausts retries → `WeatherProviderException` | P0 |
+| SC-e03s04-P1-01 | `MaxRetryAttempts=0` disables retries (exactly one call) | P1 |
+| SC-e03s04-P1-02 | 404 is never retried (exactly one call) | P1 |
+| SC-e03s04-P1-03 | Transport `HttpRequestException` is retried | P1 |
+| SC-e03s04-P2-01 | Invalid/inconsistent `OpenWeather:Resilience` values fail startup validation | P2 |
 | SC-e03s03-P0-01 | GET weather returns the full metric set | P0 |
 | SC-e03s03-P1-01 | Unknown city → 404 ProblemDetails | P1 |
 | SC-e01s02-P0-01 | A module cannot depend on another module except IntegrationEvents | P0 |
@@ -65,7 +71,9 @@ Each API endpoint area (`Weather.WebUI.Api.Modules.<Module>`) must not depend on
 
 ## Offline strategy
 - `IWeatherProvider` is a port; tests inject a stub. The concrete `OpenWeatherMapService` is tested with a canned
-  `HttpMessageHandler` returning JSON fixtures — no sockets.
+  `HttpMessageHandler` returning JSON fixtures — no sockets. Retry tests wire a counting stub as the primary
+  handler through `AddWeatherModule` and assert HTTP call counts (never wall-clock); they set
+  `RetryBaseDelaySeconds` to a sub-second value to stay fast.
 - The Events Bus is in-memory and synchronous in tests; the background outbox processor runs inline.
 - End-to-end tests replace real DI with per-module SQLite `:memory:` and the stub provider.
 - A guard test asserts the real provider is never resolved in tests.

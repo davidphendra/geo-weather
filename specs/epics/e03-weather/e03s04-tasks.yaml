@@ -1,0 +1,81 @@
+story_id: e03s04
+title: Configurable retry resilience for the OpenWeatherMap client
+status: failing
+bcps: 3
+module: M2
+standards: docs/engineering/csharp-standards.md
+tasks:
+  - id: 1
+    description: >
+      Add OpenWeatherResilienceOptions (SectionName "OpenWeather:Resilience") with [Range]-guarded
+      MaxRetryAttempts (int, default 3, 0..10), RetryBaseDelaySeconds (double, default 1, 0.001..30),
+      AttemptTimeoutSeconds (double, default 10, 0.1..60), TotalTimeoutSeconds (double, default 30,
+      0.1..120); add OpenWeatherResilienceOptionsValidator (IValidateOptions) enforcing
+      TotalTimeoutSeconds >= AttemptTimeoutSeconds. Unit-test every range and the cross-field rule.
+    verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=OpenWeatherResilienceOptions"
+    risk: P1
+    status: failing
+    allure:
+      severity: high
+      categories: ["Weather", "WeatherProvider", "unit"]
+  - id: 2
+    description: >
+      In AddWeatherModule bind OpenWeatherResilienceOptions with ValidateDataAnnotations + ValidateOnStart,
+      register the validator, and replace .AddStandardResilienceHandler() with
+      .AddResilienceHandler("openweather", ...) building total timeout -> retry (HttpRetryStrategyOptions:
+      MaxRetryAttempts, DelayBackoffType.Exponential, UseJitter = true, Delay, ShouldRetryAfterHeader) ->
+      attempt timeout, reading values from the options via ResilienceHandlerContext.ServiceProvider.
+      Extend WeatherModuleWiringTests so the graph resolves and no circuit breaker/rate limiter remains.
+    verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=WeatherServiceWiring"
+    risk: P0
+    status: failing
+    allure:
+      severity: critical
+      categories: ["Weather", "WeatherProvider", "integration"]
+  - id: 3
+    description: >
+      Add behavioral retry tests in Weather.Modules.Weather.Tests using a counting stub HttpMessageHandler
+      wired as the primary handler through AddWeatherModule: 503,503,200 with MaxRetryAttempts=2 -> 3 calls
+      and a report; persistent 503 with MaxRetryAttempts=2 -> 3 calls and WeatherProviderException;
+      MaxRetryAttempts=0 -> 1 call; 404 -> 1 call and null; HttpRequestException x2 then 200 -> 3 calls.
+      Use RetryBaseDelaySeconds = 0.01 so the suite stays fast; assert call counts, never wall-clock.
+    verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=OpenWeatherResilience"
+    risk: P0
+    status: failing
+    allure:
+      severity: critical
+      categories: ["Weather", "WeatherProvider", "integration"]
+  - id: 4
+    description: >
+      Add the OpenWeather:Resilience defaults to src/Weather.WebUI/appsettings.json and a host test
+      (Category WeatherResilienceConfig, via WeatherHostFactory) asserting IOptions<OpenWeatherResilienceOptions>
+      resolves MaxRetryAttempts=3, RetryBaseDelaySeconds=1, AttemptTimeoutSeconds=10, TotalTimeoutSeconds=30.
+      No live network call.
+    verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=WeatherResilienceConfig"
+    risk: P1
+    status: failing
+    allure:
+      severity: high
+      categories: ["Weather", "WeatherProvider", "integration"]
+  - id: 5
+    description: >
+      Update specs before completing: add specs/adr/0015-openweather-retry-resilience.md; add the
+      SC-e03s04-* rows to specs/tech-architecture/TEST_PLAN_LATEST.md; update tech-stack.md (package
+      rationale: configurable retry), SCOPE_LATEST.yaml (retry configurable; circuit breaker still
+      deferred), CONVENTIONS.md (Defensive Code Categories), and DECISIONS.md DD4.
+    verify: "rg -n 'e03s04|ADR-0015|MaxRetryAttempts' specs CONVENTIONS.md"
+    risk: P3
+    status: failing
+    allure:
+      severity: minor
+      categories: ["Weather", "Documentation"]
+  - id: 6
+    description: >
+      Standards + full preflight gate: build with warnings as errors, verify formatting, and run the whole
+      test suite.
+    verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln"
+    risk: P1
+    status: failing
+    allure:
+      severity: high
+      categories: ["Weather", "Standards"]

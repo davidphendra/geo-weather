@@ -59,7 +59,9 @@ out_of_scope:
   - item: Physical extraction of any module into a separate service or database.
     reason: Deferred — per-module files and IntegrationEvents preserve the path, but no deployment need exists.
   - item: Rate limiting and circuit breaker for the upstream provider.
-    reason: Deferred — single provider, low volume; timeout + bounded retry suffice.
+    reason: Deferred — single provider, low volume; timeout + bounded retry suffice. The bounded retry itself is
+      configurable via OpenWeather:Resilience (ADR-0015); the code no longer runs the framework's standard
+      handler, whose implicit circuit breaker and rate limiter this item defers.
   - item: Production deployment, containers, CI/CD beyond a green build.
     reason: Deferred — out of the assessment's build/test focus.
 
