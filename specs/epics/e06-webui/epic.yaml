@@ -12,7 +12,7 @@ stories:
   - id: e06s01
     title: Telemetry Slate design system + app shell
     bcps: 8
-    status: todo
+    status: done
     spec: e06s01-design-system-shell.md
     tasks: e06s01-tasks.yaml
     delta: ADDED
