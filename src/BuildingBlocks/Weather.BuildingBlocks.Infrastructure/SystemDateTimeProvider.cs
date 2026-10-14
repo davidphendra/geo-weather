@@ -1,6 +1,6 @@
-using Weather.Modules.Favorites.Application.Abstractions;
+using Weather.BuildingBlocks.Application.Abstractions;
 
-namespace Weather.Modules.Favorites.Infrastructure;
+namespace Weather.BuildingBlocks.Infrastructure;
 
 internal sealed class SystemDateTimeProvider : IDateTimeProvider
 {

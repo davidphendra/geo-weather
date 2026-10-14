@@ -1,10 +1,10 @@
 using global::Weather.Modules.Geography.IntegrationEvents;
 
 using Weather.BuildingBlocks.Application.Events;
+using Weather.BuildingBlocks.Domain.SharedKernel;
 using Weather.Modules.Favorites.Application.Abstractions;
 using Weather.Modules.Favorites.Domain;
 using Weather.Modules.Favorites.Domain.Cities;
-using Weather.Modules.Favorites.Domain.Countries;
 
 namespace Weather.Modules.Favorites.Application.Cities;
 

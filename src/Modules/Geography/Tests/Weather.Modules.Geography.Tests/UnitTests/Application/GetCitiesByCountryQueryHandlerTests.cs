@@ -1,5 +1,6 @@
 using NSubstitute;
 
+using Weather.BuildingBlocks.Domain.SharedKernel;
 using Weather.Modules.Geography.Application.Abstractions;
 using Weather.Modules.Geography.Application.Cities.GetCitiesByCountry;
 using Weather.Modules.Geography.Domain;

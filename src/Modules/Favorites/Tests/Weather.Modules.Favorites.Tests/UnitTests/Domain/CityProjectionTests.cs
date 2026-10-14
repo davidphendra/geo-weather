@@ -1,6 +1,7 @@
+using Weather.BuildingBlocks.Domain;
+using Weather.BuildingBlocks.Domain.SharedKernel;
 using Weather.Modules.Favorites.Domain;
 using Weather.Modules.Favorites.Domain.Cities;
-using Weather.Modules.Favorites.Domain.Countries;
 
 namespace Weather.Modules.Favorites.Tests.UnitTests.Domain;
 
@@ -34,7 +35,7 @@ public sealed class CityProjectionTests
     [Fact]
     public void GeoCoordinate_RejectsOutOfRange()
     {
-        Assert.Throws<FavoritesDomainException>(() => GeoCoordinate.From(90.1m, 0));
+        Assert.Throws<DomainException>(() => GeoCoordinate.From(90.1m, 0));
     }
 
     [Fact]

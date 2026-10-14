@@ -1,5 +1,6 @@
 using System.Globalization;
 
+using Weather.BuildingBlocks.Domain.SharedKernel;
 using Weather.Modules.Favorites.Domain;
 
 namespace Weather.Modules.Favorites.Infrastructure.Configurations;

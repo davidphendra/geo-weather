@@ -1,10 +1,11 @@
 using NSubstitute;
 
+using Weather.BuildingBlocks.Application.Abstractions;
+using Weather.BuildingBlocks.Domain.SharedKernel;
 using Weather.Modules.Notes.Application.Abstractions;
 using Weather.Modules.Notes.Application.Notes;
 using Weather.Modules.Notes.Application.Notes.AddWeatherNote;
 using Weather.Modules.Notes.Domain.Cities;
-using Weather.Modules.Notes.Domain.Countries;
 using Weather.Modules.Notes.Domain.Notes;
 
 namespace Weather.Modules.Notes.Tests.UnitTests.Application;

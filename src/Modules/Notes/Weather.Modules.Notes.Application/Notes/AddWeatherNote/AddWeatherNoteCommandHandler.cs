@@ -1,5 +1,6 @@
 using MediatR;
 
+using Weather.BuildingBlocks.Application.Abstractions;
 using Weather.Modules.Notes.Application.Abstractions;
 using Weather.Modules.Notes.Domain.Cities;
 using Weather.Modules.Notes.Domain.Notes;

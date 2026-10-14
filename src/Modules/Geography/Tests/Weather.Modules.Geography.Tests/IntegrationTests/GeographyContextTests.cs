@@ -1,6 +1,7 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
+using Weather.BuildingBlocks.Domain.SharedKernel;
 using Weather.Modules.Geography.Domain.Countries;
 using Weather.Modules.Geography.Infrastructure;
 

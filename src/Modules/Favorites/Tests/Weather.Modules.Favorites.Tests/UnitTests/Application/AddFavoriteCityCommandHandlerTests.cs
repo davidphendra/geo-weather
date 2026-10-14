@@ -1,11 +1,12 @@
 using NSubstitute;
 
+using Weather.BuildingBlocks.Application.Abstractions;
+using Weather.BuildingBlocks.Domain.SharedKernel;
 using Weather.Modules.Favorites.Application.Abstractions;
 using Weather.Modules.Favorites.Application.FavoriteCities.AddFavoriteCity;
 using Weather.Modules.Favorites.Application.FavoriteCities.GetFavorites;
 using Weather.Modules.Favorites.Domain;
 using Weather.Modules.Favorites.Domain.Cities;
-using Weather.Modules.Favorites.Domain.Countries;
 using Weather.Modules.Favorites.Domain.FavoriteCities;
 
 namespace Weather.Modules.Favorites.Tests.UnitTests.Application;

@@ -1,5 +1,6 @@
 using MediatR;
 
+using Weather.BuildingBlocks.Application.Abstractions;
 using Weather.Modules.Favorites.Application.Abstractions;
 using Weather.Modules.Favorites.Application.FavoriteCities.GetFavorites;
 using Weather.Modules.Favorites.Domain.Cities;

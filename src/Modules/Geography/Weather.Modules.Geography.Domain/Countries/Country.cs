@@ -1,3 +1,5 @@
+using Weather.BuildingBlocks.Domain.SharedKernel;
+
 namespace Weather.Modules.Geography.Domain.Countries;
 
 /// <summary>A country in the catalog.</summary>

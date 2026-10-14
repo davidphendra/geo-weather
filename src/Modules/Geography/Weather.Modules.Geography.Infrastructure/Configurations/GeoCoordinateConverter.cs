@@ -1,5 +1,6 @@
 using System.Globalization;
 
+using Weather.BuildingBlocks.Domain.SharedKernel;
 using Weather.Modules.Geography.Domain;
 
 namespace Weather.Modules.Geography.Infrastructure.Configurations;

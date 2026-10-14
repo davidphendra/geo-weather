@@ -1,4 +1,4 @@
-namespace Weather.Modules.Geography.Domain.Countries;
+namespace Weather.BuildingBlocks.Domain.SharedKernel;
 
 /// <summary>An ISO-3166 alpha-2 country code, normalized to upper case.</summary>
 public sealed record CountryCode
@@ -13,12 +13,9 @@ public sealed record CountryCode
 
         string normalized = value.Trim().ToUpperInvariant();
 
-        if (normalized.Length != 2 || !normalized.All(char.IsAsciiLetterUpper))
-        {
-            throw new GeographyDomainException($"'{value}' is not a valid ISO-3166 alpha-2 country code.");
-        }
-
-        return new CountryCode(normalized);
+        return normalized.Length == 2 && normalized.All(char.IsAsciiLetterUpper)
+            ? new CountryCode(normalized)
+            : throw new DomainException($"'{value}' is not an ISO-3166 alpha-2 country code.");
     }
 
     public override string ToString() => Value;

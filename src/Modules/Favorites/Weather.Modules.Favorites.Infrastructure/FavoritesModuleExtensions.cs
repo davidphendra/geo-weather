@@ -8,10 +8,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
+using Weather.BuildingBlocks.Application.Configuration;
 using Weather.BuildingBlocks.Infrastructure;
 using Weather.Modules.Favorites.Application.Abstractions;
 using Weather.Modules.Favorites.Application.Cities;
-using Weather.Modules.Favorites.Application.Configuration;
 using Weather.Modules.Favorites.Application.Contracts;
 using Weather.Modules.Favorites.Infrastructure.Database;
 using Weather.Modules.Favorites.Infrastructure.Repositories;
@@ -31,14 +31,14 @@ public static class FavoritesModuleExtensions
             options.UseSqlite(configuration.GetConnectionString("Favorites") ?? "Data Source=favorites.db"));
 
         services.AddScoped<IUnitOfWork>(provider => provider.GetRequiredService<FavoritesContext>());
-        services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
+        services.AddSystemDateTimeProvider();
         services.AddScoped<IFavoriteCityRepository, FavoriteCityRepository>();
         services.AddScoped<IFavoriteCityReadRepository, FavoriteCityReadRepository>();
         services.AddScoped<ICityProjectionRepository, CityProjectionRepository>();
 
         services.AddMediatR(configuration => configuration.RegisterServicesFromAssembly(typeof(IFavoritesService).Assembly));
         services.AddValidatorsFromAssembly(typeof(IFavoritesService).Assembly, includeInternalTypes: true);
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        services.AddWeatherValidationBehavior();
         services.AddScoped<IFavoritesService, FavoritesService>();
 
         services.AddIntegrationEventHandler<CityAddedIntegrationEvent, CityAddedIntegrationEventHandler>();

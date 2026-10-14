@@ -1,7 +1,7 @@
 using FluentValidation;
 
+using global::Weather.BuildingBlocks.Application.Configuration;
 using global::Weather.Modules.Weather.Application.Abstractions;
-using global::Weather.Modules.Weather.Application.Configuration;
 using global::Weather.Modules.Weather.Application.Contracts;
 using global::Weather.Modules.Weather.Infrastructure.OpenWeatherMap;
 
@@ -39,7 +39,7 @@ public static class WeatherModuleExtensions
 
         services.AddMediatR(configuration => configuration.RegisterServicesFromAssembly(typeof(IWeatherProvider).Assembly));
         services.AddValidatorsFromAssembly(typeof(IWeatherProvider).Assembly, includeInternalTypes: true);
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        services.AddWeatherValidationBehavior();
         services.AddScoped<IWeatherService, WeatherService>();
 
         return services;

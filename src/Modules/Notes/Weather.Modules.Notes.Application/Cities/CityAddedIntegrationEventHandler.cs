@@ -1,9 +1,9 @@
 using global::Weather.Modules.Geography.IntegrationEvents;
 
 using Weather.BuildingBlocks.Application.Events;
+using Weather.BuildingBlocks.Domain.SharedKernel;
 using Weather.Modules.Notes.Application.Abstractions;
 using Weather.Modules.Notes.Domain.Cities;
-using Weather.Modules.Notes.Domain.Countries;
 
 namespace Weather.Modules.Notes.Application.Cities;
 

@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
+using Weather.BuildingBlocks.Application.Configuration;
 using Weather.Modules.Geography.Application.Abstractions;
-using Weather.Modules.Geography.Application.Configuration;
 using Weather.Modules.Geography.Application.Contracts;
 using Weather.Modules.Geography.Infrastructure.Database;
 using Weather.Modules.Geography.Infrastructure.Events;
@@ -31,7 +31,7 @@ public static class GeographyModuleExtensions
         services.AddScoped<ICityReadRepository, CityReadRepository>();
         services.AddMediatR(configuration => configuration.RegisterServicesFromAssembly(typeof(IGeographyService).Assembly));
         services.AddValidatorsFromAssembly(typeof(IGeographyService).Assembly, includeInternalTypes: true);
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        services.AddWeatherValidationBehavior();
         services.AddScoped<IGeographyService, GeographyService>();
 
         services.AddHostedService<GeographyDatabaseInitializer>();

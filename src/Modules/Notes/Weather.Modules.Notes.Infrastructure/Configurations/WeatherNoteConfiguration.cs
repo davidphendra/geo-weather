@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-using Weather.Modules.Notes.Domain.Countries;
+using Weather.BuildingBlocks.Domain.SharedKernel;
 using Weather.Modules.Notes.Domain.Notes;
 
 namespace Weather.Modules.Notes.Infrastructure.Configurations;

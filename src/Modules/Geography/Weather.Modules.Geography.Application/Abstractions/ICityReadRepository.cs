@@ -1,3 +1,4 @@
+using Weather.BuildingBlocks.Domain.SharedKernel;
 using Weather.Modules.Geography.Domain.Cities;
 using Weather.Modules.Geography.Domain.Countries;
 

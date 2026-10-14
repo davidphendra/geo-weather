@@ -1,5 +1,5 @@
+using Weather.BuildingBlocks.Domain.SharedKernel;
 using Weather.Modules.Notes.Domain;
-using Weather.Modules.Notes.Domain.Countries;
 using Weather.Modules.Notes.Domain.Notes;
 
 namespace Weather.Modules.Notes.Tests.UnitTests.Domain;

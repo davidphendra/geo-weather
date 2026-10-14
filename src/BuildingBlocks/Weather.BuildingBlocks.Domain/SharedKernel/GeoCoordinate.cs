@@ -1,6 +1,6 @@
-namespace Weather.Modules.Favorites.Domain;
+namespace Weather.BuildingBlocks.Domain.SharedKernel;
 
-/// <summary>A geographic coordinate.</summary>
+/// <summary>A WGS-84 geographic coordinate.</summary>
 public sealed record GeoCoordinate
 {
     public decimal Latitude { get; }
@@ -17,12 +17,12 @@ public sealed record GeoCoordinate
     {
         if (latitude is < -90m or > 90m)
         {
-            throw new FavoritesDomainException("Latitude must be between -90 and 90.");
+            throw new DomainException("Latitude must be between -90 and 90.");
         }
 
         if (longitude is < -180m or > 180m)
         {
-            throw new FavoritesDomainException("Longitude must be between -180 and 180.");
+            throw new DomainException("Longitude must be between -180 and 180.");
         }
 
         return new GeoCoordinate(latitude, longitude);

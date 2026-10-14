@@ -1,6 +1,6 @@
 using FluentValidation;
 
-using global::Weather.Modules.Weather.Application.Configuration;
+using global::Weather.BuildingBlocks.Application.Configuration;
 using global::Weather.Modules.Weather.Application.WeatherReports.GetCurrentWeather;
 
 using MediatR;

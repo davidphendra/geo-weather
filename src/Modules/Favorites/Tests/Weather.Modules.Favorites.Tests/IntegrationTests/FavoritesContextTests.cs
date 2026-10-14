@@ -1,9 +1,9 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
+using Weather.BuildingBlocks.Domain.SharedKernel;
 using Weather.Modules.Favorites.Domain;
 using Weather.Modules.Favorites.Domain.Cities;
-using Weather.Modules.Favorites.Domain.Countries;
 using Weather.Modules.Favorites.Domain.FavoriteCities;
 using Weather.Modules.Favorites.Infrastructure;
 

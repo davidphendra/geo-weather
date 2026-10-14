@@ -1,4 +1,5 @@
-using Weather.Modules.Geography.Domain;
+using Weather.BuildingBlocks.Domain;
+using Weather.BuildingBlocks.Domain.SharedKernel;
 
 namespace Weather.Modules.Geography.Tests.UnitTests.Domain;
 
@@ -19,7 +20,7 @@ public sealed class GeoCoordinateTests
     [InlineData(-90.1, 0)]
     public void From_RejectsLatitudeOutOfRange(double latitude, double longitude)
     {
-        Assert.Throws<GeographyDomainException>(() => GeoCoordinate.From((decimal)latitude, (decimal)longitude));
+        Assert.Throws<DomainException>(() => GeoCoordinate.From((decimal)latitude, (decimal)longitude));
     }
 
     [Theory]
@@ -27,6 +28,6 @@ public sealed class GeoCoordinateTests
     [InlineData(0, -180.1)]
     public void From_RejectsLongitudeOutOfRange(double latitude, double longitude)
     {
-        Assert.Throws<GeographyDomainException>(() => GeoCoordinate.From((decimal)latitude, (decimal)longitude));
+        Assert.Throws<DomainException>(() => GeoCoordinate.From((decimal)latitude, (decimal)longitude));
     }
 }

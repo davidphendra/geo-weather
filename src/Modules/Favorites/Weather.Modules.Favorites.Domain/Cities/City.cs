@@ -1,4 +1,4 @@
-using Weather.Modules.Favorites.Domain.Countries;
+using Weather.BuildingBlocks.Domain.SharedKernel;
 
 namespace Weather.Modules.Favorites.Domain.Cities;
 
