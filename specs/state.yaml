@@ -20,6 +20,14 @@ epic_cycle:
 handoff:
   next_skill: survey-context
   context: >
+    RELEASED (CI hotfix): fix/ci-nuget-cache merged to main as 8cfdcf6 (BUG-006 fixed) — the Cache@2
+    NuGet path used $(UserProfile), which is undefined on the ubuntu-latest agent, so the token stayed
+    literal and the post-job save tarred a non-existent directory (the same tar / exit-code-2 failure as
+    BUG-005). Pinned the global-packages folder to NUGET_PACKAGES=$(Pipeline.Workspace)/.nuget/packages
+    so the cache path and `dotnet restore` are the same directory by construction; this also restores real
+    caching (previously every run re-restored from the network). Preflight green: build 0 warnings / 0
+    errors, format clean, 420 tests. Local proof: NUGET_PACKAGES=<dir> dotnet restore Weather.sln created
+    <dir> with 134 packages. Human step: re-run the Azure pipeline to confirm a hit on the second run. PRIOR:
     RELEASED (CI hotfix): fix/ci-npm-cache merged to main as f2bea7a (BUG-005 fixed) — the Azure
     pipeline's npm Cache@2 task was removed along with the unused NodeTool@0 install and nodeVersion
     variable, because wwwroot/app.css is committed and CI never runs npm, so the post-job cache save
