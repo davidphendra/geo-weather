@@ -11,6 +11,7 @@ public sealed class OpenWeatherMapMapperTests
         Name = "London",
         Dt = 1728820800,
         Visibility = 10000,
+        Coord = new() { Lat = 51.5074, Lon = -0.1278 },
         Main = new() { Temp = 50, Pressure = 1013, Humidity = humidity },
         Wind = new() { Speed = 10, Deg = directionDegrees },
         Sys = new() { Country = "GB" },
@@ -24,6 +25,8 @@ public sealed class OpenWeatherMapMapperTests
 
         Assert.Equal("London", report.Location.City);
         Assert.Equal("GB", report.Location.CountryCode);
+        Assert.Equal(51.5074m, report.Coordinates.Latitude);
+        Assert.Equal(-0.1278m, report.Coordinates.Longitude);
         Assert.Equal(10m, report.Temperature.Celsius);
         Assert.Equal(4.4704m, report.Wind.SpeedMetersPerSecond);
         Assert.Equal(220, report.Wind.DirectionDegrees);

@@ -106,6 +106,7 @@ public sealed class GetCurrentWeatherQueryHandlerBusinessMetricsTests
 
     private static WeatherReport Report() => WeatherReport.Create(
         Location.Of("London", "GB"),
+        Coordinates.Of(51.5074m, -0.1278m),
         DateTimeOffset.UnixEpoch,
         Temperature.FromFahrenheit(50m),
         RelativeHumidity.FromPercent(80),
