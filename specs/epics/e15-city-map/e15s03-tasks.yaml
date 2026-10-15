@@ -1,6 +1,6 @@
 story_id: e15s03
 title: CSP origins for unpkg + OpenStreetMap tiles
-status: failing
+status: passing
 bcps: 2
 module: M2
 standards: docs/engineering/csharp-standards.md
@@ -12,7 +12,7 @@ tasks:
       configuration-binding pattern and collection suppression as StyleOrigins/FontOrigins.
     verify: "dotnet test Weather.sln --filter Category=CspPolicy"
     risk: P0
-    status: failing
+    status: passing
     allure: { severity: critical, categories: ["Security Review", "Csp", "unit"] }
   - id: 2
     description: >
@@ -21,7 +21,7 @@ tasks:
       new directives and that no 'unsafe-inline', 'unsafe-eval', or https: wildcard was introduced.
     verify: "dotnet test Weather.sln --filter Category=CspPolicy"
     risk: P0
-    status: failing
+    status: passing
     allure: { severity: critical, categories: ["Security Review", "Csp", "unit"] }
   - id: 3
     description: >
@@ -29,12 +29,12 @@ tasks:
       https://tile.openstreetmap.org.
     verify: "dotnet test Weather.sln --filter Category=CspHeaders"
     risk: P1
-    status: failing
+    status: passing
     allure: { severity: high, categories: ["Security Review", "Csp", "integration"] }
   - id: 4
     description: >
       Story gate: full repo preflight green and the policy contains no new broad relaxations.
     verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln"
     risk: P0
-    status: failing
+    status: passing
     allure: { severity: critical, categories: ["Security Review", "Csp", "Standards"] }
