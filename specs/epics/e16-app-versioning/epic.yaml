@@ -1,0 +1,42 @@
+id: e16
+title: Application & Artifact SemVer
+wsjf: 9.0
+total_bcps: 15
+status: planned
+module: host
+kind: platform
+owns_data: false
+change_request: ADDED
+decisions: pending            # see specs/tech-architecture/VERSIONING_PLAN_LATEST.md §10 (D1-D10)
+design: specs/adr/0019-application-and-artifact-versioning.md
+plan: specs/tech-architecture/VERSIONING_PLAN_LATEST.md
+note: >
+  Give the deployable a semantic version derived from source (Nerdbank.GitVersioning version.json +
+  git height), stamp every assembly with AssemblyVersion=major.minor / FileVersion=full /
+  InformationalVersion=full+commit, tie the Azure DevOps run number and artifact name to it, emit a
+  self-describing build-info.json, and surface the version at runtime in the footer, GET /version, a
+  console startup line, the OpenTelemetry service.version resource attribute, and the
+  geoweather.build.info metric. Ops can then isolate the deployed version, count live instances per
+  version, and map it to a commit. Decisions D1-D10 must be confirmed before implementation.
+stories:
+  - id: e16s01
+    title: Version stamping, artifact identity, and CI (NBGV + run number + build-info.json)
+    bcps: 6
+    status: planned
+    spec: e16s01-version-stamping.md
+    tasks: e16s01-tasks.yaml
+    delta: ADDED
+  - id: e16s02
+    title: Runtime version surface (AppVersion, footer, /version, console startup line)
+    bcps: 5
+    status: planned
+    spec: e16s02-runtime-surface.md
+    tasks: e16s02-tasks.yaml
+    delta: ADDED
+  - id: e16s03
+    title: Telemetry correlation (OTel service.version + geoweather.build.info metric)
+    bcps: 4
+    status: planned
+    spec: e16s03-telemetry-correlation.md
+    tasks: e16s03-tasks.yaml
+    delta: MODIFIED

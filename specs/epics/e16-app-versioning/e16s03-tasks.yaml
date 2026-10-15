@@ -1,0 +1,55 @@
+story_id: e16s03
+title: Telemetry correlation (OTel service.version + geoweather.build.info metric)
+status: planned
+bcps: 4
+module: host
+standards: docs/engineering/csharp-standards.md
+decisions: pending
+tasks:
+  - id: 1
+    description: >
+      Add Weather.WebUI/Telemetry/HostMeters.cs: a host-local meter named "GeoWeather.Host" and the
+      geoweather.build.info ObservableGauge (value always 1) with bounded attributes version
+      (AppVersion.Version) and commit (AppVersion.Commit). Host-local because the instrument describes the
+      host process and BuildingBlocks must not know the app version (same rationale as runtime
+      instrumentation).
+    verify: "dotnet test Weather.sln --filter Category=HostMeters"
+    risk: P0
+    status: planned
+    allure: { severity: critical, categories: ["Observability", "Versioning", "unit"] }
+  - id: 2
+    description: >
+      Add service.name = "GeoWeather" and service.version = AppVersion.InformationalVersion to the
+      OpenTelemetry resource attributes in ObservabilityServiceCollectionExtensions.ResourceAttributes,
+      and register the host meter with AddMeter(HostMeters.MeterName). No change to sampling or existing
+      instruments.
+    verify: "dotnet test Weather.sln --filter Category=Observability"
+    risk: P0
+    status: planned
+    allure: { severity: critical, categories: ["Observability", "Versioning", "unit"] }
+  - id: 3
+    description: >
+      Extend ObservabilityWiringTests to assert the built resource contains service.name=GeoWeather and a
+      non-empty service.version, and that the host meter is registered; add HostMetersTests using
+      MeterListener to assert geoweather.build.info reports 1 with version and commit tags. Assert no
+      provider is built when disabled (unchanged).
+    verify: "dotnet test Weather.sln --filter \"Category=Observability|Category=HostMeters\""
+    risk: P0
+    status: planned
+    allure: { severity: critical, categories: ["Observability", "Versioning", "unit"] }
+  - id: 4
+    description: >
+      Document the service.version filter (scope traces/failures/logs to a version) and the
+      geoweather.build.info query (live versions and instance counts) in docs/operations/observability.md,
+      and optionally add a version parameter to ops/azure-monitor/workbook.json.
+    verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes"
+    risk: P1
+    status: planned
+    allure: { severity: high, categories: ["Observability", "Versioning", "docs"] }
+  - id: 5
+    description: >
+      Story gate: full repo preflight green and the observability + host-meter categories green.
+    verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln"
+    risk: P0
+    status: planned
+    allure: { severity: critical, categories: ["Observability", "Versioning", "Standards"] }

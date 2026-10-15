@@ -1,0 +1,56 @@
+story_id: e16s02
+title: Runtime version surface (AppVersion, footer, /version, startup log)
+status: planned
+bcps: 5
+module: host
+standards: docs/engineering/csharp-standards.md
+decisions: pending
+tasks:
+  - id: 1
+    description: >
+      Add Weather.WebUI/Services/AppVersion.cs: a small sealed type that reads the entry assembly's
+      AssemblyInformationalVersionAttribute once, parses SemVer (part before '-'/'+'), extracts the commit
+      (strip a leading 'g'), and exposes Version, InformationalVersion, Commit. Fall back to
+      "0.0.0-unknown" and never throw. Unit-test parsing (0.1.24-alpha+g9a7eb6c819, 0.1.24, garbage) and
+      the fallback, and assert the source is InformationalVersion not GetName().Version.
+    verify: "dotnet test Weather.sln --filter Category=AppVersion"
+    risk: P0
+    status: planned
+    allure: { severity: critical, categories: ["Versioning", "Runtime", "unit"] }
+  - id: 2
+    description: >
+      Add Weather.WebUI/Hosting/VersionEndpoints.cs returning { version, informationalVersion, commit } from
+      AppVersion, mapped at GET /version in WebUiEndpointExtensions next to /health; annotate the OpenAPI
+      metadata per ADR-0011. Integration-test GET /version -> 200 application/json with non-empty fields.
+    verify: "dotnet test Weather.sln --filter Category=VersionEndpoint"
+    risk: P0
+    status: planned
+    allure: { severity: critical, categories: ["Versioning", "Runtime", "integration"] }
+  - id: 3
+    description: >
+      Show "v{Version}" in AppFooter.razor immediately before the copyright (right-hand group), remove the
+      @RuntimeInformation.FrameworkDescription (.NET) span, and keep the Kestrel host + OS on the left using
+      the existing font-code-sm/text-on-surface-variant tokens. Switch AppHeader.razor from GetName().Version
+      to AppVersion so there is one source of truth. Integration-test that GET / contains the version before
+      the copyright and no longer contains the .NET framework string; run the Tailwind drift guard.
+    verify: "dotnet test Weather.sln --filter Category=AppFooter"
+    risk: P0
+    status: planned
+    allure: { severity: critical, categories: ["Versioning", "Runtime", "unit"] }
+  - id: 4
+    description: >
+      Print one console line at Information before app.Run() in Program.cs:
+      "GeoWeather {Version} ({Commit}) starting in {Environment}", with structured properties and no
+      secrets. Add StartupLogTests capturing the log record (test logger provider) asserting exactly one
+      record carries Version and Commit and no secret/connection string.
+    verify: "dotnet test Weather.sln --filter Category=StartupLog"
+    risk: P1
+    status: planned
+    allure: { severity: high, categories: ["Versioning", "Runtime", "unit"] }
+  - id: 5
+    description: >
+      Story gate: full repo preflight green and the Tailwind drift guard green (footer class change).
+    verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln && bash scripts/check-tailwind-css.sh"
+    risk: P0
+    status: planned
+    allure: { severity: critical, categories: ["Versioning", "Standards"] }

@@ -146,7 +146,24 @@ Covers OWM (`OpenWeatherMapService`) and the Blazor `WeatherApiClient` outbound 
 (`favorites.operations{outcome=created}` ÷ `weather.report.requests{outcome=success}`), upstream error ratio,
 catalogue not-found ratio, favorites/notes growth per day.
 
-### 5.5 Error taxonomy
+### 5.5 Host / build metrics (custom, host-level)
+
+Added by **e16** (application & artifact SemVer). These describe the running host/build, not a module, so
+they live in `Weather.WebUI` on a **host-local meter** (`GeoWeather.Host`) — the same placement rationale as
+`AddRuntimeInstrumentation()`. BuildingBlocks stays unaware of the application version.
+
+| Metric | Type | Unit | Attributes (bounded) | Emitted at | Question |
+|--------|------|------|----------------------|------------|----------|
+| `geoweather.build.info` | ObservableGauge | `1` | `version` (`0.1.24-alpha`), `commit` (short) | Host startup (`AppVersion`) | Which versions are live; instances per version; did a deployment change? |
+
+In addition, the OpenTelemetry **resource** carries `service.name = GeoWeather` and
+`service.version = <informational version>`, so every metric, trace, and log is automatically tagged with the
+version (no per-request attribute needed). The gauge is the explicitly queryable/aggregatable form.
+
+Cardinality: `version`/`commit` change only on deploy, so the series count is a function of deployments, not
+traffic. Never add per-request values here.
+
+### 5.6 Error taxonomy
 `api.errors{error.code}` reuses ADR-0011's six codes — `MALFORMED_REQUEST`, `VALIDATION_FAILED`,
 `RESOURCE_NOT_FOUND`, `DUPLICATE_RESOURCE`, `DEPENDENCY_UNAVAILABLE`, `INTERNAL_ERROR` — so technical error rate
 and business failure mix share one vocabulary.

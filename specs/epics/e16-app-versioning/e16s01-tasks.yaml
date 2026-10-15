@@ -1,0 +1,80 @@
+story_id: e16s01
+title: Version stamping, artifact identity, and CI (NBGV + run number + build-info.json)
+status: planned
+bcps: 6
+module: host
+standards: docs/engineering/csharp-standards.md
+decisions: pending
+tasks:
+  - id: 1
+    description: >
+      Add a repo-root version.json with version "0.1-alpha", a description, a publicReleaseRefSpec for
+      refs/heads/main and v* tags, release.tagName "v{version}", gitCommitIdIncludeDirty true, and
+      cloudBuild.buildNumber.enabled true with includeCommitId.when "never" (clean run/artifact label).
+      Pin Nerdbank.GitVersioning 3.10.94 in Directory.Packages.props and add the PackageReference
+      (PrivateAssets="all") once in Directory.Build.props. Verify a clean build and that
+      dotnet format --verify-no-changes and --warnaserror stay green with the generated ThisAssembly sources.
+    verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes"
+    risk: P0
+    status: planned
+    allure: { severity: critical, categories: ["Versioning", "Build", "unit"] }
+  - id: 2
+    description: >
+      Add a Directory.Build.targets target (BeforeTargets="CoreCompile") that fails the build when the
+      computed version ($(BuildVersionSimple)) is empty or starts with 0.0.0, so a shallow/no-git build
+      fails fast and locally instead of silently stamping a bogus version.
+    verify: "dotnet build Weather.sln --warnaserror"
+    risk: P0
+    status: planned
+    allure: { severity: critical, categories: ["Versioning", "Build", "unit"] }
+  - id: 3
+    description: >
+      Emit build-info.json into the Weather.WebUI publish output (version, informationalVersion, commit,
+      publicRelease, builtAtUtc) via an MSBuild target using the NBGV-derived properties
+      ($(BuildVersionSimple), $(AssemblyInformationalVersion), $(GitCommitId), $(PublicRelease)). Keep it
+      out of the source tree (output only).
+    verify: "dotnet publish src/Weather.WebUI -o /tmp/weather-publish && cat /tmp/weather-publish/build-info.json"
+    risk: P1
+    status: planned
+    allure: { severity: high, categories: ["Versioning", "Build", "unit"] }
+  - id: 4
+    description: >
+      Add scripts/check-version.sh that reads build-info.json (path argument) and fails (exit 1) when it is
+      missing, empty, or the version starts with 0.0.0; prints the honest version otherwise. This is the
+      pipeline-side guard; the build-side guard is task 2.
+    verify: "bash scripts/check-version.sh /tmp/weather-publish/build-info.json"
+    risk: P0
+    status: planned
+    allure: { severity: critical, categories: ["Versioning", "CI", "unit"] }
+  - id: 5
+    description: >
+      Update azure-pipelines.yml CI job: checkout: self with fetchDepth: 0 (full history required by NBGV;
+      a shallow clone yields 0.0.0 and the guards fail). Run scripts/check-version.sh against the published
+      build-info.json after dotnet publish and before PublishPipelineArtifact. Change nothing else in the
+      step order.
+    verify: "python3 -c \"import yaml; yaml.safe_load(open('azure-pipelines.yml'))\""
+    risk: P0
+    status: planned
+    allure: { severity: critical, categories: ["Versioning", "CI", "integration"] }
+  - id: 6
+    description: >
+      Publish the CI artifact as webapp-$(Build.BuildNumber) (NBGV sets Build.BuildNumber to the version),
+      and update the Deploy stage download artifact name and the AzureWebApp@1 package path to
+      $(Pipeline.Workspace)/webapp-$(Build.BuildNumber). All three references must change together. Use
+      Build.BuildNumber (predefined, cross-stage), NOT NBGV's job-scoped GitBuildVersionSimple. Optionally
+      add ##vso[build.addbuildtag]$(GitBuildVersionSimple). Dry-run on a feature branch; if the cross-stage
+      macro proves brittle, fall back to the stable 'webapp' name (run number + build-info.json already
+      carry the version).
+    verify: "python3 -c \"import yaml; yaml.safe_load(open('azure-pipelines.yml'))\""
+    risk: P0
+    status: planned
+    allure: { severity: critical, categories: ["Versioning", "CI", "integration"] }
+  - id: 7
+    description: >
+      Story gate: full repo preflight green; a -p:PublicRelease=true build on a matching ref has no commit
+      suffix; AssemblyVersion remains major.minor while InformationalVersion carries the commit; the
+      pipeline YAML names the artifact with $(Build.BuildNumber) in both stages.
+    verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln"
+    risk: P0
+    status: planned
+    allure: { severity: critical, categories: ["Versioning", "Standards"] }

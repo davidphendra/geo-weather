@@ -139,6 +139,21 @@ epics:
       component that lazily loads Leaflet 1.9.4 from unpkg (SRI-pinned) and renders OpenStreetMap standard
       tiles; switches StationHeroCard to the report coordinates with a City fallback; and whitelists the
       unpkg + tile origins in the CSP. Design: specs/adr/0018-city-map-leaflet.md (D1-D10 confirmed).
+  - id: e16
+    title: Application & Artifact SemVer
+    wsjf: 9.0
+    bcps: 15
+    capsule_dir: epics/e16-app-versioning
+    status: planned
+    decisions: pending
+    note: >
+      Give the deployable a semantic version derived from source (Nerdbank.GitVersioning version.json + git
+      height); stamp AssemblyVersion=major.minor / FileVersion=full / InformationalVersion=full+commit; tie
+      the Azure DevOps run number and artifact name to it; emit build-info.json into the artifact; and
+      surface the version at runtime in the footer, GET /version, a console startup line, the OpenTelemetry
+      service.version resource attribute, and the geoweather.build.info metric. Design:
+      specs/adr/0019-application-and-artifact-versioning.md.
+      Plan: specs/tech-architecture/VERSIONING_PLAN_LATEST.md. Decisions D1-D10 must be confirmed first.
 
 bugs:
   total: 1

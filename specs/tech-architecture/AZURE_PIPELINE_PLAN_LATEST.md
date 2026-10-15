@@ -66,6 +66,27 @@ The `Deploy` stage is gated three ways: it `dependsOn: CI`, it only runs when
   before the first run.
 - The Tailwind drift guard is independently verifiable locally: `bash scripts/check-tailwind-css.sh`.
 
+## Versioning integration (e16 — additive, not yet applied)
+
+When e16 lands, the pipeline gains artifact-level semantic versioning. The changes are specified in
+`specs/tech-architecture/VERSIONING_PLAN_LATEST.md` §4.4 and `specs/adr/0019-application-and-artifact-versioning.md`;
+this plan remains the pipeline authority. Summary of the touch points:
+
+| # | Change | Reason |
+|---|--------|--------|
+| P1 | `checkout: self` gains `fetchDepth: 0` | NBGV needs full git history; a shallow clone yields `0.0.0` |
+| P2 | NBGV sets `Build.BuildNumber` to the version (`##vso[build.updatebuildnumber]`) | one label for run + artifact + app |
+| P3 | `scripts/check-version.sh` runs after publish | fail loudly instead of shipping `0.0.0` |
+| P4 | CI artifact renamed to `webapp-$(Build.BuildNumber)` | artifact-level identity |
+| P5 | Deploy `download` artifact name matches P4 | must move together |
+| P6 | Deploy `AzureWebApp@1` `package` path matches P4 | must move together |
+| P7 | optional build tag `$(GitBuildVersionSimple)` | filter run history by version |
+| P8 | optional `v*` tag trigger + Deploy `condition` | build/deploy tagged releases (D9) |
+
+Note: name the artifact with `Build.BuildNumber` (predefined, visible in the Deploy stage), **not** NBGV's
+`GitBuildVersionSimple` (`task.setvariable` is job-scoped and invisible to Deploy). PR builds are unaffected
+beyond a non-public version suffix; they never deploy.
+
 ## Notes / risks
 
 - **`wire-ci` (bigpowers)** ships templates for GitHub only; Azure DevOps is unsupported, so this
