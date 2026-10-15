@@ -130,7 +130,7 @@ epics:
     title: City Map on the Weather Page
     wsjf: 6.0
     bcps: 16
-    status: planned
+    status: done
     capsule_dir: epics/e15-city-map
     note: >
       Draw the selected city on an interactive Leaflet map beneath the five-day forecast. Surfaces the

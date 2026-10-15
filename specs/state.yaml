@@ -8,8 +8,8 @@ project_cycle:
   mode: standard
 
 active_epic: e15
-active_story: e15s01
-active_flow: plan-work
+active_story: e15s04
+active_flow: verify-work
 
 epic_cycle:
   step: null
@@ -18,16 +18,17 @@ epic_cycle:
   fast_mode: false
 
 handoff:
-  next_skill: kickoff-branch
+  next_skill: verify-work
   context: >
-    PLANNED: e15 City Map on the Weather Page (4 stories, 16 BCPs, 18 tasks, all status:failing) on
-    specs/epics/e15-city-map/. ADR-0018 (D1-D10 confirmed 2026-10-15). Surfaces the OpenWeather `coord`
+    BUILT: e15 City Map on the Weather Page (4 stories, 16 BCPs, 18/18 tasks passing) on
+    feature/e15-city-map. ADR-0018 (D1-D10 confirmed 2026-10-15). Surfaces the OpenWeather `coord`
     block as a Weather-domain Coordinates value object on WeatherReport -> flat latitude/longitude on
     WeatherReportDto -> nullable WeatherReportModel; adds StationMap (lazy Leaflet 1.9.4 from unpkg,
     SRI-pinned, OpenStreetMap tiles, default marker + text-only popup, explicit unavailable state);
     switches StationHeroCard to report coordinates with City fallback; whitelists unpkg +
-    tile.openstreetmap.org in the CSP. Next: kickoff-branch, then develop-tdd e15s01, then e15s02/e15s03/
-    e15s04. PRIOR: COMPLETED: e14 Five-Day Forecast (4/4 stories, 19/19 tasks passing) on feature/e14-forecast. The empty
+    tile.openstreetmap.org in the CSP. Evidence: specs/verifications/e15.md. Preflight green: build 0
+    warnings, format clean, 397 tests (Weather module 138 -> 150); check-layout + check-tailwind-css green.
+    Next: verify-work (manual browser pass for Leaflet/tiles). PRIOR: COMPLETED: e14 Five-Day Forecast (4/4 stories, 19/19 tasks passing) on feature/e14-forecast. The empty
     ForecastStrip now renders five daily cards from real OpenWeather data: Forecast domain (ForecastInterval ->
     DailyForecast -> WeatherForecast, city-local daily aggregation), IWeatherProvider.GetForecastAsync
     (GET /data/2.5/forecast, units=imperial, shared key handler + resilience), GetWeatherForecast query +

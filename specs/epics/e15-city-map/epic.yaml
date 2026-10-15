@@ -2,7 +2,7 @@ id: e15
 title: City Map on the Weather Page
 wsjf: 6.0
 total_bcps: 16
-status: planned
+status: done
 module: M2
 kind: core
 owns_data: false
@@ -18,28 +18,28 @@ stories:
   - id: e15s01
     title: Report coordinates (Coordinates value object -> OpenWeather coord -> WeatherReportDto)
     bcps: 5
-    status: planned
+    status: done
     spec: e15s01-report-coordinates.md
     tasks: e15s01-tasks.yaml
     delta: ADDED
   - id: e15s02
     title: StationMap component + lazy Leaflet CDN + OpenStreetMap tiles
     bcps: 6
-    status: planned
+    status: done
     spec: e15s02-station-map.md
     tasks: e15s02-tasks.yaml
     delta: ADDED
   - id: e15s03
     title: CSP origins for unpkg + OpenStreetMap tiles
     bcps: 2
-    status: planned
+    status: done
     spec: e15s03-csp-origins.md
     tasks: e15s03-tasks.yaml
     delta: MODIFIED
   - id: e15s04
     title: Page wiring + StationHeroCard coordinate switch
     bcps: 3
-    status: planned
+    status: done
     spec: e15s04-page-wiring.md
     tasks: e15s04-tasks.yaml
     delta: MODIFIED
