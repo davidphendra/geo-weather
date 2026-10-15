@@ -40,19 +40,44 @@ stage CI  (ubuntu-latest)                  stage Deploy  (ubuntu-latest)
 ## One-time setup
 
 1. **Service connection** — Project settings → Service connections → new **Azure Resource Manager**
-   connection with Contributor on the App Service. Set the pipeline variable
-   `azureServiceConnection` to its name.
-2. **Pipeline variables** — set `webAppName` (and `dotnetRuntimeStack` if it differs) in the pipeline
-   UI, or in a Library variable group. `dotnetRuntimeStack` defaults to `DOTNETCORE|10.0`.
-3. **No Environment/approval needed** — the `Deploy` job is a plain `job` with no `environment:`
+   connection with Contributor on the App Service.
+2. **Variable group** — create a Library variable group named **`weather-cicd`** and authorize it for
+   this pipeline (Library → group → Pipeline permissions). Without the authorization the run fails
+   with *variable group not authorized*. Members:
+
+   | Key | Purpose |
+   |-----|---------|
+   | `azureServiceConnection` | name of the ARM service connection from step 1 |
+   | `webAppName` | App Service name |
+   | `dotnetRuntimeStack` | e.g. `DOTNETCORE\|10.0` |
+   | `vmImage` | agent image for the Deploy job, e.g. `ubuntu-latest` |
+   | `appType` | e.g. `webAppLinux` |
+   | `deploymentMethod` | e.g. `zipDeploy` |
+
+   The group is referenced **only by the `Deploy` stage**, so the `CI` stage runs on pull requests
+   even when the group is not linked. Secrets (e.g. `OpenWeather__ApiKey`) do **not** belong in this
+   group; they live in App Service configuration / Key Vault (step 5).
+3. **Values that stay in YAML** — repo-structural constants (`buildConfiguration`, `solution`,
+   `webProject`, `testResultsDirectory`) and toolchain defaults (`dotnetSdkVersion`, `nodeVersion`,
+   `vmImage`) are declared in `azure-pipelines.yml`. The Deploy stage's group-scoped `vmImage`
+   overrides the root default (narrowest scope wins).
+4. **No Environment/approval needed** — the `Deploy` job is a plain `job` with no `environment:`
    and no approval check, so CD runs automatically. Do not attach the deploy to an Environment
    that carries an Approval check.
-4. **App Service configuration** (App Service → Configuration):
+5. **App Service configuration** (App Service → Configuration):
    - `Database__DataDirectory` = `/home/data` (persistent on App Service Linux). The host creates the
      directory and the three SQLite files at startup (ADR-0013).
    - `OpenWeather__ApiKey` = your key, ideally as a **Key Vault reference** (never in the repo).
    - `ASPNETCORE_ENVIRONMENT` = `Production` (CSP is enforced outside Development).
-5. **Branch policy** — add a build policy on `main` requiring the `CI` stage, so PRs must be green.
+6. **Branch policy** — add a build policy on `main` requiring the `CI` stage, so PRs must be green.
+
+### Parameter provenance
+
+| Value | Where it lives | Why |
+|-------|----------------|-----|
+| `azureServiceConnection`, `webAppName`, `dotnetRuntimeStack`, `vmImage`, `appType`, `deploymentMethod` | `weather-cicd` variable group | environment-scoped; change without a commit |
+| `buildConfiguration`, `solution`, `webProject`, `testResultsDirectory`, `dotnetSdkVersion`, `nodeVersion` | `azure-pipelines.yml` | repo-structural / toolchain defaults |
+| `trigger`/`pr` branch lists, deploy `condition` | `azure-pipelines.yml` (literal) | evaluated at compile time; variables are not expanded there |
 
 ## Why the deploy is automatic
 

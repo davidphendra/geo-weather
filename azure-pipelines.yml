@@ -9,8 +9,10 @@
 #       the published WebUI to Azure App Service (Linux).
 #
 # Setup (one-time, see specs/tech-architecture/AZURE_PIPELINE_PLAN_LATEST.md):
-#   * create an ARM service connection and set $(azureServiceConnection)
-#   * set $(webAppName) (and optionally $(dotnetRuntimeStack)) as pipeline variables
+#   * create an ARM service connection and put its name in the weather-cicd variable group
+#   * add the weather-cicd group members: azureServiceConnection, webAppName,
+#     dotnetRuntimeStack, vmImage, appType, deploymentMethod
+#   * authorize the weather-cicd group for this pipeline (Library → group → Pipeline permissions)
 #   * no Environment or Approval check is needed — the Deploy job runs automatically
 
 trigger:
@@ -24,17 +26,25 @@ pr:
       - main
 
 variables:
-  buildConfiguration: 'Release'
-  dotnetSdkVersion: '10.0.x'
-  nodeVersion: '20.x'
-  solution: 'Weather.sln'
-  webProject: 'src/Weather.WebUI/Weather.WebUI.csproj'
-  testResultsDirectory: '$(Agent.TempDirectory)/TestResults'
+  # --- Repo-structural constants: belong in git, not a variable group ---
+  - name: buildConfiguration
+    value: 'Release'
+  - name: solution
+    value: 'Weather.sln'
+  - name: webProject
+    value: 'src/Weather.WebUI/Weather.WebUI.csproj'
+  - name: testResultsDirectory
+    value: '$(Agent.TempDirectory)/TestResults'
 
-  # --- Deployment settings: set these in the pipeline UI or a Library variable group ---
-  azureServiceConnection: 'REPLACE_ME-arm-service-connection'
-  webAppName: 'REPLACE_ME-app-service-name'
-  dotnetRuntimeStack: 'DOTNETCORE|10.0'
+  # --- Toolchain: YAML defaults keep CI green even when the variable group is not linked ---
+  - name: dotnetSdkVersion
+    value: '10.0.x'
+  - name: nodeVersion
+    value: '20.x'
+
+  # --- Agent image: CI default; the Deploy stage overrides it from the variable group ---
+  - name: vmImage
+    value: 'ubuntu-latest'
 
 stages:
   - stage: CI
@@ -43,7 +53,7 @@ stages:
       - job: BuildTest
         displayName: 'Build & test (.NET 10)'
         pool:
-          vmImage: 'ubuntu-latest'
+          vmImage: '$(vmImage)'
         steps:
           # Full history is required by Nerdbank.GitVersioning; a shallow clone yields version 0.0.0.
           - checkout: self
@@ -133,12 +143,16 @@ stages:
     displayName: 'CD — deploy to App Service (automatic)'
     dependsOn: CI
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    variables:
+      # Environment-scoped deployment config (Library variable group). Keys:
+      #   azureServiceConnection, webAppName, dotnetRuntimeStack, vmImage, appType, deploymentMethod
+      - group: geo-weather-net-prod
     jobs:
       # Plain job, not a deployment job: no Environment means no approval check can suspend the run.
       - job: DeployWebApp
         displayName: 'Deploy GeoWeather WebUI'
         pool:
-          vmImage: 'ubuntu-latest'
+          vmImage: '$(vmImage)'
         steps:
           - download: current
             displayName: 'Download versioned webapp artifact'
@@ -148,8 +162,8 @@ stages:
             displayName: 'Zip deploy to App Service (Linux)'
             inputs:
               azureSubscription: '$(azureServiceConnection)'
-              appType: 'webAppLinux'
+              appType: '$(appType)'
               appName: '$(webAppName)'
               package: '$(Pipeline.Workspace)/webapp-$(Build.BuildNumber)'
               runtimeStack: '$(dotnetRuntimeStack)'
-              deploymentMethod: 'zipDeploy'
+              deploymentMethod: '$(deploymentMethod)'
