@@ -52,6 +52,13 @@ Tailwind "Telemetry Slate" design system and its Playwright parity gate
    the filter and the ~10-row cap.
 8. **D8 — Component choice:** `FluentCombobox`, not `FluentAutocomplete`, to avoid the documented
    accessibility gap.
+9. **D9 — Global reset override:** Fluent's client library adopts a global stylesheet on
+   `document.adoptedStyleSheets` (independent of `<FluentDesignSystemProvider>`) that sets
+   `body { height: 100dvh; overflow: hidden }` and `a { text-decoration: underline }`. The body rule
+   propagates to the viewport and blocks user scrolling (BUG-002). Override both in the Tailwind base
+   layer with higher-specificity selectors rather than `!important`:
+   `html body { height: auto; min-height: 100dvh; overflow: visible }` and
+   `html a { text-decoration: inherit }`. Regression test: `tests/visual/scroll.spec.ts`.
 
 ## Rationale
 - The requirement is a filterable, height-capped picker; `FluentCombobox` provides both and is
@@ -70,7 +77,8 @@ Tailwind "Telemetry Slate" design system and its Playwright parity gate
   parity gate no longer asserts their computed style. The pickers' browser behaviour (filter, scroll,
   selection) is not covered by offline dotnet tests — it is covered by the Playwright spec.
 - Risk: a Fluent UI major upgrade could reintroduce inline styles or change the internal
-  `fluent-listbox` element; the Playwright CSP assertion guards this.
+  `fluent-listbox` element; the Playwright CSP assertion guards this. A Fluent upgrade could also change
+  the adopted global reset (D9); `tests/visual/scroll.spec.ts` guards the body/link overrides.
 
 ## Alternatives rejected
 - **Fluent's `Height` parameter:** CSP violation under `style-src-attr 'none'` (spike evidence).
@@ -82,6 +90,7 @@ Tailwind "Telemetry Slate" design system and its Playwright parity gate
 
 ## References
 - `specs/tech-architecture/SEARCHABLE_LOCATION_SELECT_PLAN_LATEST.md`
+- `specs/bugs/BUG-002-unscrollable-page-fluent-body-reset.md`
 - `specs/tech-architecture/UI_DESIGN_PLAN_LATEST.md` (D1, D4, D8)
 - `specs/adr/0011-rest-api-response-contract.md`
 - Fluent UI Blazor: `https://www.fluentui-blazor.net/Combobox`
