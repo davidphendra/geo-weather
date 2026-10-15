@@ -9,10 +9,14 @@
 #       the published WebUI to Azure App Service (Linux).
 #
 # Setup (one-time, see specs/tech-architecture/AZURE_PIPELINE_PLAN_LATEST.md):
-#   * create an ARM service connection and put its name in the weather-cicd variable group
-#   * add the weather-cicd group members: azureServiceConnection, webAppName,
-#     dotnetRuntimeStack, vmImage, appType, deploymentMethod
-#   * authorize the weather-cicd group for this pipeline (Library → group → Pipeline permissions)
+#   * create an ARM service connection and put its name in the geo-weather-net-cicd-prod group
+#   * add the group members: azureServiceConnection, webAppName, dotnetRuntimeStack, appType
+#   * the group MUST be referenced at the pipeline ROOT (see `variables:` below): service
+#     connections are authorized at compile time, before any stage runs, so a stage-scoped
+#     group leaves $(azureServiceConnection) unexpanded and the Deploy step fails with
+#     "references service connection $(azureServiceConnection) which could not be found"
+#   * authorize BOTH the group and the service connection for this pipeline
+#     (Library group / Service connections → Security → Pipeline permissions)
 #   * no Environment or Approval check is needed — the Deploy job runs automatically
 
 trigger:
@@ -26,6 +30,14 @@ pr:
       - main
 
 variables:
+  # --- Environment-scoped config (Library variable group) ---
+  # Referenced at the PIPELINE ROOT on purpose: service connections are authorized at compile
+  # time, before stage/job variables exist. A stage-scoped group would NOT populate
+  # $(azureServiceConnection) and the Deploy step would fail as "could not be found".
+  # Required keys: azureServiceConnection, webAppName, dotnetRuntimeStack, appType
+  # The name below must match the Library group exactly (case-sensitive).
+  - group: geo-weather-net-cicd-prod
+
   # --- Repo-structural constants: belong in git, not a variable group ---
   - name: buildConfiguration
     value: 'Release'
@@ -143,10 +155,6 @@ stages:
     displayName: 'CD — deploy to App Service (automatic)'
     dependsOn: CI
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-    variables:
-      # Environment-scoped deployment config (Library variable group). Keys:
-      #   azureServiceConnection, webAppName, dotnetRuntimeStack, vmImage, appType, deploymentMethod
-      - group: geo-weather-net-cicd-prod
     jobs:
       # Plain job, not a deployment job: no Environment means no approval check can suspend the run.
       - job: DeployWebApp
