@@ -1,6 +1,6 @@
 story_id: e14s03
 title: GetWeatherForecast query + IWeatherService + GET /api/weather/{cityName}/forecast
-status: planned
+status: done
 bcps: 4
 module: M2
 standards: docs/engineering/csharp-standards.md
@@ -12,7 +12,7 @@ tasks:
       to IWeatherProvider.GetForecastAsync).
     verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=GetWeatherForecast"
     risk: P0
-    status: failing
+    status: passing
     allure: { severity: critical, categories: ["Weather", "Forecast", "unit"] }
   - id: 2
     description: >
@@ -21,7 +21,7 @@ tasks:
       string SkyCondition) + internal WeatherForecastDtoMapper (guarded; first five days only).
     verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=WeatherForecastDto"
     risk: P1
-    status: failing
+    status: passing
     allure: { severity: high, categories: ["Weather", "Forecast", "unit"] }
   - id: 3
     description: >
@@ -29,7 +29,7 @@ tasks:
       implementation (ISender.Send of GetWeatherForecastQuery).
     verify: "dotnet build src/Modules/Weather/Weather.Modules.Weather.Infrastructure/Weather.Modules.Weather.Infrastructure.csproj --warnaserror"
     risk: P0
-    status: failing
+    status: passing
     allure: { severity: critical, categories: ["Weather", "Forecast", "ModularMonolith"] }
   - id: 4
     description: >
@@ -38,12 +38,12 @@ tasks:
       integration + OpenAPI contract tests.
     verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=WeatherForecast"
     risk: P0
-    status: failing
+    status: passing
     allure: { severity: critical, categories: ["Weather", "Forecast", "integration", "OpenApiContract"] }
   - id: 5
     description: >
       Story gate: full repo preflight green and the new route does not collide with GET /api/weather/{cityName}.
     verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln && bash scripts/check-layout.sh"
     risk: P0
-    status: failing
+    status: passing
     allure: { severity: critical, categories: ["Weather", "Forecast", "Standards"] }

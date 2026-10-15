@@ -11,6 +11,7 @@ public sealed class OpenApiContractTests(WeatherHostFactory factory) : IClassFix
 {
     [Theory]
     [InlineData("/api/weather/{cityName}", "get", "200,404,422,500,502")]
+    [InlineData("/api/weather/{cityName}/forecast", "get", "200,404,422,500,502")]
     [InlineData("/api/countries", "get", "200,500")]
     [InlineData("/api/countries/{countryCode}/cities", "get", "200,404,422,500")]
     public async Task Action_DeclaresExactlyTheExpectedOutcomes(string path, string method, string expectedCsv)
@@ -25,7 +26,13 @@ public sealed class OpenApiContractTests(WeatherHostFactory factory) : IClassFix
     [Fact]
     public async Task NoGetAction_DeclaresMalformedRequest()
     {
-        string[] paths = ["/api/weather/{cityName}", "/api/countries", "/api/countries/{countryCode}/cities"];
+        string[] paths =
+        [
+            "/api/weather/{cityName}",
+            "/api/weather/{cityName}/forecast",
+            "/api/countries",
+            "/api/countries/{countryCode}/cities",
+        ];
 
         foreach (string path in paths)
         {

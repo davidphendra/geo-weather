@@ -1,5 +1,6 @@
 using global::Weather.Modules.Weather.Application.Contracts;
 using global::Weather.Modules.Weather.Application.WeatherReports.GetCurrentWeather;
+using global::Weather.Modules.Weather.Application.WeatherReports.GetWeatherForecast;
 
 using MediatR;
 
@@ -12,4 +13,10 @@ internal sealed class WeatherService(ISender sender) : IWeatherService
         string? countryCode,
         CancellationToken cancellationToken)
         => sender.Send(new GetCurrentWeatherQuery(cityName, countryCode), cancellationToken);
+
+    public Task<WeatherForecastDto> GetForecastAsync(
+        string cityName,
+        string? countryCode,
+        CancellationToken cancellationToken)
+        => sender.Send(new GetWeatherForecastQuery(cityName, countryCode), cancellationToken);
 }
