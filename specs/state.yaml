@@ -20,6 +20,12 @@ epic_cycle:
 handoff:
   next_skill: survey-context
   context: >
+    RELEASED (CI hotfix): fix/ci-npm-cache merged to main as f2bea7a (BUG-005 fixed) — the Azure
+    pipeline's npm Cache@2 task was removed along with the unused NodeTool@0 install and nodeVersion
+    variable, because wwwroot/app.css is committed and CI never runs npm, so the post-job cache save
+    tarred a non-existent path and failed the run with exit code 2. Preflight green: build 0 warnings /
+    0 errors, format clean, 420 tests. AZURE_PIPELINE_PLAN_LATEST.md aligned (Q5, shape diagram, toolchain
+    vars). Human step: run the Azure pipeline to confirm the CI job now completes. PRIOR:
     RELEASED: e16 Application & Artifact SemVer merged to main from branch e16-app-versioning
     (3/3 stories, 17/17 tasks passing; ADR-0019). Preflight green at merge: build 0 warnings,
     format clean, 412 tests (+15; categories AppVersion/VersionEndpoint/AppFooter/StartupLog/HostMeters),
