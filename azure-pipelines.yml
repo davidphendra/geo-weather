@@ -45,6 +45,8 @@ variables:
   # --- Agent image: CI default; the Deploy stage overrides it from the variable group ---
   - name: vmImage
     value: 'ubuntu-latest'
+    
+  - group: geo-weather-net-cicd-prod
 
 stages:
   - stage: CI
@@ -146,7 +148,7 @@ stages:
     variables:
       # Environment-scoped deployment config (Library variable group). Keys:
       #   azureServiceConnection, webAppName, dotnetRuntimeStack, vmImage, appType, deploymentMethod
-      - group: geo-weather-net-prod
+      
     jobs:
       # Plain job, not a deployment job: no Environment means no approval check can suspend the run.
       - job: DeployWebApp
