@@ -75,7 +75,7 @@ customMetrics
 ### Version correlation (e16)
 
 The running build carries a Semantic Version (`service.version` resource attribute, so it is attached to
-every metric, trace, and log) and advertises itself in the `geoweather.build.info` gauge. The same value is
+every metric and trace) and advertises itself in the `geoweather.build.info` gauge. The same value is
 printed on the console at startup and served at `GET /version`.
 
 ```kusto

@@ -144,7 +144,7 @@ epics:
     wsjf: 9.0
     bcps: 15
     capsule_dir: epics/e16-app-versioning
-    status: planned
+    status: done
     decisions: pending
     note: >
       Give the deployable a semantic version derived from source (Nerdbank.GitVersioning version.json + git
