@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.FluentUI.AspNetCore.Components;
 
 using Weather.BuildingBlocks.Application.Telemetry;
 using Weather.WebUI.Configuration;
@@ -36,6 +37,7 @@ internal static class WebUiServiceCollectionExtensions
 
         services.AddRazorComponents()
             .AddInteractiveServerComponents();
+        services.AddFluentUIComponents();
 
         services.AddControllers();
         services.AddOpenApi();
