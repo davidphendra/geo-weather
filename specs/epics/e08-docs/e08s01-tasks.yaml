@@ -1,35 +1,47 @@
 story_id: e08s01
-title: README (modular monolith), AI instructions finalization, GitHub-ready repo
-status: failing
+title: GeoWeather README (new-joiner bootstrap) + AI instructions
+status: passing
 bcps: 3
 tasks:
   - id: 1
-    description: "Write README modular-monolith overview (bounded contexts, module = assembly set, IntegrationEvents, Events Bus)"
-    verify: "grep -qi 'modular monolith' README.md && grep -q 'Bounded context' README.md"
+    description: "Broaden the story spec to the 15-section hybrid structure; record decisions Q1-Q4"
+    verify: "grep -q 'GeoWeather' specs/epics/e08-docs/e08s01-readme.md && grep -q 'Q1' specs/epics/e08-docs/e08s01-readme.md"
     risk: P3
-    status: failing
+    status: passing
     allure: { severity: minor, categories: ["Docs"] }
   - id: 2
-    description: "Add setup/build/run/test instructions (verified commands)"
-    verify: "grep -q 'dotnet test' README.md && grep -q 'dotnet run' README.md"
+    description: "README front matter: H1 + logo, TOC, Overview, Key Features, Technology Stack, Repository Structure"
+    verify: "grep -q 'geoweather-mark.svg' README.md && grep -q 'MediatR' README.md && grep -q 'BuildingBlocks' README.md"
     risk: P3
-    status: failing
+    status: passing
     allure: { severity: minor, categories: ["Docs"] }
   - id: 3
-    description: "Document the module map, IntegrationEvents flow, and per-module EF Core contexts"
-    verify: "grep -q 'Geography' README.md && grep -q 'IntegrationEvents' README.md && grep -q 'DbContext' README.md"
+    description: "Quick Start + Configuration (verified commands, ports 5121/7137, config keys)"
+    verify: "grep -q 'dotnet run' README.md && grep -q 'OpenWeather__ApiKey' README.md"
     risk: P3
-    status: failing
+    status: passing
     allure: { severity: minor, categories: ["Docs"] }
   - id: 4
-    description: "Document design decisions (link ADRs) and the AI instructions file"
-    verify: "grep -qi 'design decisions' README.md && grep -q 'CONVENTIONS.md' README.md && grep -q 'AGENTS.md' README.md"
+    description: "Architecture: module table, IntegrationEvents, per-module DbContext, ADR links"
+    verify: "grep -q 'IntegrationEvents' README.md && grep -q 'DbContext' README.md"
     risk: P3
-    status: failing
+    status: passing
     allure: { severity: minor, categories: ["Docs"] }
   - id: 5
-    description: "Confirm clean build and no committed API keys"
-    verify: "dotnet build Weather.sln --warnaserror"
+    description: "Remaining sections: Development Guide, Security, Observability, Testing, Deployment, Troubleshooting, Known Limitations, Contributing"
+    verify: "grep -q 'CONVENTIONS.md' README.md && grep -q 'parity:styles' README.md && grep -qi 'limitation' README.md"
+    risk: P3
+    status: passing
+    allure: { severity: minor, categories: ["Docs"] }
+  - id: 6
+    description: "Run every documented command; confirm no API key committed and no License section"
+    verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln"
     risk: P2
-    status: failing
+    status: passing
     allure: { severity: normal, categories: ["Docs", "Security Review"] }
+  - id: 7
+    description: "Log the spec drift (Favorites/Notes modules vs Journal) as BUG-003"
+    verify: "grep -q 'BUG-003' specs/bugs/registry.yaml"
+    risk: P3
+    status: passing
+    allure: { severity: minor, categories: ["Docs"] }

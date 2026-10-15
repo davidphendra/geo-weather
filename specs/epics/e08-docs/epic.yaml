@@ -2,12 +2,12 @@ id: e08
 title: Documentation & Repository Tooling
 wsjf: 3.0
 total_bcps: 3
-status: todo
+status: done
 stories:
   - id: e08s01
-    title: README (modular monolith), AI instructions finalization, GitHub-ready repo
+    title: GeoWeather README (new-joiner bootstrap) + AI instructions
     bcps: 3
-    status: todo
+    status: done
     spec: e08s01-readme.md
     tasks: e08s01-tasks.yaml
     delta: ADDED

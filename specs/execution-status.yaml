@@ -31,7 +31,7 @@ stories:
   e06s06: { status: done }
   e07s01: { status: todo }
   e07s02: { status: todo }
-  e08s01: { status: todo }
+  e08s01: { status: done }
   e12s01: { status: done }
   e12s02: { status: done }
   e12s03: { status: done }
