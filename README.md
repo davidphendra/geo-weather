@@ -9,6 +9,7 @@
 ## Table of Contents
 
 - [Overview](#overview)
+- [Release](#release)
 - [Key Features](#key-features)
 - [Technology Stack](#technology-stack)
 - [Quick Start](#quick-start)
@@ -39,6 +40,10 @@ saves weather notes or favorite cities.
 - ✅ **Promise** — all automated tests run **offline**, with zero live network calls.
 - 📄 **Docs-first** — requirements, decisions, and evidence live in [`specs/`](#repository-structure); the
   agent workflow is defined in [`AGENTS.md`](AGENTS.md) and [`CONVENTIONS.md`](CONVENTIONS.md).
+
+## Release
+
+Live production: <https://geo-weather-a6ffe8hwfpbmfgcv.indonesiacentral-01.azurewebsites.net/>
 
 ## Key Features
 
