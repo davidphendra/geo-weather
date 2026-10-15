@@ -152,7 +152,7 @@ stages:
       - job: DeployWebApp
         displayName: 'Deploy GeoWeather WebUI'
         pool:
-          vmImage: '$(vmImage)'
+          vmImage: 'ubuntu-latest'
         steps:
           - download: current
             displayName: 'Download versioned webapp artifact'
@@ -166,4 +166,4 @@ stages:
               appName: '$(webAppName)'
               package: '$(Pipeline.Workspace)/webapp-$(Build.BuildNumber)'
               runtimeStack: '$(dotnetRuntimeStack)'
-              deploymentMethod: '$(deploymentMethod)'
+              deploymentMethod: 'zipDeploy'
