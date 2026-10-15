@@ -82,3 +82,39 @@ bugs:
     regression_tests: n/a (documentation)
     evidence: >
       README.md documents Geography/Weather/Journal only; BUG-003 logged during e08s01.
+
+  - id: BUG-004
+    title: DesignTokenTests cannot find app.css in a clean build output
+    status: fixed
+    severity: low
+    discovered: 2026-10-15
+    discovered_during: Azure DevOps CI `dotnet test` step
+    fixed: 2026-10-15
+    area: Weather.WebUI.UnitTests (build-output content items)
+    symptom: >
+      The CI `dotnet test` step fails with System.IO.FileNotFoundException for
+      bin/Release/net10.0/app.css wrapped in a TypeInitializationException for DesignTokenTests;
+      all 15 tests in the class fail before any assertion runs.
+    reproduction: >
+      rm -rf src/Tests/Weather.WebUI.UnitTests/bin/Release src/Tests/Weather.WebUI.UnitTests/obj/Release;
+      dotnet build src/Tests/Weather.WebUI.UnitTests/Weather.WebUI.UnitTests.csproj -c Release;
+      dotnet test src/Tests/Weather.WebUI.UnitTests/Weather.WebUI.UnitTests.csproj -c Release --no-build
+      --filter "Category=DesignTokens". Fails 15/15 with the missing app.css path.
+    root_cause: >
+      DesignTokenTests reads tailwind.config.js and app.css from AppContext.BaseDirectory. The test
+      project delivers both as build-output content items, but commit 2f6c3db removed the app.css
+      <Content ... CopyToOutputDirectory="PreserveNewest" /> item while only intending to regenerate
+      the stylesheet. A leftover copy in a locally built bin/Debug masked the regression; a clean
+      Release CI clone has no app.css in the test output, so the static field initializer throws.
+    resolution: >
+      Restored the app.css content item in Weather.WebUI.UnitTests.csproj (Link="app.css",
+      CopyToOutputDirectory="PreserveNewest") and added an explicit output-delivery guard test in
+      DesignTokenTests (reads made lazy so a missing artifact yields a clear message, not a
+      TypeInitializationException). Corrected the stale azure-pipelines.yml header comment; re-adding the
+      Tailwind drift guard was left as a separate decision (removed in 89b3973).
+    regression_tests: "src/Tests/Weather.WebUI.UnitTests/Design/DesignTokenTests.cs (Design_sources_are_copied_to_the_test_output)"
+    evidence: >
+      Clean Release run reproduced Failed: 15, Passed: 0; with the fix Category=DesignTokens passes 17/17.
+      Preflight green: build 0 warnings/0 errors, dotnet format clean, 420 tests pass. Fixed on branch
+      fix/design-tokens-css-copy.
+    introduced_by: 2f6c3db (Remove and regenerate app.css)
