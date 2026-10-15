@@ -7,9 +7,9 @@ project_cycle:
   completed_phases: [1, 2]
   mode: standard
 
-active_epic: e03
-active_story: e03s04
-active_flow: verify-work
+active_epic: e14
+active_story: e14s01
+active_flow: plan-work
 
 epic_cycle:
   step: null
@@ -18,9 +18,15 @@ epic_cycle:
   fast_mode: false
 
 handoff:
-  next_skill: verify-work
+  next_skill: kickoff-branch
   context: >
-    COMPLETED: e03s04 Configurable retry resilience for the OpenWeatherMap client (6/6 tasks passing).
+    PLANNED (not built): e14 Five-Day Forecast, all 4 stories planned into specs/epics/e14-forecast/ with
+    tasks. Populates the empty ForecastStrip. Forecast domain aggregation, IWeatherProvider.GetForecastAsync
+    (GET /data/2.5/forecast, units=imperial), GET /api/weather/{cityName}/forecast, and the WebUI strip.
+    Design/decisions: specs/adr/0017-five-day-forecast.md (D1-D6 CONFIRMED: city-local days, first 5 days,
+    separate endpoint, extend IWeatherProvider, graceful partial failure, weather.forecast.* metrics). SCOPE S9 added;
+    e14 registered in release-plan.yaml; weather.forecast.* metrics added to the observability catalog.
+    PRIOR: COMPLETED: e03s04 Configurable retry resilience for the OpenWeatherMap client (6/6 tasks passing).
     Replaced AddStandardResilienceHandler with an explicit AddResilienceHandler pipeline (total timeout ->
     retry -> attempt timeout) bound and validated from OpenWeather:Resilience (MaxRetryAttempts 3 = retries
     after the first attempt; RetryBaseDelaySeconds 1; AttemptTimeoutSeconds 10; TotalTimeoutSeconds 30;
@@ -92,6 +98,7 @@ decisions:
   - { id: ADR-0014, title: "OpenTelemetry observability with Azure Monitor (Microsoft OpenTelemetry Distro; shared instruments in BuildingBlocks; EF skipped; 100% dev / 10% prod traces)", status: accepted }
   - { id: ADR-0015, title: "Explicit configurable retry resilience for the OpenWeatherMap client (OpenWeather:Resilience; no circuit breaker/rate limiter)", status: accepted }
   - { id: ADR-0016, title: "Merge Favorites and Notes into the Journal module (one JournalContext/journal.db; routes unchanged; two contracts kept)", status: accepted }
+  - { id: ADR-0017, title: "Five-day forecast (OpenWeather 5 day / 3 hour; domain daily aggregation; GET /api/weather/{cityName}/forecast)", status: accepted }
 
 risks:
   - id: R1

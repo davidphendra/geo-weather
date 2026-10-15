@@ -1,0 +1,42 @@
+story_id: e14s01
+title: Forecast domain - intervals and city-local daily aggregation
+status: planned
+bcps: 5
+module: M2
+standards: docs/engineering/csharp-standards.md
+tasks:
+  - id: 1
+    description: >
+      Add sealed record PrecipitationProbability (Percent int, 0-100) with FromRatio(double 0..1),
+      FromPercent(int), and guards throwing WeatherDomainException outside range.
+    verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=ForecastDomain"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["Weather", "Forecast", "unit"] }
+  - id: 2
+    description: >
+      Add sealed records ForecastInterval (AtUtc DateTimeOffset, Temperature, PrecipitationProbability,
+      SkyCondition) and DailyForecast (DateOnly Date, Temperature High, Temperature Low,
+      PrecipitationProbability Precipitation, SkyCondition), each with a Create factory and guards.
+    verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=ForecastDomain"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["Weather", "Forecast", "unit"] }
+  - id: 3
+    description: >
+      Add sealed record WeatherForecast (Location, IReadOnlyList<DailyForecast> Days) with
+      FromIntervals(location, intervals, utcOffset): validate offset within +/-14h, group by
+      interval.AtUtc.ToOffset(utcOffset).Date, order ascending, high=max temp, low=min temp,
+      precipitation=max percent, sky=most frequent condition (first-occurrence tie-break); empty -> throw.
+    verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=ForecastAggregation"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Weather", "Forecast", "unit"] }
+  - id: 4
+    description: >
+      Story gate: full repo preflight green (build under analyzers + formatting + all tests) and no
+      cross-module reference introduced.
+    verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln && bash scripts/check-layout.sh"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Weather", "Forecast", "Standards"] }

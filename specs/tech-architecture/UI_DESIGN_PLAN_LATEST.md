@@ -22,7 +22,7 @@ Both prototypes are static **Tailwind (CDN) + Google Fonts (Geist, JetBrains Mon
 |---|----------|--------|
 | D1 | CSS strategy | **A — Real Tailwind build.** Tailwind **v3.4.x**, `tailwind.config.js` extracted verbatim from `code.html`, source `Styles/tailwind.css`, compiled to `wwwroot/app.css`. npm-based build step (`package.json` + MSBuild target); **compiled output committed** so build/test stay offline. |
 | D2 | Fonts & icons | **B — Google Fonts CDN.** Geist, JetBrains Mono, Material Symbols Outlined loaded from `fonts.googleapis.com` / `gstatic.com` via `<link>` in `App.razor`, with local fallback stacks (`system-ui`, `ui-monospace`) so offline rendering degrades gracefully. |
-| D3 | Unbacked data | **A — Substitute nearest real metric + explicit "unavailable" states; no fake data.** Backend untouched; forecast stays out of scope. |
+| D3 | Unbacked data | **A — Substitute nearest real metric + explicit "unavailable" states; no fake data.** Backend untouched by e06; the 5-day forecast is now backed by e14 (ADR-0017) rather than an unavailable shell. |
 | D4 | Token source of truth | **A — `code.html`'s Tailwind config is authoritative.** `DESIGN.md` remains prose/component rationale and is **not modified**; where they conflict, the HTML config wins. |
 | D5 | Scope placement | **A — Reshape epic e06** into the Telemetry Slate WebUI epic (5 stories). |
 | D6 | Render mode | **A — `@rendermode InteractiveServer`** on `/` and `/favorites`. |
@@ -74,7 +74,7 @@ Delete template artifacts: `Counter.razor`, `Weather.razor` (superseded), sideba
 | Wind "Gusts" line | none (speed + cardinal only) | Substitute → real **direction/cardinal** |
 | Pressure "Steady +0.2" | none | Substitute → **observed-at UTC** timestamp |
 | **24h trend / sparkline + "Trend: +1.2°"** | none (current only) | Drop the fabricated series; keep a header noting **current observation only** |
-| **5-day forecast strip** | none (out of scope) | Keep the strip shell; render one explicit **"Forecast not available — current conditions only"** state |
+| **5-day forecast strip** | `GET /api/weather/{cityName}/forecast` (`WeatherForecastDto`) | Wire (e14 / ADR-0017): five `ForecastDayCard`s (weekday, icon, high/low, rain %); keep the explicit unavailable state only when the forecast fails to load |
 | Command dispatch | `POST /api/weather/notes`, `POST /api/cities/favorites` | Wire |
 | ChangeTracker / response well | actual HTTP status + response JSON | Render real response |
 | Architecture tabs (cURL/C#) | static documentation | Static content, real route paths |

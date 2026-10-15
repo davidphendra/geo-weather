@@ -44,14 +44,17 @@ in_scope:
   - id: S8
     description: Documentation & tooling — README, CLAUDE.md/CONVENTIONS.md AI instructions, module map, .gitignore, GitHub-ready repo.
     maps_to: e08
+  - id: S9
+    description: Five-day forecast — Weather domain daily aggregation over the OpenWeather 5 day / 3 hour forecast, GET /api/weather/{cityName}/forecast, and the WebUI forecast strip.
+    maps_to: e14
 
 out_of_scope:
   - item: User accounts, authentication, and authorization (a UserAccess module).
     reason: Deferred — the reference has UserAccess because it authenticates; this app has no login requirement.
   - item: Alerts / Notifications module.
     reason: Not in requirements.
-  - item: Forecast / WeatherHistory module.
-    reason: Current conditions only.
+  - item: Hourly forecast detail, historical weather, and forecast caching.
+    reason: Deferred — the five daily cards satisfy the requirement; hourly/history add volume and caching invalidation complexity (ADR-0017).
   - item: Caching layer for weather responses.
     reason: Deferred — invalidation complexity with no requirement.
   - item: External message broker (RabbitMQ/Kafka) for the Events Bus.
@@ -95,6 +98,7 @@ success_criteria:
   - POST endpoints persist in the owning module's context and return the created identifier (HTTP 201 + id).
   - Temperature conversion is correct at freezing, boiling, negative, and -40 equilibrium points.
   - Weather payload includes location, UTC time, wind speed/direction, visibility, pressure, sky condition, temperature in F and C, dew point, relative humidity.
+  - The five-day forecast returns up to five daily cards, each with a city-local high, low, precipitation probability, and sky condition (ADR-0017).
   - Domain assemblies have no reference to EF Core, ASP.NET Core, or Infrastructure.
   - All tests pass with network disabled.
   - README explains the modular monolith (bounded contexts, module slicing, integration events) and setup/build/run/test; AI instructions file exists at repo root.

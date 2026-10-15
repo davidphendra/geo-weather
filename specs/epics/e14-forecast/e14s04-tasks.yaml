@@ -1,0 +1,50 @@
+story_id: e14s04
+title: WebUI 5-day forecast strip (ForecastStrip + ForecastDayCard)
+status: planned
+bcps: 5
+module: M2
+standards: docs/engineering/csharp-standards.md
+tasks:
+  - id: 1
+    description: >
+      Add WeatherForecastModel(LocationModel, IReadOnlyList<ForecastDayModel>) and
+      ForecastDayModel(DateOnly Date, TemperatureModel High, TemperatureModel Low,
+      int PrecipitationProbabilityPercent, string SkyCondition); add WeatherApiClient.GetForecastAsync
+      (api/weather/{city}/forecast?countryCode=).
+    verify: "dotnet test src/Tests/Weather.WebUI.UnitTests --filter Category=WeatherApiClient"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["Weather", "Forecast", "unit"] }
+  - id: 2
+    description: >
+      Add WeatherExplorerModel.Forecast and load current + forecast in LoadReportAsync so a forecast failure
+      keeps the current report and leaves Forecast null (D5); reset Forecast on city/country change.
+    verify: "dotnet test src/Tests/Weather.WebUI.UnitTests --filter Category=WeatherExplorerModel"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Weather", "Forecast", "unit"] }
+  - id: 3
+    description: >
+      Add a small static SkyConditionIcon helper mapping every SkyCondition value to a Material Symbols name;
+      cover every value with a unit test.
+    verify: "dotnet test src/Tests/Weather.WebUI.UnitTests --filter Category=SkyConditionIcon"
+    risk: P2
+    status: failing
+    allure: { severity: normal, categories: ["Weather", "Forecast", "unit"] }
+  - id: 4
+    description: >
+      Add ForecastDayCard (weekday label, icon, high/low, umbrella + precipitation %) and rewrite
+      ForecastStrip to render one card per day (grid-cols-2 sm:grid-cols-5), keeping the unavailable state
+      only when Forecast is null; wire ForecastStrip Forecast="Model.Forecast" on the page.
+    verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=WeatherExplorerPage"
+    risk: P1
+    status: failing
+    allure: { severity: high, categories: ["Weather", "Forecast", "integration"] }
+  - id: 5
+    description: >
+      Story gate: full repo preflight green, CPS/CSP unchanged (no inline style), and the strip shows no
+      fabricated data.
+    verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln && bash scripts/check-layout.sh"
+    risk: P0
+    status: failing
+    allure: { severity: critical, categories: ["Weather", "Forecast", "Standards"] }
