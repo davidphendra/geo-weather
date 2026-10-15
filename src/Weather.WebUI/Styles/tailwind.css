@@ -9,6 +9,22 @@
     padding: 0;
   }
 
+  /* Fluent UI Blazor adopts a global stylesheet (document.adoptedStyleSheets) whose body rule
+     sets height: 100dvh; overflow: hidden. With html overflow visible that propagates to the
+     viewport and blocks user scroll input (BUG-002). Override with a higher-specificity selector
+     rather than !important. */
+  html body {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+
+  /* The same Fluent reset also force-underlines every link. Restore the Tailwind Preflight
+     behaviour; explicit `hover:underline` utilities still win on hover. */
+  html a {
+    text-decoration: inherit;
+  }
+
   ::-webkit-scrollbar {
     display: none;
   }
