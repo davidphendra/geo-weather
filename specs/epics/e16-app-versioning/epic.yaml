@@ -22,7 +22,7 @@ stories:
   - id: e16s01
     title: Version stamping, artifact identity, and CI (NBGV + run number + build-info.json)
     bcps: 6
-    status: planned
+    status: done
     spec: e16s01-version-stamping.md
     tasks: e16s01-tasks.yaml
     delta: ADDED
