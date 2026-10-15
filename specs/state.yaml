@@ -9,7 +9,7 @@ project_cycle:
 
 active_epic: e16
 active_story: e16s03
-active_flow: verify-work
+active_flow: release-branch
 
 epic_cycle:
   step: null
@@ -18,9 +18,20 @@ epic_cycle:
   fast_mode: false
 
 handoff:
-  next_skill: verify-work
+  next_skill: survey-context
   context: >
-    IMPLEMENTED (not released): e16 Application & Artifact SemVer on branch e16-app-versioning.
+    RELEASED: e16 Application & Artifact SemVer merged to main from branch e16-app-versioning
+    (3/3 stories, 17/17 tasks passing; ADR-0019). Preflight green at merge: build 0 warnings,
+    format clean, 412 tests (+15; categories AppVersion/VersionEndpoint/AppFooter/StartupLog/HostMeters),
+    layout/publish-data/Tailwind guards green. Design ADR-0019, plan VERSIONING_PLAN_LATEST.md, evidence
+    specs/verifications/e16.md. Nerdbank.GitVersioning 3.10.94 + version.json ("0.1-alpha") stamps
+    AssemblyVersion=major.minor / FileVersion=full / InformationalVersion=semver+commit; pipeline does a
+    full clone, NBGV sets Build.BuildNumber to the version, a post-publish guard rejects 0.0.0, artifact is
+    webapp-$(Build.BuildNumber) with build-info.json. Runtime surfaces: footer (version before copyright,
+    .NET line removed), console startup line, GET /version, OTel resource service.version (metrics+traces),
+    and the host-local geoweather.build.info gauge. Known limitation: distro logging resource is separate,
+    so logs use the SDK-default service.name (documented). Open human steps: Azure pipeline dry-run; optional
+    v-tag release (D9). PRIOR: IMPLEMENTED (not released): e16 Application & Artifact SemVer on branch e16-app-versioning.
     All 3 stories / 17 tasks passing; design ADR-0019, plan VERSIONING_PLAN_LATEST.md,
     evidence specs/verifications/e16.md. Nerdbank.GitVersioning 3.10.94 + repo-root version.json
     ("0.1-alpha") stamps AssemblyVersion=major.minor, FileVersion=full, InformationalVersion=semver+commit;
