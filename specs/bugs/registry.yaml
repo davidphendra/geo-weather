@@ -58,3 +58,27 @@ bugs:
       Tailwind base layer; ADR-0020 D9. dotnet 418 tests pass, Playwright 12/12 with 0 CSP violations,
       check-tailwind-css in sync, check-layout OK. Fixed on branch fix/scroll-fluent-body-reset.
     introduced_by: ADR-0020 (Fluent UI Blazor country/city pickers)
+
+  - id: BUG-003
+    title: Spec docs still list the pre-ADR-0016 Favorites and Notes modules
+    status: open
+    severity: low
+    discovered: 2026-10-15
+    discovered_during: e08s01 (README)
+    area: specs/tech-architecture (documentation drift)
+    symptom: >
+      TEST_PLAN_LATEST.md still shows src/Modules/Favorites/Tests/ and src/Modules/Notes/Tests/ and a
+      Favorites/Notes module test pyramid, and tech-stack.md still lists a standalone Favorites module API
+      surface — but ADR-0016 merged Favorites and Notes into the single Journal module.
+    reproduction: >
+      grep -rn 'Favorites/Tests\|Notes/Tests\|Modules.Favorites' specs/tech-architecture/
+    root_cause: >
+      ADR-0016 merged the two modules in code and in CONVENTIONS.md/state.yaml, but the older tech-architecture
+      documents were not updated at the same time.
+    resolution: >
+      Not fixed here (docs-only story). The README reflects the real Journal module. Update
+      TEST_PLAN_LATEST.md and tech-stack.md module tables/API surfaces to Journal, or annotate them as
+      superseded by ADR-0016.
+    regression_tests: n/a (documentation)
+    evidence: >
+      README.md documents Geography/Weather/Journal only; BUG-003 logged during e08s01.
