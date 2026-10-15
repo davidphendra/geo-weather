@@ -1,6 +1,6 @@
 story_id: e15s01
 title: Report coordinates (Coordinates value object -> OpenWeather coord -> WeatherReportDto)
-status: failing
+status: passing
 bcps: 5
 module: M2
 standards: docs/engineering/csharp-standards.md
@@ -12,7 +12,7 @@ tasks:
       [-90, 90] or longitude outside [-180, 180]; cover boundary values and both rejection cases.
     verify: "dotnet test Weather.sln --filter Category=Coordinates"
     risk: P0
-    status: failing
+    status: passing
     allure: { severity: critical, categories: ["Weather", "Coordinates", "unit"] }
   - id: 2
     description: >
@@ -21,7 +21,7 @@ tasks:
       tests, WeatherReportDtoMapperTests).
     verify: "dotnet test Weather.sln --filter Category=WeatherReport"
     risk: P0
-    status: failing
+    status: passing
     allure: { severity: critical, categories: ["Weather", "Coordinates", "unit"] }
   - id: 3
     description: >
@@ -30,7 +30,7 @@ tasks:
       mapping and service tests.
     verify: "dotnet test Weather.sln --filter Category=OpenWeatherMapping"
     risk: P1
-    status: failing
+    status: passing
     allure: { severity: high, categories: ["Weather", "Coordinates", "unit"] }
   - id: 4
     description: >
@@ -38,7 +38,7 @@ tasks:
       update WeatherReportDto tests and WeatherControllerTests (the controller fixture) accordingly.
     verify: "dotnet test Weather.sln --filter \"Category=WeatherReportDto|Category=WeatherController\""
     risk: P1
-    status: failing
+    status: passing
     allure: { severity: high, categories: ["Weather", "Coordinates", "unit"] }
   - id: 5
     description: >
@@ -46,12 +46,12 @@ tasks:
       endpoint integration tests keep compiling and the payload exposes latitude/longitude.
     verify: "dotnet test Weather.sln --filter Category=WeatherEndpoint"
     risk: P1
-    status: failing
+    status: passing
     allure: { severity: high, categories: ["Weather", "Coordinates", "integration"] }
   - id: 6
     description: >
       Story gate: full repo preflight green and the forecast DTO/endpoint unchanged.
     verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln"
     risk: P0
-    status: failing
+    status: passing
     allure: { severity: critical, categories: ["Weather", "Coordinates", "Standards"] }
