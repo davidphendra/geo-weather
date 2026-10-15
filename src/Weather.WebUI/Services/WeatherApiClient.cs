@@ -36,6 +36,19 @@ public sealed class WeatherApiClient(HttpClient http, NavigationManager navigati
             cancellationToken);
     }
 
+    public Task<WeatherForecastModel> GetForecastAsync(
+        string cityName,
+        string countryCode,
+        CancellationToken cancellationToken)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(cityName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(countryCode);
+
+        return GetAsync<WeatherForecastModel>(
+            $"api/weather/{Uri.EscapeDataString(cityName)}/forecast?countryCode={Uri.EscapeDataString(countryCode)}",
+            cancellationToken);
+    }
+
     public Task<IReadOnlyList<FavoriteCityModel>> GetFavoritesAsync(CancellationToken cancellationToken) =>
         GetAsync<IReadOnlyList<FavoriteCityModel>>("api/cities/favorites", cancellationToken);
 

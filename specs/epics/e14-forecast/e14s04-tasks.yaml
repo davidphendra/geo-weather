@@ -1,6 +1,6 @@
 story_id: e14s04
 title: WebUI 5-day forecast strip (ForecastStrip + ForecastDayCard)
-status: planned
+status: done
 bcps: 5
 module: M2
 standards: docs/engineering/csharp-standards.md
@@ -13,7 +13,7 @@ tasks:
       (api/weather/{city}/forecast?countryCode=).
     verify: "dotnet test src/Tests/Weather.WebUI.UnitTests --filter Category=WeatherApiClient"
     risk: P1
-    status: failing
+    status: passing
     allure: { severity: high, categories: ["Weather", "Forecast", "unit"] }
   - id: 2
     description: >
@@ -21,7 +21,7 @@ tasks:
       keeps the current report and leaves Forecast null (D5); reset Forecast on city/country change.
     verify: "dotnet test src/Tests/Weather.WebUI.UnitTests --filter Category=WeatherExplorerModel"
     risk: P0
-    status: failing
+    status: passing
     allure: { severity: critical, categories: ["Weather", "Forecast", "unit"] }
   - id: 3
     description: >
@@ -29,7 +29,7 @@ tasks:
       cover every value with a unit test.
     verify: "dotnet test src/Tests/Weather.WebUI.UnitTests --filter Category=SkyConditionIcon"
     risk: P2
-    status: failing
+    status: passing
     allure: { severity: normal, categories: ["Weather", "Forecast", "unit"] }
   - id: 4
     description: >
@@ -38,7 +38,7 @@ tasks:
       only when Forecast is null; wire ForecastStrip Forecast="Model.Forecast" on the page.
     verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=WeatherExplorerPage"
     risk: P1
-    status: failing
+    status: passing
     allure: { severity: high, categories: ["Weather", "Forecast", "integration"] }
   - id: 5
     description: >
@@ -46,5 +46,5 @@ tasks:
       fabricated data.
     verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln && bash scripts/check-layout.sh"
     risk: P0
-    status: failing
+    status: passing
     allure: { severity: critical, categories: ["Weather", "Forecast", "Standards"] }
