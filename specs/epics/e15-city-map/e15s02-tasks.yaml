@@ -1,0 +1,42 @@
+story_id: e15s02
+title: StationMap component + lazy Leaflet CDN + OpenStreetMap tiles
+status: passing
+bcps: 6
+module: M2
+standards: docs/engineering/csharp-standards.md
+tasks:
+  - id: 1
+    description: >
+      Add nullable decimal Latitude/Longitude and a HasCoordinates helper to WeatherReportModel; update
+      the WebUI JSON fixtures to include latitude/longitude and assert parsing plus the absent case never
+      yields a truthy HasCoordinates (no 0,0 default).
+    verify: "dotnet test src/Tests/Weather.WebUI.UnitTests --filter \"Category=WeatherApiClient|Category=WeatherExplorerModel\""
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Weather", "Map", "unit"] }
+  - id: 2
+    description: >
+      Add StationMap.razor (section shell, coordinate caption, fixed-height @ref container, unavailable
+      state, OnAfterRenderAsync module import + render keyed on coordinates, IAsyncDisposable dispose) and
+      StationMap.razor.js (lazy unpkg Leaflet 1.9.4 loader with integrity + crossorigin, OpenStreetMap tile
+      layer, default marker, text-only click popup, setView on change, map.remove on dispose).
+    verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["Weather", "Map", "unit"] }
+  - id: 3
+    description: >
+      Rebuild and commit the Tailwind stylesheet so the new fixed-height map classes are present in
+      wwwroot/app.css.
+    verify: "bash scripts/check-tailwind-css.sh"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Weather", "Map", "Standards"] }
+  - id: 4
+    description: >
+      Story gate: full repo preflight green; verify no inline style/script was introduced (CSP-safe) and no
+      fabricated data.
+    verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["Weather", "Map", "Standards"] }

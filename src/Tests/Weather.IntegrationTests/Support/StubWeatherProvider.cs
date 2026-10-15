@@ -24,6 +24,7 @@ internal sealed class StubWeatherProvider : IWeatherProvider
 
         WeatherReport report = WeatherReport.Create(
             Location.Of(cityName, countryCode ?? "GB"),
+            Coordinates.Of(51.5074m, -0.1278m),
             DateTimeOffset.UnixEpoch,
             Temperature.FromFahrenheit(50m),
             RelativeHumidity.FromPercent(80),

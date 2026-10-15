@@ -59,7 +59,7 @@ Delete template artifacts: `Counter.razor`, `Weather.razor` (superseded), sideba
 |-------|-----------|
 | Shell | `AppHeader`, `AppFooter`, `AppNav`, `AppShell` (layout) |
 | Design system | `StatChip`, `StatusPill`, `MethodBadge`, `SectionCard`, `CodeWell`, `TabSwitcher`, `TextField`, `SelectField`, `TextAreaField`, `Button`, `TagChip`, `TerminalLogWell` |
-| Weather Explorer | `QueryControllerPanel`, `MediatRExpressionBar`, `StationHeroCard`, `DiagnosticMetricGrid`, `Sparkline`, `ForecastStrip`, `ForecastDayCard`, `CommandDispatchForm`, `ChangeTrackerResponseWell`, `ArchitectureDeepDive` |
+| Weather Explorer | `QueryControllerPanel`, `MediatRExpressionBar`, `StationHeroCard`, `DiagnosticMetricGrid`, `Sparkline`, `ForecastStrip`, `ForecastDayCard`, `StationMap`, `CommandDispatchForm`, `ChangeTrackerResponseWell`, `ArchitectureDeepDive` |
 | Favorites | `MetricsStrip`, `EntityControlBar`, `EntityTable`, `EntityRow`, `TypeBadge`, `SnapshotCell`, `QuickAddCommandForm`, `CqrsMutationFeed`, `PipelineTopologyCard`, `RawJsonInspectorModal` |
 | Services | `WeatherApiClient`, client DTO mirrors, page view-models (formatting: °C/°F, cardinal, hPa, visibility km, timestamps) |
 

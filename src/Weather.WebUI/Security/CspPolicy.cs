@@ -11,9 +11,14 @@ public static class CspPolicy
         ArgumentException.ThrowIfNullOrWhiteSpace(nonce);
         ArgumentNullException.ThrowIfNull(options);
 
-        string styleSources = string.Join(' ', SelfSource.Concat(options.StyleOrigins));
+        // Leaflet serves both its script and its stylesheet from the same pinned CDN host, so the
+        // configured script origins also extend style-src.
+        string scriptSources = string.Join(
+            ' ',
+            SelfSource.Concat([$"'nonce-{nonce}'"]).Concat(options.ScriptOrigins));
+        string styleSources = string.Join(' ', SelfSource.Concat(options.StyleOrigins).Concat(options.ScriptOrigins));
         string fontSources = string.Join(' ', options.FontOrigins);
-        string scriptSources = $"'self' 'nonce-{nonce}'";
+        string imageSources = string.Join(' ', SelfSource.Concat(["data:"]).Concat(options.ImageOrigins));
 
         return string.Join("; ", new[]
         {
@@ -32,7 +37,7 @@ public static class CspPolicy
             "style-src-attr 'none'",
             $"font-src {fontSources}",
 
-            "img-src 'self' data:",
+            $"img-src {imageSources}",
             "connect-src 'self' ws: wss:",
             "form-action 'self'",
             "frame-ancestors 'none'",

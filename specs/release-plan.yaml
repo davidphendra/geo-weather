@@ -126,6 +126,19 @@ epics:
       GET /data/2.5/forecast (units=imperial, same key + resilience), GetWeatherForecast query +
       GET /api/weather/{cityName}/forecast, and the WebUI ForecastStrip/ForecastDayCard. Reverses the
       "Forecast/WeatherHistory out of scope" item. Design: specs/adr/0017-five-day-forecast.md.
+  - id: e15
+    title: City Map on the Weather Page
+    wsjf: 6.0
+    bcps: 16
+    status: done
+    capsule_dir: epics/e15-city-map
+    note: >
+      Draw the selected city on an interactive Leaflet map beneath the five-day forecast. Surfaces the
+      OpenWeather `coord` block as a domain Coordinates value object on WeatherReport -> flat
+      latitude/longitude on WeatherReportDto -> nullable WeatherReportModel; adds the WebUI StationMap
+      component that lazily loads Leaflet 1.9.4 from unpkg (SRI-pinned) and renders OpenStreetMap standard
+      tiles; switches StationHeroCard to the report coordinates with a City fallback; and whitelists the
+      unpkg + tile origins in the CSP. Design: specs/adr/0018-city-map-leaflet.md (D1-D10 confirmed).
 
 bugs:
   total: 1

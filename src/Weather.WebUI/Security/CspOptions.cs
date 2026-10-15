@@ -26,4 +26,18 @@ public sealed class CspOptions
         "CA2227:Collection properties should be read only",
         Justification = "Configuration binding requires a settable collection.")]
     public IList<string> FontOrigins { get; set; } = ["https://fonts.gstatic.com"];
+
+    /// <summary>Script origins permitted by script-src (the pinned Leaflet CDN). Also applied to style-src.</summary>
+    [SuppressMessage(
+        "Design",
+        "CA2227:Collection properties should be read only",
+        Justification = "Configuration binding requires a settable collection.")]
+    public IList<string> ScriptOrigins { get; set; } = ["https://unpkg.com"];
+
+    /// <summary>Image origins permitted by img-src (Leaflet's marker icons and the map tile host).</summary>
+    [SuppressMessage(
+        "Design",
+        "CA2227:Collection properties should be read only",
+        Justification = "Configuration binding requires a settable collection.")]
+    public IList<string> ImageOrigins { get; set; } = ["https://unpkg.com", "https://tile.openstreetmap.org"];
 }

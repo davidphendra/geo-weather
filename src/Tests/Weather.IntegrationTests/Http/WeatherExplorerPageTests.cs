@@ -19,6 +19,7 @@ public sealed class WeatherExplorerPageTests(WeatherHostFactory factory) : IClas
         Assert.Contains("Weather Explorer", html);
         Assert.Contains("CQRS QUERY PIPELINE", html);
         Assert.Contains("5-Day Predictive Ensemble Forecast", html);
+        Assert.Contains("Surface Location Map", html);
         Assert.Contains("href=\"favorites\"", html);
     }
 }

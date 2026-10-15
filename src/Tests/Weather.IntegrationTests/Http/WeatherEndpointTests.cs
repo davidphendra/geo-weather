@@ -22,6 +22,8 @@ public sealed class WeatherEndpointTests(WeatherHostFactory factory) : IClassFix
 
         Assert.Equal("London", root.GetProperty("location").GetProperty("city").GetString());
         Assert.Equal("GB", root.GetProperty("location").GetProperty("country").GetString());
+        Assert.Equal(51.5074m, root.GetProperty("latitude").GetDecimal());
+        Assert.Equal(-0.1278m, root.GetProperty("longitude").GetDecimal());
         Assert.True(root.TryGetProperty("observedAtUtc", out _));
         Assert.True(root.GetProperty("temperature").TryGetProperty("celsius", out _));
         Assert.True(root.GetProperty("temperature").TryGetProperty("fahrenheit", out _));

@@ -8,6 +8,7 @@ public sealed class WeatherReportTests
 {
     private static WeatherReport CreateReport(DateTimeOffset observedAtUtc) => WeatherReport.Create(
         Location.Of("London", "GB"),
+        Coordinates.Of(51.5074m, -0.1278m),
         observedAtUtc,
         Temperature.FromFahrenheit(50m),
         RelativeHumidity.FromPercent(80),
@@ -15,6 +16,15 @@ public sealed class WeatherReportTests
         Visibility.FromMeters(10000m),
         Pressure.FromHectopascals(1013m),
         SkyCondition.Cloudy);
+
+    [Fact]
+    public void Create_CarriesCoordinates()
+    {
+        WeatherReport report = CreateReport(DateTimeOffset.UnixEpoch);
+
+        Assert.Equal(51.5074m, report.Coordinates.Latitude);
+        Assert.Equal(-0.1278m, report.Coordinates.Longitude);
+    }
 
     [Fact]
     public void Create_DerivesDewPoint()

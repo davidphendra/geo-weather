@@ -13,6 +13,8 @@ public sealed class WeatherExplorerModelTests
     private const string WeatherJson = """
         {
           "location": { "city": "London", "country": "GB" },
+          "latitude": 51.5074,
+          "longitude": -0.1278,
           "observedAtUtc": "2025-01-01T12:00:00+00:00",
           "temperature": { "celsius": 10.0, "fahrenheit": 50.0 },
           "dewPoint": { "celsius": 8.0, "fahrenheit": 46.4 },
@@ -66,6 +68,7 @@ public sealed class WeatherExplorerModelTests
         Assert.Equal("United Kingdom", model.Country?.Name);
         Assert.Equal("London", model.City?.Name);
         Assert.NotNull(model.Report);
+        Assert.Equal(51.5074m, model.Report!.Latitude);
         Assert.Null(model.Error);
         Assert.False(model.Loading);
     }

@@ -18,6 +18,7 @@ public sealed class OpenWeatherMapServiceTests
           "name": "London",
           "dt": 1728820800,
           "visibility": 10000,
+          "coord": { "lat": 51.5074, "lon": -0.1278 },
           "main": { "temp": 50, "pressure": 1013, "humidity": 80 },
           "wind": { "speed": 10, "deg": 220 },
           "sys": { "country": "GB" },
@@ -46,6 +47,8 @@ public sealed class OpenWeatherMapServiceTests
 
         Assert.NotNull(report);
         Assert.Equal("London", report!.Location.City);
+        Assert.Equal(51.5074m, report.Coordinates.Latitude);
+        Assert.Equal(-0.1278m, report.Coordinates.Longitude);
     }
 
     [Fact]

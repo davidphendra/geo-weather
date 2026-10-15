@@ -16,6 +16,7 @@ internal static class OpenWeatherMapMapper
         {
             return WeatherReport.Create(
                 Location.Of(response.Name, response.Sys.Country),
+                Coordinates.Of((decimal)response.Coord.Lat, (decimal)response.Coord.Lon),
                 DateTimeOffset.FromUnixTimeSeconds(response.Dt),
                 Temperature.FromFahrenheit((decimal)response.Main.Temp),
                 RelativeHumidity.FromPercent(response.Main.Humidity),

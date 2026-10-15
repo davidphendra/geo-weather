@@ -13,6 +13,8 @@ public sealed class WeatherApiClientTests
     private const string WeatherJson = """
         {
           "location": { "city": "London", "country": "GB" },
+          "latitude": 51.5074,
+          "longitude": -0.1278,
           "observedAtUtc": "2025-01-01T12:00:00+00:00",
           "temperature": { "celsius": 10.0, "fahrenheit": 50.0 },
           "dewPoint": { "celsius": 8.0, "fahrenheit": 46.4 },
@@ -50,12 +52,41 @@ public sealed class WeatherApiClientTests
         WeatherReportModel report = await client.GetWeatherAsync("London", "GB", CancellationToken.None);
 
         Assert.Equal("London", report.Location.City);
+        Assert.Equal(51.5074m, report.Latitude);
+        Assert.Equal(-0.1278m, report.Longitude);
+        Assert.True(report.HasCoordinates);
         Assert.Equal(10.0m, report.Temperature.Celsius);
         Assert.Equal(8.0m, report.DewPoint.Celsius);
         Assert.Equal(80, report.RelativeHumidityPercent);
         Assert.Equal("SW", report.Wind.Cardinal);
         Assert.Equal(1013m, report.PressureHectopascals);
         Assert.Equal("Cloudy", report.SkyCondition);
+    }
+
+    [Fact]
+    public async Task GetWeather_without_coordinates_leaves_them_null()
+    {
+        const string withoutCoordinates =
+            """
+            {
+              "location": { "city": "London", "country": "GB" },
+              "observedAtUtc": "2025-01-01T12:00:00+00:00",
+              "temperature": { "celsius": 10.0, "fahrenheit": 50.0 },
+              "dewPoint": { "celsius": 8.0, "fahrenheit": 46.4 },
+              "relativeHumidityPercent": 80,
+              "wind": { "speedMetersPerSecond": 4.0, "directionDegrees": 220, "cardinal": "SW" },
+              "visibilityMeters": 10000,
+              "pressureHectopascals": 1013,
+              "skyCondition": "Cloudy"
+            }
+            """;
+        WeatherApiClient client = Create(_ => Json(withoutCoordinates));
+
+        WeatherReportModel report = await client.GetWeatherAsync("London", "GB", CancellationToken.None);
+
+        Assert.Null(report.Latitude);
+        Assert.Null(report.Longitude);
+        Assert.False(report.HasCoordinates);
     }
 
     [Fact]

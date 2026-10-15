@@ -23,6 +23,11 @@ public sealed class CspPolicyTests
     [InlineData("script-src-attr 'none'")]
     [InlineData("img-src 'self' data:")]
     [InlineData("connect-src 'self' ws: wss:")]
+    [InlineData("script-src 'self' 'nonce-NONCE' https://unpkg.com")]
+    [InlineData("script-src-elem 'self' 'nonce-NONCE' https://unpkg.com")]
+    [InlineData("style-src 'self' https://fonts.googleapis.com https://unpkg.com")]
+    [InlineData("style-src-elem 'self' https://fonts.googleapis.com https://unpkg.com")]
+    [InlineData("img-src 'self' data: https://unpkg.com https://tile.openstreetmap.org")]
     public void Emits_directive(string directive) => Assert.Contains(directive, Policy());
 
     [Fact]
@@ -42,6 +47,19 @@ public sealed class CspPolicyTests
         Assert.DoesNotContain("style-src https:", Policy());
         Assert.DoesNotContain("'unsafe-inline'", Policy());
         Assert.DoesNotContain("'unsafe-eval'", Policy());
+    }
+
+    [Fact]
+    public void Uses_the_configured_script_and_image_origins()
+    {
+        string policy = CspPolicy.Build("NONCE", new CspOptions
+        {
+            ScriptOrigins = ["https://cdn.example"],
+            ImageOrigins = ["https://tiles.example"],
+        });
+
+        Assert.Contains("script-src 'self' 'nonce-NONCE' https://cdn.example", policy);
+        Assert.Contains("img-src 'self' data: https://tiles.example", policy);
     }
 
     [Fact]

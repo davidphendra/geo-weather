@@ -2,6 +2,8 @@ namespace Weather.Modules.Weather.Application.WeatherReports.GetCurrentWeather;
 
 public sealed record WeatherReportDto(
     LocationDto Location,
+    decimal Latitude,
+    decimal Longitude,
     DateTimeOffset ObservedAtUtc,
     TemperatureDto Temperature,
     TemperatureDto DewPoint,

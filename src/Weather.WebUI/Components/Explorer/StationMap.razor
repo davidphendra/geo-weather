@@ -1,0 +1,101 @@
+@using System.Globalization
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+<section class="bg-surface-container-lowest shadow-sm rounded-xl p-space-lg md:p-space-xl">
+    <div class="flex items-center justify-between mb-space-md">
+        <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold flex items-center gap-2">
+            <span class="material-symbols-outlined text-secondary text-[20px]">pin_map</span>
+            Surface Location Map
+        </h3>
+        @if (CanDraw)
+        {
+            <span class="font-code-sm text-code-sm text-on-surface-variant">
+                Lat @Format(Report?.Latitude) · Lon @Format(Report?.Longitude)
+            </span>
+        }
+    </div>
+
+    @if (CanDraw)
+    {
+        <div @ref="_container"
+             class="h-[320px] md:h-[420px] w-full rounded-lg overflow-hidden z-0"></div>
+    }
+    else
+    {
+        <div class="p-space-lg rounded-lg bg-surface-container-low text-center font-code-sm text-code-sm text-on-surface-variant">
+            Map not available — coordinates only.
+        </div>
+    }
+</section>
+
+@code {
+    private ElementReference _container;
+    private IJSObjectReference? _module;
+    private string? _renderedKey;
+
+    [Parameter] public WeatherReportModel? Report { get; set; }
+
+    private bool CanDraw => Report?.HasCoordinates == true;
+
+    private string PopupLabel =>
+        Report is null
+            ? string.Empty
+            : FormattableString.Invariant(
+                $"{Report.Location.City}, {Report.Location.Country} — {Report.Temperature.Celsius:0.#}°C / {Report.Temperature.Fahrenheit:0.#}°F");
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Report is not { HasCoordinates: true })
+        {
+            await RemoveMapAsync();
+
+            return;
+        }
+
+        string key = FormattableString.Invariant($"{Report.Latitude},{Report.Longitude}");
+        if (string.Equals(key, _renderedKey, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        _module ??= await JS.InvokeAsync<IJSObjectReference>(
+            "import", "./Components/Explorer/StationMap.razor.js");
+
+        await _module.InvokeVoidAsync("render", _container, Report.Latitude, Report.Longitude, PopupLabel);
+        _renderedKey = key;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await RemoveMapAsync();
+
+        if (_module is not null)
+        {
+            await _module.DisposeAsync();
+            _module = null;
+        }
+    }
+
+    private async Task RemoveMapAsync()
+    {
+        if (_module is null || _renderedKey is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await _module.InvokeVoidAsync("dispose", _container);
+        }
+        catch (JSDisconnectedException)
+        {
+            // The circuit is gone; the map dies with the DOM.
+        }
+
+        _renderedKey = null;
+    }
+
+    private static string Format(decimal? value) =>
+        value?.ToString("0.0000", CultureInfo.InvariantCulture) ?? "—";
+}

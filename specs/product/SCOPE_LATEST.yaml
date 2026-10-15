@@ -47,6 +47,9 @@ in_scope:
   - id: S9
     description: Five-day forecast — Weather domain daily aggregation over the OpenWeather 5 day / 3 hour forecast, GET /api/weather/{cityName}/forecast, and the WebUI forecast strip.
     maps_to: e14
+  - id: S10
+    description: City map — the selected city drawn on a Leaflet map under the forecast, from the OpenWeather coordinates carried on the weather report, with OpenStreetMap tiles and a graceful unavailable state.
+    maps_to: e15
 
 out_of_scope:
   - item: User accounts, authentication, and authorization (a UserAccess module).
@@ -83,7 +86,7 @@ constraints:
   resources: Single developer with an AI agent.
   decisions_to_confirm:
     - Module slicing: adopt the reference module-per-assembly structure (recommended) vs keep modules as folders inside shared layer projects.
-    - Module set: RESOLVED (ADR-0016) — three bounded contexts: Geography, Weather, Journal (Favorites + Notes merged).
+    - "Module set: RESOLVED (ADR-0016) — three bounded contexts: Geography, Weather, Journal (Favorites + Notes merged)."
     - Granularity fallback: one assembly per module with Domain/Application/Infrastructure as folders + a separate IntegrationEvents assembly (fewer projects) vs the reference's four assemblies per module.
     - Test granularity: LOCKED — 7 test projects (one per module with UnitTests/IntegrationTests/ArchTests folders + Weather.ArchTests + Weather.IntegrationTests + Weather.BuildingBlocks.Tests).
     - Front-end: keep the existing Blazor WebUI (recommended) vs replace with plain JS/React.
@@ -99,6 +102,7 @@ success_criteria:
   - Temperature conversion is correct at freezing, boiling, negative, and -40 equilibrium points.
   - Weather payload includes location, UTC time, wind speed/direction, visibility, pressure, sky condition, temperature in F and C, dew point, relative humidity.
   - The five-day forecast returns up to five daily cards, each with a city-local high, low, precipitation probability, and sky condition (ADR-0017).
+  - A city map renders the observation's coordinates on OpenStreetMap tiles, with an explicit unavailable state when the report carries no coordinates (ADR-0018).
   - Domain assemblies have no reference to EF Core, ASP.NET Core, or Infrastructure.
   - All tests pass with network disabled.
   - README explains the modular monolith (bounded contexts, module slicing, integration events) and setup/build/run/test; AI instructions file exists at repo root.

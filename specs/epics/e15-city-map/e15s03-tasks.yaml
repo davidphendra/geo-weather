@@ -1,0 +1,40 @@
+story_id: e15s03
+title: CSP origins for unpkg + OpenStreetMap tiles
+status: passing
+bcps: 2
+module: M2
+standards: docs/engineering/csharp-standards.md
+tasks:
+  - id: 1
+    description: >
+      Add ScriptOrigins (default ["https://unpkg.com"]) and ImageOrigins (default
+      ["https://unpkg.com", "https://tile.openstreetmap.org"]) to CspOptions with the same
+      configuration-binding pattern and collection suppression as StyleOrigins/FontOrigins.
+    verify: "dotnet test Weather.sln --filter Category=CspPolicy"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["Security Review", "Csp", "unit"] }
+  - id: 2
+    description: >
+      Append ScriptOrigins to script-src/script-src-elem, the script host to style-src/style-src-elem
+      (Leaflet CSS), and ImageOrigins to img-src in CspPolicy.Build; update CspPolicyTests to assert the
+      new directives and that no 'unsafe-inline', 'unsafe-eval', or https: wildcard was introduced.
+    verify: "dotnet test Weather.sln --filter Category=CspPolicy"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["Security Review", "Csp", "unit"] }
+  - id: 3
+    description: >
+      Extend CspHeaderTests to assert the enforced header on "/" contains https://unpkg.com and
+      https://tile.openstreetmap.org.
+    verify: "dotnet test Weather.sln --filter Category=CspHeaders"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Security Review", "Csp", "integration"] }
+  - id: 4
+    description: >
+      Story gate: full repo preflight green and the policy contains no new broad relaxations.
+    verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["Security Review", "Csp", "Standards"] }

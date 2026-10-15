@@ -10,9 +10,9 @@
                 </div>
                 <h2 class="font-headline-lg text-headline-lg text-on-surface font-semibold">@Report.Location.City, @Report.Location.Country</h2>
                 <p class="font-code-sm text-code-sm text-on-surface-variant flex items-center gap-2 mt-1 flex-wrap">
-                    <span>Lat: @City.Latitude.ToString("0.0000", CultureInfo.InvariantCulture)</span>
+                    <span>Lat: @Latitude.ToString("0.0000", CultureInfo.InvariantCulture)</span>
                     <span>•</span>
-                    <span>Lon: @City.Longitude.ToString("0.0000", CultureInfo.InvariantCulture)</span>
+                    <span>Lon: @Longitude.ToString("0.0000", CultureInfo.InvariantCulture)</span>
                     <span>•</span>
                     <span class="text-secondary font-bold">Observed @Report.ObservedAtUtc.ToUniversalTime().ToString("u", CultureInfo.InvariantCulture)</span>
                 </p>
@@ -50,4 +50,9 @@
     [Parameter] public WeatherReportModel? Report { get; set; }
 
     [Parameter] public CityModel? City { get; set; }
+
+    // Prefer the observation's coordinates; fall back to the catalog city's coordinates (ADR-0018 D8).
+    private decimal Latitude => Report?.Latitude ?? City?.Latitude ?? 0m;
+
+    private decimal Longitude => Report?.Longitude ?? City?.Longitude ?? 0m;
 }
