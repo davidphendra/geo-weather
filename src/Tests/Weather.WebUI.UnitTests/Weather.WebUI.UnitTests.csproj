@@ -30,5 +30,6 @@
   <ItemGroup>
     <!-- Design tokens are asserted offline against the Tailwind SSOT and its compiled output. -->
     <Content Include="..\..\Weather.WebUI\tailwind.config.js" Link="tailwind.config.js" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\Weather.WebUI\wwwroot\app.css" Link="app.css" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

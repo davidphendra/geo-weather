@@ -1,8 +1,10 @@
 # Azure DevOps pipeline for the Weather modular monolith.
 #
 # CI  — runs on pull requests and main: restore, build (warnings as errors), format check,
-#       Tailwind CSS drift guard, and all offline tests (unit + architecture + in-process
-#       integration). The Playwright browser e2e harness is intentionally NOT run here.
+#       and all offline tests (unit + architecture + in-process integration). The Tailwind CSS
+#       drift guard (scripts/check-tailwind-css.sh) is author-time only and NOT run in CI; the
+#       committed wwwroot/app.css is delivered to the design-token tests as build output.
+#       The Playwright browser e2e harness is intentionally NOT run here.
 #       Nerdbank.GitVersioning stamps a semantic version (version.json SSOT) and sets the run
 #       number to it; the version guard fails the build if no version could be derived.
 # CD  — runs only on main, after CI, with no approval gate (automatic deployment). It zip-deploys
