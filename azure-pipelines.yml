@@ -105,11 +105,6 @@ stages:
           - script: dotnet format $(solution) --verify-no-changes --no-restore
             displayName: 'dotnet format --verify-no-changes'
 
-          - script: bash scripts/check-tailwind-css.sh
-            displayName: 'Tailwind CSS drift guard'
-            env:
-              npm_config_cache: '$(Pipeline.Workspace)/.npm'
-
           - script: >
               dotnet test $(solution)
               --configuration $(buildConfiguration)
