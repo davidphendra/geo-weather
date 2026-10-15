@@ -5,6 +5,8 @@ public sealed record WeatherReport
 {
     public Location Location { get; }
 
+    public Coordinates Coordinates { get; }
+
     public DateTimeOffset ObservedAtUtc { get; }
 
     public Temperature Temperature { get; }
@@ -23,6 +25,7 @@ public sealed record WeatherReport
 
     private WeatherReport(
         Location location,
+        Coordinates coordinates,
         DateTimeOffset observedAtUtc,
         Temperature temperature,
         DewPoint dewPoint,
@@ -33,6 +36,7 @@ public sealed record WeatherReport
         SkyCondition skyCondition)
     {
         Location = location;
+        Coordinates = coordinates;
         ObservedAtUtc = observedAtUtc;
         Temperature = temperature;
         DewPoint = dewPoint;
@@ -45,6 +49,7 @@ public sealed record WeatherReport
 
     public static WeatherReport Create(
         Location location,
+        Coordinates coordinates,
         DateTimeOffset observedAtUtc,
         Temperature temperature,
         RelativeHumidity relativeHumidity,
@@ -54,6 +59,7 @@ public sealed record WeatherReport
         SkyCondition skyCondition)
     {
         ArgumentNullException.ThrowIfNull(location);
+        ArgumentNullException.ThrowIfNull(coordinates);
 
         if (observedAtUtc.Offset != TimeSpan.Zero)
         {
@@ -62,6 +68,7 @@ public sealed record WeatherReport
 
         return new WeatherReport(
             location,
+            coordinates,
             observedAtUtc,
             temperature,
             DewPoint.Derive(temperature, relativeHumidity),

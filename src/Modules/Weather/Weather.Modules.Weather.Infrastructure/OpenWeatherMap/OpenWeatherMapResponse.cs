@@ -9,10 +9,17 @@ internal sealed class OpenWeatherMapResponse
     [JsonPropertyName("name")] public string Name { get; init; } = string.Empty;
     [JsonPropertyName("dt")] public long Dt { get; init; }
     [JsonPropertyName("visibility")] public int Visibility { get; init; }
+    [JsonPropertyName("coord")] public CoordBlock Coord { get; init; } = new();
     [JsonPropertyName("main")] public MainBlock Main { get; init; } = new();
     [JsonPropertyName("wind")] public WindBlock Wind { get; init; } = new();
     [JsonPropertyName("sys")] public SysBlock Sys { get; init; } = new();
     [JsonPropertyName("weather")] public IReadOnlyList<WeatherBlock> Weather { get; init; } = [];
+
+    internal sealed class CoordBlock
+    {
+        [JsonPropertyName("lat")] public double Lat { get; init; }
+        [JsonPropertyName("lon")] public double Lon { get; init; }
+    }
 
     internal sealed class MainBlock
     {
