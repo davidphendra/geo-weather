@@ -169,3 +169,22 @@ Fluent UI; C is the swap; D is evidence.
 
 Bookkeeping once approved: turn this into a story capsule via `change-request` / `plan-work`
 (`specs/epics/<eNN>/` + `-tasks.yaml`), register it in `release-plan.yaml`, then `kickoff-branch` → `develop-tdd`.
+
+## 10. Implementation status (branch `feature/searchable-location-select`)
+
+| Workstream | Status | Notes |
+|------------|--------|-------|
+| A — config-driven defaults | done | `LocationOptions` (`Configuration/LocationOptions.cs`); `Location` section in `appsettings.json`; `IOptionsSnapshot<LocationOptions>` in `WeatherExplorerModel` with blank/unknown fallback. Unit + binding tests. |
+| B — Fluent UI spike | done — **path A** | `Microsoft.FluentUI.AspNetCore.Components` 5.0.1. Spike found Fluent's `Height` parameter writes an inline `style="max-height"` on `fluent-listbox`, which `style-src-attr 'none'` blocks. Decision + evidence in ADR-0020. |
+| C — searchable pickers | done | Both pickers are single-select `FluentCombobox` with `Immediate` filtering; popup capped by the stylesheet rule `.location-combobox fluent-listbox { max-height: 16rem; }`. Dropdown options are null-safe (`country?.Name`) because Fluent invokes the option delegates with a null item. |
+| D — verification | done | Full preflight green; Playwright 10/10 (7 parity + 3 `location-select` specs) with zero CSP violations. |
+
+Verification commands and results (2026-10-15):
+- `dotnet build Weather.sln --warnaserror` → 0 warnings, 0 errors.
+- `dotnet format Weather.sln --verify-no-changes` → clean.
+- `dotnet test Weather.sln` → 418 passing (baseline 412; +6 default-location tests).
+- `npm --prefix src/Weather.WebUI run parity:styles` → 10 passed, 0 CSP violations.
+- `bash scripts/check-layout.sh` → OK.
+
+Deferred bookkeeping: formal epic capsule (`change-request`/`plan-work`), `release-plan.yaml` entry, and
+`specs/verifications/` evidence file.

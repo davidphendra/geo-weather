@@ -4,8 +4,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.FluentUI.AspNetCore.Components;
 
 using Weather.BuildingBlocks.Application.Telemetry;
+using Weather.WebUI.Configuration;
 using Weather.WebUI.Security;
 using Weather.WebUI.Services;
 
@@ -35,10 +37,12 @@ internal static class WebUiServiceCollectionExtensions
 
         services.AddRazorComponents()
             .AddInteractiveServerComponents();
+        services.AddFluentUIComponents();
 
         services.AddControllers();
         services.AddOpenApi();
         services.AddCsp(configuration);
+        services.Configure<LocationOptions>(configuration.GetSection(LocationOptions.SectionName));
 
         // Same-origin REST client for the Blazor UI; the origin is resolved per request from
         // NavigationManager.BaseUri, so there is deliberately no configured base address (D7).

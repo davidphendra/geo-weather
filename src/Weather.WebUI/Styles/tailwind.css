@@ -20,4 +20,11 @@
   .icon-fill {
     font-variation-settings: 'FILL' 1;
   }
+
+  /* Fluent UI's `Height` parameter writes style="max-height" on the inner
+     <fluent-listbox>, which the strict CSP (style-src-attr 'none') blocks.
+     Cap the popup from the stylesheet instead: ~10 rows, then scroll. */
+  .location-combobox fluent-listbox {
+    max-height: 16rem;
+  }
 }

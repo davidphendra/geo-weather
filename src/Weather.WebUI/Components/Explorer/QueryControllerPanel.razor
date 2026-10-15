@@ -15,34 +15,40 @@
             <label class="font-label-md text-label-md text-on-surface uppercase tracking-wider font-semibold" for="country-selector">
                 Target Jurisdiction (Country)
             </label>
-            <div class="relative">
-                <select id="country-selector"
-                        class="w-full h-10 px-3 bg-surface-container-low text-on-surface font-body-md text-body-md rounded-lg appearance-none cursor-pointer focus:outline-none focus:bg-surface-container transition-all"
-                        value="@SelectedCountry?.Code" @onchange="CountryChangedAsync">
-                    @foreach (CountryModel country in Countries)
-                    {
-                        <option value="@country.Code">@country.Name</option>
-                    }
-                </select>
-                <span class="material-symbols-outlined absolute right-3 top-2.5 pointer-events-none text-on-surface-variant text-[20px]">expand_more</span>
-            </div>
+            <FluentCombobox TOption="CountryModel"
+                            TValue="string"
+                            Id="country-selector"
+                            class="w-full location-combobox"
+                            Placeholder="Type to filter countries…"
+                            Multiple="false"
+                            Immediate="true"
+                            Items="@_filteredCountries"
+                            OptionText="@(country => country?.Name)"
+                            OptionValue="@(country => country?.Code)"
+                            @bind-ImmediateText="_countryFilter"
+                            @bind-ImmediateText:after="FilterCountries"
+                            Value="@SelectedCountry?.Code"
+                            ValueChanged="CountryValueChangedAsync" />
         </div>
 
         <div class="md:col-span-5 flex flex-col gap-space-xs">
             <label class="font-label-md text-label-md text-on-surface uppercase tracking-wider font-semibold" for="city-selector">
                 Dependent Region (City)
             </label>
-            <div class="relative">
-                <select id="city-selector"
-                        class="w-full h-10 px-3 bg-surface-container-low text-on-surface font-body-md text-body-md rounded-lg appearance-none cursor-pointer focus:outline-none focus:bg-surface-container transition-all"
-                        value="@SelectedCity?.Id" @onchange="CityChangedAsync">
-                    @foreach (CityModel city in Cities)
-                    {
-                        <option value="@city.Id">@city.Name</option>
-                    }
-                </select>
-                <span class="material-symbols-outlined absolute right-3 top-2.5 pointer-events-none text-on-surface-variant text-[20px]">expand_more</span>
-            </div>
+            <FluentCombobox TOption="CityModel"
+                            TValue="string"
+                            Id="city-selector"
+                            class="w-full location-combobox"
+                            Placeholder="Type to filter cities…"
+                            Multiple="false"
+                            Immediate="true"
+                            Items="@_filteredCities"
+                            OptionText="@(city => city?.Name)"
+                            OptionValue="@(city => city?.Id)"
+                            @bind-ImmediateText="_cityFilter"
+                            @bind-ImmediateText:after="FilterCities"
+                            Value="@SelectedCity?.Id"
+                            ValueChanged="CityValueChangedAsync" />
         </div>
 
         <div class="md:col-span-2">
@@ -73,24 +79,49 @@
 
     [Parameter] public EventCallback OnFetch { get; set; }
 
-    private async Task CountryChangedAsync(ChangeEventArgs args)
+    private string? _countryFilter;
+
+    private IReadOnlyList<CountryModel> _filteredCountries = [];
+
+    private string? _cityFilter;
+
+    private IReadOnlyList<CityModel> _filteredCities = [];
+
+    private IReadOnlyList<CityModel> _previousCities = [];
+
+    protected override void OnParametersSet()
     {
-        string? code = args.Value?.ToString();
-        CountryModel? country = Countries.FirstOrDefault(candidate => candidate.Code == code);
-        if (country is not null)
+        // A new city list (country changed) starts unfiltered so a stale term cannot hide every city.
+        if (!ReferenceEquals(_previousCities, Cities))
         {
-            await OnCountryChanged.InvokeAsync(country);
+            _previousCities = Cities;
+            _cityFilter = null;
         }
+
+        FilterCountries();
+        FilterCities();
     }
 
-    private async Task CityChangedAsync(ChangeEventArgs args)
+    private void FilterCountries() =>
+        _filteredCountries = string.IsNullOrWhiteSpace(_countryFilter)
+            ? Countries
+            : [.. Countries.Where(country => country.Name.Contains(_countryFilter, StringComparison.OrdinalIgnoreCase))];
+
+    private void FilterCities() =>
+        _filteredCities = string.IsNullOrWhiteSpace(_cityFilter)
+            ? Cities
+            : [.. Cities.Where(city => city.Name.Contains(_cityFilter, StringComparison.OrdinalIgnoreCase))];
+
+    private Task CountryValueChangedAsync(string? code)
     {
-        string? id = args.Value?.ToString();
+        CountryModel? country = Countries.FirstOrDefault(candidate => candidate.Code == code);
+        return country is null ? Task.CompletedTask : OnCountryChanged.InvokeAsync(country);
+    }
+
+    private Task CityValueChangedAsync(string? id)
+    {
         CityModel? city = Cities.FirstOrDefault(candidate => candidate.Id == id);
-        if (city is not null)
-        {
-            await OnCityChanged.InvokeAsync(city);
-        }
+        return city is null ? Task.CompletedTask : OnCityChanged.InvokeAsync(city);
     }
 
     private Task FetchAsync() => OnFetch.InvokeAsync();

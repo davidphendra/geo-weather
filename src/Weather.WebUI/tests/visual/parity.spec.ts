@@ -21,6 +21,7 @@ const VIEWPORTS = [
 
 interface Probe {
   selector: string;
+  protoSelector?: string;
   props: string[];
   compareWidth?: boolean;
 }
@@ -34,17 +35,14 @@ const CASES: Array<{ name: string; app: string; proto: string; probes: Record<st
       header: { selector: 'header', props: ['backgroundColor', 'paddingLeft'], compareWidth: true },
       footer: { selector: 'footer', props: ['backgroundColor', 'fontFamily', 'fontSize'], compareWidth: true },
       queryCard: {
-        selector: 'section:has(select)',
+        selector: 'section:has(.location-combobox)',
+        protoSelector: 'section:has(select)',
         props: ['backgroundColor', 'borderTopLeftRadius', 'paddingTop', 'paddingLeft'],
         compareWidth: true,
       },
       primaryButton: {
         selector: 'button.bg-primary',
         props: ['backgroundColor', 'color', 'fontSize', 'fontWeight', 'borderTopLeftRadius'],
-      },
-      select: {
-        selector: 'select',
-        props: ['backgroundColor', 'color', 'fontSize', 'borderTopLeftRadius'],
       },
     },
   },
@@ -119,7 +117,7 @@ for (const viewport of VIEWPORTS) {
 
       for (const [label, probe] of Object.entries(testCase.probes)) {
         const actual = await measure(app, probe);
-        const expected = await measure(proto, probe);
+        const expected = await measure(proto, { ...probe, selector: probe.protoSelector ?? probe.selector });
 
         for (const [property, value] of Object.entries(expected.styles)) {
           expect

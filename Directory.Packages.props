@@ -40,4 +40,8 @@
     <PackageVersion Include="Microsoft.OpenTelemetry" Version="1.1.0" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.18.0" />
   </ItemGroup>
+
+  <ItemGroup Label="WebUI">
+    <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components" Version="5.0.1" />
+  </ItemGroup>
 </Project>
