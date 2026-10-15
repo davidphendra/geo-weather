@@ -31,10 +31,11 @@ bugs:
 
   - id: BUG-002
     title: Pages could not be scrolled by wheel/trackpad after adopting Fluent UI
-    status: open
+    status: fixed
     severity: medium
     discovered: 2026-10-15
     discovered_during: post-merge verification (ADR-0020)
+    fixed: 2026-10-15
     area: Weather.WebUI (Fluent UI global stylesheet vs. document scrolling)
     symptom: >
       With Fluent UI Blazor adopted for the country/city pickers, the viewport could not be scrolled by
@@ -51,6 +52,9 @@ bugs:
       Override in the Tailwind base layer with a higher-specificity rule
       html body { height:auto; min-height:100dvh; overflow:visible } (plus html a { text-decoration:inherit }
       for the forced link underline). No !important and no CSP change.
-    regression_tests: "src/Weather.WebUI/tests/visual/location-select.spec.ts (wheel-scroll + reset checks)"
-    evidence: "Pending fix."
+    regression_tests: "src/Weather.WebUI/tests/visual/scroll.spec.ts (real wheel event + link decoration)"
+    evidence: >
+      html body override (height auto / overflow visible) plus html a text-decoration inherit in the
+      Tailwind base layer; ADR-0020 D9. dotnet 418 tests pass, Playwright 12/12 with 0 CSP violations,
+      check-tailwind-css in sync, check-layout OK. Fixed on branch fix/scroll-fluent-body-reset.
     introduced_by: ADR-0020 (Fluent UI Blazor country/city pickers)

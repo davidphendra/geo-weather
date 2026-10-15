@@ -95,4 +95,12 @@ real-event assertion.
 
 ## Resolution
 
-<!-- filled in by validate-fix -->
+Fixed on branch `fix/scroll-fluent-body-reset`. Fluent UI Blazor's global adopted stylesheet sets
+`body { height: 100dvh; overflow: hidden }`, which propagates to the viewport and blocks user scroll
+input. Overrode it in the Tailwind base layer with `html body { height: auto; min-height: 100dvh;
+overflow: visible }` and neutralised the forced link underline with `html a { text-decoration: inherit }`
+(no `!important`, no CSP change; ADR-0020 D9). Added `tests/visual/scroll.spec.ts` — a real `mouse.wheel`
+regression test — plus a link-decoration check.
+
+Evidence: `dotnet build --warnaserror` clean, `dotnet format` clean, 418 dotnet tests pass,
+Playwright 12/12 with 0 CSP violations, `check-tailwind-css.sh` in sync, `check-layout.sh` OK.
