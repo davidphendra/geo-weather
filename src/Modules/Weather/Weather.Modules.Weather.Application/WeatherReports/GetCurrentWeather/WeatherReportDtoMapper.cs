@@ -10,6 +10,8 @@ internal static class WeatherReportDtoMapper
 
         return new WeatherReportDto(
             new LocationDto(report.Location.City, report.Location.CountryCode),
+            report.Coordinates.Latitude,
+            report.Coordinates.Longitude,
             report.ObservedAtUtc,
             new TemperatureDto(report.Temperature.Celsius, report.Temperature.Fahrenheit),
             new TemperatureDto(report.DewPoint.Celsius, report.DewPoint.Fahrenheit),
