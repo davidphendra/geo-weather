@@ -11,7 +11,7 @@
 | Q2 | Deploy target | **Azure App Service (Linux)**, framework-dependent zip deploy. |
 | Q3 | Deploy gate | **None — automatic deploy.** The `Deploy` job is a plain `job` with no `environment:` and no approval check. |
 | Q4 | Shape | **One pipeline**: CI on PRs + `main`; a `Deploy` stage that runs only on `main`, after CI, with no approval gate. |
-| Q5 | Extra gates | `dotnet format --verify-no-changes` **and** the Tailwind CSS drift guard (`scripts/check-tailwind-css.sh`). |
+| Q5 | Extra gates | `dotnet format --verify-no-changes`. The Tailwind CSS drift guard (`scripts/check-tailwind-css.sh`) was **removed from CI** in 89b3973 and is author-time only: `wwwroot/app.css` is committed and delivered to the design-token tests as build output. |
 | Q6 | Reporting | Publish **test results (TRX)** and **code coverage** (visibility only, no threshold). |
 | Q7 | GitHub Actions | **Removed** — Azure is the single CI/CD system; the drift-guard script stays and is called by the pipeline. |
 
@@ -24,7 +24,7 @@ stage CI  (ubuntu-latest)                  stage Deploy  (ubuntu-latest)
   restore                                    dependsOn: CI
   build --warnaserror                        condition: main only
   dotnet format --verify-no-changes          download webapp artifact
-  Tailwind CSS drift guard                   AzureWebApp@1  zipDeploy → App Service (Linux)
+                                             AzureWebApp@1  zipDeploy → App Service (Linux)
   dotnet test (no e2e) + TRX + coverage
   dotnet publish → artifact "webapp"
 ```
@@ -36,6 +36,10 @@ stage CI  (ubuntu-latest)                  stage Deploy  (ubuntu-latest)
   `WebApplicationFactory`, no network).
 - **Does not run:** `npm run parity:styles` (Playwright, browser e2e). It needs a running app and a
   Chromium download, which belongs on a developer machine or a dedicated nightly job, not PR validation.
+- **No Node/npm step:** because `wwwroot/app.css` is committed, CI never invokes the Tailwind toolchain,
+  so the pipeline installs no Node.js and caches no npm packages. (The npm cache task was removed because
+  a cache path that nothing writes to makes the `Cache@2` save step fail with `tar: Cannot open: No such
+  file or directory`.)
 
 ## One-time setup
 
@@ -58,9 +62,9 @@ stage CI  (ubuntu-latest)                  stage Deploy  (ubuntu-latest)
    even when the group is not linked. Secrets (e.g. `OpenWeather__ApiKey`) do **not** belong in this
    group; they live in App Service configuration / Key Vault (step 5).
 3. **Values that stay in YAML** — repo-structural constants (`buildConfiguration`, `solution`,
-   `webProject`, `testResultsDirectory`) and toolchain defaults (`dotnetSdkVersion`, `nodeVersion`,
-   `vmImage`) are declared in `azure-pipelines.yml`. The Deploy stage's group-scoped `vmImage`
-   overrides the root default (narrowest scope wins).
+   `webProject`, `testResultsDirectory`) and toolchain defaults (`dotnetSdkVersion`, `vmImage`) are
+   declared in `azure-pipelines.yml`. The Deploy stage's group-scoped `vmImage` overrides the root default
+   (narrowest scope wins).
 4. **No Environment/approval needed** — the `Deploy` job is a plain `job` with no `environment:`
    and no approval check, so CD runs automatically. Do not attach the deploy to an Environment
    that carries an Approval check.
@@ -76,7 +80,7 @@ stage CI  (ubuntu-latest)                  stage Deploy  (ubuntu-latest)
 | Value | Where it lives | Why |
 |-------|----------------|-----|
 | `azureServiceConnection`, `webAppName`, `dotnetRuntimeStack`, `vmImage`, `appType`, `deploymentMethod` | `weather-cicd` variable group | environment-scoped; change without a commit |
-| `buildConfiguration`, `solution`, `webProject`, `testResultsDirectory`, `dotnetSdkVersion`, `nodeVersion` | `azure-pipelines.yml` | repo-structural / toolchain defaults |
+| `buildConfiguration`, `solution`, `webProject`, `testResultsDirectory`, `dotnetSdkVersion` | `azure-pipelines.yml` | repo-structural / toolchain defaults |
 | `trigger`/`pr` branch lists, deploy `condition` | `azure-pipelines.yml` (literal) | evaluated at compile time; variables are not expanded there |
 
 ## Why the deploy is automatic

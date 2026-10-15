@@ -5,6 +5,9 @@
 #       drift guard (scripts/check-tailwind-css.sh) is author-time only and NOT run in CI; the
 #       committed wwwroot/app.css is delivered to the design-token tests as build output.
 #       The Playwright browser e2e harness is intentionally NOT run here.
+#       No Node/npm step exists: because wwwroot/app.css is committed, CI never invokes the Tailwind
+#       toolchain, so there is no npm cache to restore or save (a cache path nobody writes to makes
+#       the Cache@2 save step fail with "tar: Cannot open: No such file or directory").
 #       Nerdbank.GitVersioning stamps a semantic version (version.json SSOT) and sets the run
 #       number to it; the version guard fails the build if no version could be derived.
 # CD  — runs only on main, after CI, with no approval gate (automatic deployment). It zip-deploys
@@ -53,8 +56,6 @@ variables:
   # --- Toolchain: YAML defaults keep CI green even when the variable group is not linked ---
   - name: dotnetSdkVersion
     value: '10.0.x'
-  - name: nodeVersion
-    value: '20.x'
 
   # --- Agent image: CI default; the Deploy stage overrides it from the variable group ---
   - name: vmImage
@@ -79,11 +80,6 @@ stages:
               packageType: 'sdk'
               version: '$(dotnetSdkVersion)'
 
-          - task: NodeTool@0
-            displayName: 'Install Node.js $(nodeVersion)'
-            inputs:
-              versionSpec: '$(nodeVersion)'
-
           - task: Cache@2
             displayName: 'Cache NuGet packages'
             inputs:
@@ -91,12 +87,6 @@ stages:
               restoreKeys: |
                 nuget | "$(Agent.OS)"
               path: '$(UserProfile)/.nuget/packages'
-
-          - task: Cache@2
-            displayName: 'Cache npm packages'
-            inputs:
-              key: 'npm | "$(Agent.OS)" | src/Weather.WebUI/package-lock.json'
-              path: '$(Pipeline.Workspace)/.npm'
 
           - script: dotnet restore $(solution)
             displayName: 'dotnet restore'
