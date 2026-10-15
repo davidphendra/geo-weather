@@ -15,8 +15,6 @@
                           OnCityChanged="OnCityChangedAsync"
                           OnFetch="OnFetchAsync"/>
 
-    <MediatRExpressionBar City="Model.City?.Name" Country="Model.City?.CountryCode"/>
-
     <ProblemBanner Problem="Model.Error"/>
 
     @if (Model.Report is not null && Model.City is not null)
@@ -32,8 +30,6 @@
                 <ChangeTrackerResponseWell/>
             </div>
         </div>
-
-        <ArchitectureDeepDive/>
     }
 </div>
 
