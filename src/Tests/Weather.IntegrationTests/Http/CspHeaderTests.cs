@@ -21,6 +21,8 @@ public sealed class CspHeaderTests(WeatherHostFactory factory) : IClassFixture<W
         Assert.Contains("frame-ancestors 'none'", policy);
         Assert.Contains("script-src 'self' 'nonce-", policy);
         Assert.Contains("default-src 'self'", policy);
+        Assert.Contains("https://unpkg.com", policy);
+        Assert.Contains("https://tile.openstreetmap.org", policy);
     }
 
     [Fact]
