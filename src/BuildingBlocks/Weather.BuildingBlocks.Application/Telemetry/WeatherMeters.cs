@@ -52,6 +52,12 @@ public static class WeatherMeters
     public static readonly Histogram<double> WeatherProviderDuration =
         Meter.CreateHistogram<double>("weather.provider.duration", unit: "ms");
 
+    public static readonly Counter<long> WeatherForecastRequests =
+        Meter.CreateCounter<long>("weather.forecast.requests", unit: "{request}");
+
+    public static readonly Histogram<double> WeatherForecastDuration =
+        Meter.CreateHistogram<double>("weather.forecast.duration", unit: "ms");
+
     // Geography (business).
     public static readonly Counter<long> GeographyCountryListRequests =
         Meter.CreateCounter<long>("geography.country.list_requests", unit: "{request}");

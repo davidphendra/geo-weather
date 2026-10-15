@@ -1,4 +1,5 @@
 using global::Weather.Modules.Weather.Application.Abstractions;
+using global::Weather.Modules.Weather.Domain.Forecasts;
 using global::Weather.Modules.Weather.Domain.WeatherReports;
 
 namespace Weather.IntegrationTests.Support;
@@ -32,5 +33,37 @@ internal sealed class StubWeatherProvider : IWeatherProvider
             SkyCondition.Cloudy);
 
         return Task.FromResult<WeatherReport?>(report);
+    }
+
+    public Task<WeatherForecast?> GetForecastAsync(
+        string cityName,
+        string? countryCode,
+        CancellationToken cancellationToken)
+    {
+        if (string.Equals(cityName, "ProviderDown", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new WeatherProviderException("Weather provider is unavailable.");
+        }
+
+        if (string.Equals(cityName, "Nowhere", StringComparison.OrdinalIgnoreCase))
+        {
+            return Task.FromResult<WeatherForecast?>(null);
+        }
+
+        ForecastInterval[] intervals =
+        [
+            .. Enumerable.Range(0, 5).Select(offset => ForecastInterval.Create(
+                DateTimeOffset.UnixEpoch.AddDays(offset),
+                Temperature.FromFahrenheit(50m + offset),
+                PrecipitationProbability.FromPercent(20 + offset),
+                SkyCondition.Cloudy)),
+        ];
+
+        WeatherForecast forecast = WeatherForecast.FromIntervals(
+            Location.Of(cityName, countryCode ?? "GB"),
+            intervals,
+            TimeSpan.Zero);
+
+        return Task.FromResult<WeatherForecast?>(forecast);
     }
 }

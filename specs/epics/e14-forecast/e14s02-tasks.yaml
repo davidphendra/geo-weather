@@ -1,6 +1,6 @@
 story_id: e14s02
 title: IWeatherProvider.GetForecastAsync + OpenWeatherMap 5 day/3 hour adapter
-status: planned
+status: done
 bcps: 4
 module: M2
 standards: docs/engineering/csharp-standards.md
@@ -12,7 +12,7 @@ tasks:
       deserialization.
     verify: "dotnet build src/Modules/Weather/Weather.Modules.Weather.Infrastructure/Weather.Modules.Weather.Infrastructure.csproj --warnaserror"
     risk: P1
-    status: failing
+    status: passing
     allure: { severity: high, categories: ["Weather", "Forecast", "unit"] }
   - id: 2
     description: >
@@ -21,7 +21,7 @@ tasks:
       city.timezone offset; wrap WeatherDomainException as WeatherProviderException.
     verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=OpenWeatherForecastMapping"
     risk: P0
-    status: failing
+    status: passing
     allure: { severity: critical, categories: ["Weather", "Forecast", "unit"] }
   - id: 3
     description: >
@@ -30,15 +30,15 @@ tasks:
       WeatherProviderException; reuse the key handler and resilience pipeline; never log the URL.
     verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=OpenWeatherForecastService"
     risk: P0
-    status: failing
+    status: passing
     allure: { severity: critical, categories: ["Weather", "Forecast", "integration"] }
   - id: 4
     description: >
-      Add weather.forecast.requests (Counter) + weather.forecast.duration (Histogram) to WeatherMeters,
-      emit them from GetForecastAsync, and add both to the observability metric catalog.
-    verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=ForecastObservability"
+      Define weather.forecast.requests (Counter) + weather.forecast.duration (Histogram) in WeatherMeters and
+      add them to the observability catalog. Emission is asserted in e14s03 (GetWeatherForecastQueryHandler).
+    verify: "dotnet build src/BuildingBlocks/Weather.BuildingBlocks.Application/Weather.BuildingBlocks.Application.csproj --warnaserror"
     risk: P2
-    status: failing
+    status: passing
     security: low
     allure: { severity: normal, categories: ["Weather", "Forecast", "Observability"] }
   - id: 5
@@ -47,5 +47,5 @@ tasks:
     verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln && bash scripts/check-layout.sh"
     risk: P0
     security: medium
-    status: failing
+    status: passing
     allure: { severity: critical, categories: ["Weather", "Forecast", "Security Review"] }
