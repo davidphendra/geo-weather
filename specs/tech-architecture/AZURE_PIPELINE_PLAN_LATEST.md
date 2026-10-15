@@ -40,6 +40,11 @@ stage CI  (ubuntu-latest)                  stage Deploy  (ubuntu-latest)
   so the pipeline installs no Node.js and caches no npm packages. (The npm cache task was removed because
   a cache path that nothing writes to makes the `Cache@2` save step fail with `tar: Cannot open: No such
   file or directory`.)
+- **NuGet cache:** the global-packages folder is pinned with
+  `NUGET_PACKAGES=$(Pipeline.Workspace)/.nuget/packages`, so the `Cache@2` path and `dotnet restore` are
+  the same directory by construction. Never use `$(UserProfile)` here — it is Windows-only and undefined
+  on the `ubuntu-latest` agent, which leaves the path unexpanded and fails the save step with the same tar
+  error (BUG-006).
 
 ## One-time setup
 
@@ -62,9 +67,9 @@ stage CI  (ubuntu-latest)                  stage Deploy  (ubuntu-latest)
    even when the group is not linked. Secrets (e.g. `OpenWeather__ApiKey`) do **not** belong in this
    group; they live in App Service configuration / Key Vault (step 5).
 3. **Values that stay in YAML** — repo-structural constants (`buildConfiguration`, `solution`,
-   `webProject`, `testResultsDirectory`) and toolchain defaults (`dotnetSdkVersion`, `vmImage`) are
-   declared in `azure-pipelines.yml`. The Deploy stage's group-scoped `vmImage` overrides the root default
-   (narrowest scope wins).
+   `webProject`, `testResultsDirectory`) and toolchain defaults (`dotnetSdkVersion`, `NUGET_PACKAGES`,
+   `vmImage`) are declared in `azure-pipelines.yml`. The Deploy stage's group-scoped `vmImage` overrides
+   the root default (narrowest scope wins).
 4. **No Environment/approval needed** — the `Deploy` job is a plain `job` with no `environment:`
    and no approval check, so CD runs automatically. Do not attach the deploy to an Environment
    that carries an Approval check.
@@ -80,7 +85,7 @@ stage CI  (ubuntu-latest)                  stage Deploy  (ubuntu-latest)
 | Value | Where it lives | Why |
 |-------|----------------|-----|
 | `azureServiceConnection`, `webAppName`, `dotnetRuntimeStack`, `vmImage`, `appType`, `deploymentMethod` | `weather-cicd` variable group | environment-scoped; change without a commit |
-| `buildConfiguration`, `solution`, `webProject`, `testResultsDirectory`, `dotnetSdkVersion` | `azure-pipelines.yml` | repo-structural / toolchain defaults |
+| `buildConfiguration`, `solution`, `webProject`, `testResultsDirectory`, `dotnetSdkVersion`, `NUGET_PACKAGES` | `azure-pipelines.yml` | repo-structural / toolchain defaults |
 | `trigger`/`pr` branch lists, deploy `condition` | `azure-pipelines.yml` (literal) | evaluated at compile time; variables are not expanded there |
 
 ## Why the deploy is automatic

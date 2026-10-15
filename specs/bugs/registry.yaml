@@ -153,3 +153,42 @@ bugs:
       remains and only the NuGet Cache@2 stays. Preflight green: build 0 warnings/0 errors, dotnet format
       clean, dotnet test green.
     introduced_by: Tailwind-removal commits 89b3973 / 2f6c3db (npm cache step left behind)
+
+  - id: BUG-006
+    title: CI NuGet cache path used the Windows-only $(UserProfile), so the save step failed on Linux
+    status: fixed
+    severity: medium
+    discovered: 2026-10-15
+    discovered_during: Azure DevOps CI run (post-job Cache@2 NuGet save)
+    fixed: 2026-10-15
+    area: azure-pipelines.yml (CI Cache@2 NuGet step path)
+    symptom: >
+      The post-job "cache NuGet packages" step fails with "There is a cache miss. / tar:
+      /home/vsts/work/1/s/$(UserProfile)/.nuget/packages: Cannot open: No such file or directory / tar:
+      Error is not recoverable: exiting now" and "##[error]Process returned non-zero exit code: 2".
+      Note the literal $(UserProfile) in the failing path.
+    reproduction: >
+      Run the pipeline; it executes on the ubuntu-latest agent (vmImage), and the NuGet cache key is
+      stable, so first/rotated runs are misses and the post-job save step runs.
+    root_cause: >
+      UserProfile is an environment variable on Windows; it is undefined on the Linux agent. Azure
+      Pipelines therefore leaves the token unexpanded and Cache@2 receives the literal string
+      $(UserProfile)/.nuget/packages, which it resolves relative to the job working directory (the repo
+      checkout, /home/vsts/work/1/s). NuGet's real global-packages folder on Linux is $HOME/.nuget/packages
+      (/home/vsts/.nuget/packages), so the cache path never matches the restore folder and never exists:
+      the save step tars a non-existent directory and exits 2. The cache also never stored anything, so
+      every run restored the full NuGet graph from the network (a silent performance bug behind the hard
+      failure).
+    resolution: >
+      Added a root variable NUGET_PACKAGES=$(Pipeline.Workspace)/.nuget/packages and pointed the Cache@2
+      path at $(NUGET_PACKAGES). NUGET_PACKAGES is a documented NuGet environment variable and pipeline
+      variables become process environment variables, so `dotnet restore` installs to exactly the cached
+      directory: the cache path and the restore folder can no longer drift apart, and the post-job save
+      always has a real directory to archive.
+    regression_tests: n/a (pipeline configuration)
+    evidence: >
+      Local proof that restore honours the variable:
+      NUGET_PACKAGES=/tmp/wx-cache-probe/.nuget/packages dotnet restore Weather.sln succeeded and created
+      that folder (134 packages). python3 yaml.safe_load('azure-pipelines.yml') parses. Preflight green:
+      build 0 warnings/0 errors, dotnet format clean, 420 tests pass.
+    introduced_by: original pipeline authoring (Windows-flavoured path on a ubuntu-latest agent)
