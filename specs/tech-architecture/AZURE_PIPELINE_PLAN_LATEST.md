@@ -9,8 +9,8 @@
 |---|----------|----------|
 | Q1 | Test scope | **All offline tests** — `dotnet test Weather.sln` (unit + architecture + in-process integration). The Playwright browser e2e harness is **not** run. |
 | Q2 | Deploy target | **Azure App Service (Linux)**, framework-dependent zip deploy. |
-| Q3 | Deploy gate | **Azure DevOps Environment approval** on `environment: production` (no automatic deploy). |
-| Q4 | Shape | **One pipeline**: CI on PRs + `main`; a `Deploy` stage that runs only on `main`, after CI, and waits for the Environment approval. |
+| Q3 | Deploy gate | **None — automatic deploy.** The `Deploy` job is a plain `job` with no `environment:` and no approval check. |
+| Q4 | Shape | **One pipeline**: CI on PRs + `main`; a `Deploy` stage that runs only on `main`, after CI, with no approval gate. |
 | Q5 | Extra gates | `dotnet format --verify-no-changes` **and** the Tailwind CSS drift guard (`scripts/check-tailwind-css.sh`). |
 | Q6 | Reporting | Publish **test results (TRX)** and **code coverage** (visibility only, no threshold). |
 | Q7 | GitHub Actions | **Removed** — Azure is the single CI/CD system; the drift-guard script stays and is called by the pipeline. |
@@ -23,9 +23,9 @@ trigger: pull_request + main ─────────────┐
 stage CI  (ubuntu-latest)                  stage Deploy  (ubuntu-latest)
   restore                                    dependsOn: CI
   build --warnaserror                        condition: main only
-  dotnet format --verify-no-changes          environment: production  ◄── approval gate
-  Tailwind CSS drift guard                     download webapp artifact
-  dotnet test (no e2e) + TRX + coverage        AzureWebApp@1  zipDeploy → App Service (Linux)
+  dotnet format --verify-no-changes          download webapp artifact
+  Tailwind CSS drift guard                   AzureWebApp@1  zipDeploy → App Service (Linux)
+  dotnet test (no e2e) + TRX + coverage
   dotnet publish → artifact "webapp"
 ```
 
@@ -44,8 +44,9 @@ stage CI  (ubuntu-latest)                  stage Deploy  (ubuntu-latest)
    `azureServiceConnection` to its name.
 2. **Pipeline variables** — set `webAppName` (and `dotnetRuntimeStack` if it differs) in the pipeline
    UI, or in a Library variable group. `dotnetRuntimeStack` defaults to `DOTNETCORE|10.0`.
-3. **Environment + approval** — Pipelines → Environments → create `production` → **Approvals and
-   checks** → add an **Approval** (add yourself/your team). This is what makes CD wait for a user.
+3. **No Environment/approval needed** — the `Deploy` job is a plain `job` with no `environment:`
+   and no approval check, so CD runs automatically. Do not attach the deploy to an Environment
+   that carries an Approval check.
 4. **App Service configuration** (App Service → Configuration):
    - `Database__DataDirectory` = `/home/data` (persistent on App Service Linux). The host creates the
      directory and the three SQLite files at startup (ADR-0013).
@@ -53,11 +54,13 @@ stage CI  (ubuntu-latest)                  stage Deploy  (ubuntu-latest)
    - `ASPNETCORE_ENVIRONMENT` = `Production` (CSP is enforced outside Development).
 5. **Branch policy** — add a build policy on `main` requiring the `CI` stage, so PRs must be green.
 
-## Why the deploy is not automatic
+## Why the deploy is automatic
 
-The `Deploy` stage is gated three ways: it `dependsOn: CI`, it only runs when
-`Build.SourceBranch == refs/heads/main`, and it targets the `production` Environment whose
-**Approval** check suspends the run until a user approves. No approval ⇒ no deployment.
+The `Deploy` stage runs without human approval. It `dependsOn: CI`, it only runs when
+`Build.SourceBranch == refs/heads/main`, and it is a plain `job` with **no `environment:` and no
+approval check**, so a green CI on `main` deploys straight to App Service. The gate was removed
+from the YAML (rather than by deleting the Environment's Approval check) so the automatic-deploy
+decision is codified in git; the trade-off is the loss of Environment deployment history.
 
 ## Verification
 
@@ -89,6 +92,9 @@ beyond a non-public version suffix; they never deploy.
 
 ## Notes / risks
 
+- **Unused `production` Environment** — if one was created with an Approval check, the pipeline no
+  longer references it. It can be deleted (Pipelines → Environments) or left in place; it no longer
+  affects CD.
 - **`wire-ci` (bigpowers)** ships templates for GitHub only; Azure DevOps is unsupported, so this
   pipeline was written by hand (the documented fallback for unsupported forges).
 - **.NET 10 on App Service Linux** must be offered as `DOTNETCORE|10.0`. If the stack is not yet

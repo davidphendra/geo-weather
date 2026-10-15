@@ -270,7 +270,7 @@ The pipeline [`azure-pipelines.yml`](azure-pipelines.yml) (Azure DevOps) runs:
 
 1. 🧪 **CI** (on PR and `main`) — full clone → restore → `build -warnaserror` → `format --verify-no-changes`
    → Tailwind guard → all offline tests + coverage → publish → version guard.
-2. 🚀 **CD** (on `main`, after CI) — gated by a manual **Environment approval**; zip-deploys the publish
+2. 🚀 **CD** (on `main`, after CI) — **automatic**, no approval gate; zip-deploys the publish
    artifact to a Linux Azure App Service.
 
 Versioning is git-derived (Nerdbank.GitVersioning, single source `version.json`); the run number is set to the

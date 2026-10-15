@@ -5,13 +5,13 @@
 #       integration). The Playwright browser e2e harness is intentionally NOT run here.
 #       Nerdbank.GitVersioning stamps a semantic version (version.json SSOT) and sets the run
 #       number to it; the version guard fails the build if no version could be derived.
-# CD  — runs only on main, after CI, and is gated by an Azure DevOps Environment approval
-#       (no automatic deployment). It zip-deploys the published WebUI to Azure App Service (Linux).
+# CD  — runs only on main, after CI, with no approval gate (automatic deployment). It zip-deploys
+#       the published WebUI to Azure App Service (Linux).
 #
 # Setup (one-time, see specs/tech-architecture/AZURE_PIPELINE_PLAN_LATEST.md):
 #   * create an ARM service connection and set $(azureServiceConnection)
 #   * set $(webAppName) (and optionally $(dotnetRuntimeStack)) as pipeline variables
-#   * create the 'production' Environment and add an Approval check to it
+#   * no Environment or Approval check is needed — the Deploy job runs automatically
 
 trigger:
   branches:
@@ -130,30 +130,26 @@ stages:
               artifact: 'webapp-$(Build.BuildNumber)'
 
   - stage: Deploy
-    displayName: 'CD — deploy to App Service (approval required)'
+    displayName: 'CD — deploy to App Service (automatic)'
     dependsOn: CI
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
     jobs:
-      - deployment: DeployWebApp
+      # Plain job, not a deployment job: no Environment means no approval check can suspend the run.
+      - job: DeployWebApp
         displayName: 'Deploy GeoWeather WebUI'
         pool:
           vmImage: 'ubuntu-latest'
-        # Approval is configured on this Environment (Pipelines > Environments > production > Approvals).
-        environment: 'production'
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-                - download: current
-                  displayName: 'Download versioned webapp artifact'
-                  artifact: 'webapp-$(Build.BuildNumber)'
+        steps:
+          - download: current
+            displayName: 'Download versioned webapp artifact'
+            artifact: 'webapp-$(Build.BuildNumber)'
 
-                - task: AzureWebApp@1
-                  displayName: 'Zip deploy to App Service (Linux)'
-                  inputs:
-                    azureSubscription: '$(azureServiceConnection)'
-                    appType: 'webAppLinux'
-                    appName: '$(webAppName)'
-                    package: '$(Pipeline.Workspace)/webapp-$(Build.BuildNumber)'
-                    runtimeStack: '$(dotnetRuntimeStack)'
-                    deploymentMethod: 'zipDeploy'
+          - task: AzureWebApp@1
+            displayName: 'Zip deploy to App Service (Linux)'
+            inputs:
+              azureSubscription: '$(azureServiceConnection)'
+              appType: 'webAppLinux'
+              appName: '$(webAppName)'
+              package: '$(Pipeline.Workspace)/webapp-$(Build.BuildNumber)'
+              runtimeStack: '$(dotnetRuntimeStack)'
+              deploymentMethod: 'zipDeploy'
