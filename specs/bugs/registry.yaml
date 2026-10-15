@@ -28,3 +28,29 @@ bugs:
       /nope -> 404 + 5,781 B styled not-found page; /api/does-not-exist -> 404 application/problem+json
       with code RESOURCE_NOT_FOUND. 248 dotnet tests pass.
     introduced_by: e10s01 (status-code-pages scoping)
+
+  - id: BUG-002
+    title: Pages could not be scrolled by wheel/trackpad after adopting Fluent UI
+    status: open
+    severity: medium
+    discovered: 2026-10-15
+    discovered_during: post-merge verification (ADR-0020)
+    area: Weather.WebUI (Fluent UI global stylesheet vs. document scrolling)
+    symptom: >
+      With Fluent UI Blazor adopted for the country/city pickers, the viewport could not be scrolled by
+      user input (wheel/trackpad/touch); the footer carrying the app version was unreachable on the
+      Weather Explorer. Programmatic scrollTo still worked, which hid the bug from the parity harness.
+    reproduction: >
+      Run the host with Csp:EnforceInDevelopment=true, open / (or /favorites), and use the wheel.
+      documentElement.scrollHeight - innerHeight > 0 but window.scrollY stays 0.
+    root_cause: >
+      Fluent UI Blazor's client library adopts a global stylesheet on document.adoptedStyleSheets whose
+      body rule sets height:100dvh; overflow:hidden. With html overflow visible, that body overflow
+      propagates to the viewport, blocking user scroll while still allowing programmatic scroll.
+    resolution: >
+      Override in the Tailwind base layer with a higher-specificity rule
+      html body { height:auto; min-height:100dvh; overflow:visible } (plus html a { text-decoration:inherit }
+      for the forced link underline). No !important and no CSP change.
+    regression_tests: "src/Weather.WebUI/tests/visual/location-select.spec.ts (wheel-scroll + reset checks)"
+    evidence: "Pending fix."
+    introduced_by: ADR-0020 (Fluent UI Blazor country/city pickers)
