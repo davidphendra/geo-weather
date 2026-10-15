@@ -39,8 +39,6 @@ saves weather notes or favorite cities.
 - ✅ **Promise** — all automated tests run **offline**, with zero live network calls.
 - 📄 **Docs-first** — requirements, decisions, and evidence live in [`specs/`](#repository-structure); the
   agent workflow is defined in [`AGENTS.md`](AGENTS.md) and [`CONVENTIONS.md`](CONVENTIONS.md).
-- 🚀 **Live app** — <https://geo-weather-a6ffe8hwfpbmfgcv.indonesiacentral-01.azurewebsites.net/>
-  (Azure App Service, deployed from `main` by [`azure-pipelines.yml`](azure-pipelines.yml)).
 
 ## Key Features
 
@@ -279,9 +277,6 @@ Versioning is git-derived (Nerdbank.GitVersioning, single source `version.json`)
 semantic version, and `scripts/check-version.sh` rejects a bogus `0.0.0`. Plan and one-time setup:
 [`specs/tech-architecture/AZURE_PIPELINE_PLAN_LATEST.md`](specs/tech-architecture/AZURE_PIPELINE_PLAN_LATEST.md)
 and [`VERSIONING_PLAN_LATEST.md`](specs/tech-architecture/VERSIONING_PLAN_LATEST.md).
-
-Production runs at <https://geo-weather-a6ffe8hwfpbmfgcv.indonesiacentral-01.azurewebsites.net/>
-— health probes: `/health/live` · `/health/ready` · `/version`.
 
 ## Troubleshooting
 
