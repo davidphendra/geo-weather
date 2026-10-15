@@ -118,3 +118,38 @@ bugs:
       Preflight green: build 0 warnings/0 errors, dotnet format clean, 420 tests pass. Fixed on branch
       fix/design-tokens-css-copy.
     introduced_by: 2f6c3db (Remove and regenerate app.css)
+
+  - id: BUG-005
+    title: CI npm cache task fails because nothing in the pipeline writes to the cache path
+    status: fixed
+    severity: medium
+    discovered: 2026-10-15
+    discovered_during: Azure DevOps CI run (post-job Cache@2 npm save)
+    fixed: 2026-10-15
+    area: azure-pipelines.yml (CI Cache@2 npm step)
+    symptom: >
+      A CI run ends with the npm Cache@2 post-job save step failing: "Getting a pipeline cache artifact
+      ... Fingerprint: npm|"Linux"|...= / There is a cache miss. / tar: /home/vsts/work/1/.npm: Cannot
+      open: No such file or directory / tar: Error is not recoverable: exiting now" followed by
+      "##[error]Process returned non-zero exit code: 2", failing the job even though the real CI steps
+      (restore/build/format/test) had already succeeded.
+    reproduction: >
+      Run the pipeline. The npm cache task uses a key derived from src/Weather.WebUI/package-lock.json;
+      on a first/rotated-key run it is a miss and the save step runs.
+    root_cause: >
+      Cache@2 saves its `path` in a post-job step by tarring it. The task pointed at
+      $(Pipeline.Workspace)/.npm, but no pipeline step runs npm or sets npm_config_cache, and the Tailwind
+      build is author-time only (wwwroot/app.css is committed, so the csproj BuildTailwind target never
+      fires). The directory therefore never exists; on a key miss the save tars a non-existent path and
+      exits 2. A cache with no producer.
+    resolution: >
+      Removed the npm Cache@2 task and the now-unused NodeTool@0 install (and the nodeVersion variable);
+      CI never invokes the Node toolchain, so there is nothing to install or cache. Kept the NuGet cache.
+      Corrected the pipeline header comment and brought AZURE_PIPELINE_PLAN_LATEST.md (Q5, shape diagram,
+      toolchain variables) back in line with the pipeline.
+    regression_tests: n/a (pipeline configuration)
+    evidence: >
+      python3 -c "yaml.safe_load('azure-pipelines.yml')" parses; grep shows no NodeTool@0 / npm step
+      remains and only the NuGet Cache@2 stays. Preflight green: build 0 warnings/0 errors, dotnet format
+      clean, dotnet test green.
+    introduced_by: Tailwind-removal commits 89b3973 / 2f6c3db (npm cache step left behind)
