@@ -1,6 +1,6 @@
 story_id: e16s03
 title: Telemetry correlation (OTel service.version + geoweather.build.info metric)
-status: planned
+status: passing
 bcps: 4
 module: host
 standards: docs/engineering/csharp-standards.md
@@ -15,7 +15,7 @@ tasks:
       instrumentation).
     verify: "dotnet test Weather.sln --filter Category=HostMeters"
     risk: P0
-    status: planned
+    status: passing
     allure: { severity: critical, categories: ["Observability", "Versioning", "unit"] }
   - id: 2
     description: >
@@ -25,7 +25,7 @@ tasks:
       instruments.
     verify: "dotnet test Weather.sln --filter Category=Observability"
     risk: P0
-    status: planned
+    status: passing
     allure: { severity: critical, categories: ["Observability", "Versioning", "unit"] }
   - id: 3
     description: >
@@ -35,7 +35,7 @@ tasks:
       provider is built when disabled (unchanged).
     verify: "dotnet test Weather.sln --filter \"Category=Observability|Category=HostMeters\""
     risk: P0
-    status: planned
+    status: passing
     allure: { severity: critical, categories: ["Observability", "Versioning", "unit"] }
   - id: 4
     description: >
@@ -44,12 +44,12 @@ tasks:
       and optionally add a version parameter to ops/azure-monitor/workbook.json.
     verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes"
     risk: P1
-    status: planned
+    status: passing
     allure: { severity: high, categories: ["Observability", "Versioning", "docs"] }
   - id: 5
     description: >
       Story gate: full repo preflight green and the observability + host-meter categories green.
     verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln"
     risk: P0
-    status: planned
+    status: passing
     allure: { severity: critical, categories: ["Observability", "Versioning", "Standards"] }

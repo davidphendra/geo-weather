@@ -11,6 +11,7 @@
 | Metrics | Azure Monitor → Metrics / Workbook | Rate, errors, latency; runtime; business funnels |
 | Traces | Application Insights → Transaction search | Which step failed/slowed |
 | Logs | Application Insights → Logs (KQL) | Structured detail, correlated by `trace_id` |
+| Version | OTel resource `service.version`; `geoweather.build.info` metric; `GET /version`; console at startup | Which build is running, and how many instances of each |
 
 Every RFC 9457 error response carries a `traceId` equal to the OpenTelemetry trace id and mirrored in the
 `X-Correlation-ID` header. **To investigate a user report, search that trace id in Application Insights.**
@@ -70,6 +71,30 @@ customMetrics
 | extend outcome = tostring(customDimensions['favorites.outcome'])
 | summarize Operations = sum(valueSum) by outcome
 ```
+
+### Version correlation (e16)
+
+The running build carries a Semantic Version (`service.version` resource attribute, so it is attached to
+every metric, trace, and log) and advertises itself in the `geoweather.build.info` gauge. The same value is
+printed on the console at startup and served at `GET /version`.
+
+```kusto
+// Which versions are live, and how many instances of each (rolling deploy / canary)
+customMetrics
+| where timestamp > ago(15m) and name == 'geoweather.build.info'
+| extend version = tostring(customDimensions['version'])
+| summarize Instances = count() by version
+| order by Instances desc
+
+// Failures for a specific version
+requests
+| where timestamp > ago(24h) and success == false
+| summarize Failures = count() by version = tostring(customDimensions['service.version']), name
+| order by Failures desc
+```
+
+Use the version to answer "did this error start with the latest deployment?": compare the failing version
+to the one shown in the footer, `GET /version`, and the startup log line.
 
 ## 5. Alerts and first response
 
