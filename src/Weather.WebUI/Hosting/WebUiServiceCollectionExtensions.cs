@@ -25,6 +25,9 @@ internal static class WebUiServiceCollectionExtensions
 
         services.AddWeatherObservability(configuration, environment);
 
+        // Build identity on the console at startup (e16s02).
+        services.AddHostedService<StartupVersionLogger>();
+
         // Telemetry is always emitted into the shared Meter/ActivitySource; the exporter is optional.
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TelemetryBehavior<,>));
         services.Configure<LoggerFactoryOptions>(options => options.ActivityTrackingOptions =

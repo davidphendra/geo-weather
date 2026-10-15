@@ -16,6 +16,7 @@ internal static class WebUiEndpointExtensions
 
         app.MapStaticAssets();
         app.MapHealthEndpoints();
+        app.MapVersionEndpoint();
         app.MapSeoEndpoints();
         app.MapControllers();
 

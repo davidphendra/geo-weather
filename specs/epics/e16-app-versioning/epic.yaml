@@ -29,7 +29,7 @@ stories:
   - id: e16s02
     title: Runtime version surface (AppVersion, footer, /version, console startup line)
     bcps: 5
-    status: planned
+    status: done
     spec: e16s02-runtime-surface.md
     tasks: e16s02-tasks.yaml
     delta: ADDED
