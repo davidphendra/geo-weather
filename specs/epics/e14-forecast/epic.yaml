@@ -1,0 +1,46 @@
+id: e14
+title: Five-Day Forecast
+wsjf: 8.0
+total_bcps: 18
+status: done
+module: M2
+kind: core
+owns_data: false
+change_request: ADDED
+note: >
+  Populate the empty 5-day forecast section of the Weather Explorer. Adds a Forecast sub-domain
+  (ForecastInterval -> DailyForecast -> WeatherForecast with city-local daily aggregation), a
+  GetForecastAsync method on the existing IWeatherProvider / OpenWeatherMap adapter
+  (GET /data/2.5/forecast, units=imperial, same key + resilience), a GetWeatherForecast query +
+  GET /api/weather/{cityName}/forecast endpoint, and the WebUI ForecastStrip/ForecastDayCard.
+  Reverses the "Forecast/WeatherHistory out of scope" item in SCOPE_LATEST.yaml.
+  Design: specs/adr/0017-five-day-forecast.md. Six open decisions (D1-D6) must be confirmed before build.
+stories:
+  - id: e14s01
+    title: Forecast domain - intervals and city-local daily aggregation
+    bcps: 5
+    status: done
+    spec: e14s01-domain.md
+    tasks: e14s01-tasks.yaml
+    delta: ADDED
+  - id: e14s02
+    title: IWeatherProvider.GetForecastAsync + OpenWeatherMap 5 day/3 hour adapter
+    bcps: 4
+    status: done
+    spec: e14s02-provider.md
+    tasks: e14s02-tasks.yaml
+    delta: ADDED
+  - id: e14s03
+    title: GetWeatherForecast query + IWeatherService + GET /api/weather/{cityName}/forecast
+    bcps: 4
+    status: done
+    spec: e14s03-query.md
+    tasks: e14s03-tasks.yaml
+    delta: ADDED
+  - id: e14s04
+    title: WebUI 5-day forecast strip (ForecastStrip + ForecastDayCard)
+    bcps: 5
+    status: done
+    spec: e14s04-webui.md
+    tasks: e14s04-tasks.yaml
+    delta: ADDED

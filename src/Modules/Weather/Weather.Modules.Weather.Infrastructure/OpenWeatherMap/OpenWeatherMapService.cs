@@ -5,6 +5,7 @@ using System.Net.Http.Json;
 
 using global::Weather.BuildingBlocks.Application.Telemetry;
 using global::Weather.Modules.Weather.Application.Abstractions;
+using global::Weather.Modules.Weather.Domain.Forecasts;
 using global::Weather.Modules.Weather.Domain.WeatherReports;
 
 using Microsoft.Extensions.Logging;
@@ -25,11 +26,53 @@ internal sealed class OpenWeatherMapService(
         using Activity? activity = WeatherActivity.Source.StartActivity("weather.provider.get_current");
         activity?.SetTag(WeatherMeters.Tags.CountryCode, countryCode);
 
-        string city = string.IsNullOrWhiteSpace(countryCode) ? cityName : $"{cityName},{countryCode}";
-        Uri requestUri = new($"data/2.5/weather?q={Uri.EscapeDataString(city)}&units=imperial", UriKind.Relative);
+        Uri requestUri = RequestUri("data/2.5/weather", cityName, countryCode);
 
         logger.LogDebug("Requesting current weather for {City}", cityName);
 
+        OpenWeatherMapResponse? payload = await GetPayloadAsync<OpenWeatherMapResponse>(
+            requestUri,
+            cityName,
+            cancellationToken);
+
+        return payload is null ? null : OpenWeatherMapMapper.ToDomain(payload);
+    }
+
+    public async Task<WeatherForecast?> GetForecastAsync(
+        string cityName,
+        string? countryCode,
+        CancellationToken cancellationToken)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(cityName);
+
+        using Activity? activity = WeatherActivity.Source.StartActivity("weather.provider.get_forecast");
+        activity?.SetTag(WeatherMeters.Tags.CountryCode, countryCode);
+
+        Uri requestUri = RequestUri("data/2.5/forecast", cityName, countryCode);
+
+        logger.LogDebug("Requesting forecast for {City}", cityName);
+
+        OpenWeatherForecastResponse? payload = await GetPayloadAsync<OpenWeatherForecastResponse>(
+            requestUri,
+            cityName,
+            cancellationToken);
+
+        return payload is null ? null : OpenWeatherForecastMapper.ToDomain(payload);
+    }
+
+    private static Uri RequestUri(string path, string cityName, string? countryCode)
+    {
+        string city = string.IsNullOrWhiteSpace(countryCode) ? cityName : $"{cityName},{countryCode}";
+
+        return new Uri($"{path}?q={Uri.EscapeDataString(city)}&units=imperial", UriKind.Relative);
+    }
+
+    private async Task<TPayload?> GetPayloadAsync<TPayload>(
+        Uri requestUri,
+        string cityName,
+        CancellationToken cancellationToken)
+        where TPayload : class
+    {
         long start = Stopwatch.GetTimestamp();
 
         HttpResponseMessage response;
@@ -69,8 +112,7 @@ internal sealed class OpenWeatherMapService(
             throw new WeatherProviderException($"Weather provider returned status {(int)response.StatusCode}.");
         }
 
-        OpenWeatherMapResponse? payload = await response.Content
-            .ReadFromJsonAsync<OpenWeatherMapResponse>(cancellationToken);
+        TPayload? payload = await response.Content.ReadFromJsonAsync<TPayload>(cancellationToken);
 
         if (payload is null)
         {
@@ -79,7 +121,7 @@ internal sealed class OpenWeatherMapService(
             throw new WeatherProviderException("Weather provider returned an empty body.");
         }
 
-        return OpenWeatherMapMapper.ToDomain(payload);
+        return payload;
     }
 
     private static void RecordFailure(string errorType) =>

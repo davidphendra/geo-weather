@@ -24,7 +24,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
             <div class="lg:col-span-7 flex flex-col gap-space-xl">
                 <StationHeroCard Report="Model.Report" City="Model.City"/>
-                <ForecastStrip/>
+                <ForecastStrip Forecast="Model.Forecast"/>
             </div>
             <div class="lg:col-span-5 flex flex-col gap-space-xl">
                 <CommandDispatchForm City="Model.City" TemperatureCelsius="Model.Report.Temperature.Celsius"/>

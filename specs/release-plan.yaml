@@ -114,6 +114,18 @@ epics:
       notes, integration events, api.errors) signals. Shared instruments in BuildingBlocks.Application; modules free
       of OTel packages; EF Core instrumentation out of scope; sampling 100% dev / 10% prod. Plan:
       specs/tech-architecture/OBSERVABILITY_PLAN_LATEST.md.
+  - id: e14
+    title: Five-Day Forecast
+    wsjf: 8.0
+    bcps: 18
+    capsule_dir: epics/e14-forecast
+    status: done
+    note: >
+      Populate the empty 5-day forecast section. Adds a Forecast domain (ForecastInterval -> DailyForecast ->
+      WeatherForecast, city-local daily aggregation), IWeatherProvider.GetForecastAsync against
+      GET /data/2.5/forecast (units=imperial, same key + resilience), GetWeatherForecast query +
+      GET /api/weather/{cityName}/forecast, and the WebUI ForecastStrip/ForecastDayCard. Reverses the
+      "Forecast/WeatherHistory out of scope" item. Design: specs/adr/0017-five-day-forecast.md.
 
 bugs:
   total: 1

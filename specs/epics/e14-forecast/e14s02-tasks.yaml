@@ -1,0 +1,51 @@
+story_id: e14s02
+title: IWeatherProvider.GetForecastAsync + OpenWeatherMap 5 day/3 hour adapter
+status: done
+bcps: 4
+module: M2
+standards: docs/engineering/csharp-standards.md
+tasks:
+  - id: 1
+    description: >
+      Add internal sealed OpenWeatherForecastResponse for GET /data/2.5/forecast (cod, cnt, list[] with dt,
+      main.temp, weather[0].main, pop, and city.timezone), typed with JsonPropertyName and no polymorphic
+      deserialization.
+    verify: "dotnet build src/Modules/Weather/Weather.Modules.Weather.Infrastructure/Weather.Modules.Weather.Infrastructure.csproj --warnaserror"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Weather", "Forecast", "unit"] }
+  - id: 2
+    description: >
+      Add internal OpenWeatherForecastMapper: map list[] to ForecastInterval (F->C via Temperature.FromFahrenheit,
+      pop ratio -> percent, SkyCondition.FromProvider) and call WeatherForecast.FromIntervals with the
+      city.timezone offset; wrap WeatherDomainException as WeatherProviderException.
+    verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=OpenWeatherForecastMapping"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["Weather", "Forecast", "unit"] }
+  - id: 3
+    description: >
+      Add GetForecastAsync(cityName, countryCode, ct) to IWeatherProvider and OpenWeatherMapService
+      (data/2.5/forecast?q=...&units=imperial): 404 -> null, non-success/timeout/empty/malformed ->
+      WeatherProviderException; reuse the key handler and resilience pipeline; never log the URL.
+    verify: "dotnet test src/Modules/Weather/Tests/Weather.Modules.Weather.Tests --filter Category=OpenWeatherForecastService"
+    risk: P0
+    status: passing
+    allure: { severity: critical, categories: ["Weather", "Forecast", "integration"] }
+  - id: 4
+    description: >
+      Define weather.forecast.requests (Counter) + weather.forecast.duration (Histogram) in WeatherMeters and
+      add them to the observability catalog. Emission is asserted in e14s03 (GetWeatherForecastQueryHandler).
+    verify: "dotnet build src/BuildingBlocks/Weather.BuildingBlocks.Application/Weather.BuildingBlocks.Application.csproj --warnaserror"
+    risk: P2
+    status: passing
+    security: low
+    allure: { severity: normal, categories: ["Weather", "Forecast", "Observability"] }
+  - id: 5
+    description: >
+      Story gate: full repo preflight green, and the API key still never appears in logs or exception messages.
+    verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln && bash scripts/check-layout.sh"
+    risk: P0
+    security: medium
+    status: passing
+    allure: { severity: critical, categories: ["Weather", "Forecast", "Security Review"] }

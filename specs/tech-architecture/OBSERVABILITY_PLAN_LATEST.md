@@ -130,6 +130,8 @@ Covers OWM (`OpenWeatherMapService`) and the Blazor `WeatherApiClient` outbound 
 | `weather.provider.failures` | Counter | {failure} | error.type = timeout \| unavailable \| bad_status \| empty_body | `OpenWeatherMapService` | Dependency health / 502 predictor |
 | `weather.provider.duration` | Histogram | ms | http.response.status_code | `OpenWeatherMapService` | Upstream latency |
 | `weather.city.not_found` | Counter | {request} | geo.country_code | `GetCurrentWeatherQueryHandler` | Catalogue coverage gap |
+| `weather.forecast.requests` | Counter | {request} | weather.outcome = success \| not_found \| provider_error \| validation_error; geo.country_code | `GetWeatherForecastQueryHandler` | Forecast lookup volume + success rate |
+| `weather.forecast.duration` | Histogram | ms | weather.outcome | same | End-to-end forecast latency |
 | `geography.country.list_requests` | Counter | {request} | geo.has_search (bool) | Geography service | Catalogue usage |
 | `geography.city.list_requests` | Counter | {request} | geo.country_code | Geography service | Which countries are explored |
 | `favorites.operations` | Counter | {operation} | operation = add \| list; favorites.outcome = created \| duplicate \| city_not_found \| invalid \| success | Journal favorites service | Save funnel + failure mix |

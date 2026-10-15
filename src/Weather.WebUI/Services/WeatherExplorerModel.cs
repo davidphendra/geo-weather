@@ -17,6 +17,8 @@ public sealed class WeatherExplorerModel(WeatherApiClient api)
 
     public WeatherReportModel? Report { get; private set; }
 
+    public WeatherForecastModel? Forecast { get; private set; }
+
     public bool Loading { get; private set; }
 
     public ApiProblem? Error { get; private set; }
@@ -91,6 +93,7 @@ public sealed class WeatherExplorerModel(WeatherApiClient api)
         Country = country;
         City = null;
         Report = null;
+        Forecast = null;
 
         Cities = await api.GetCitiesAsync(country.Code, cancellationToken);
         if (Cities.Count > 0)
@@ -103,6 +106,18 @@ public sealed class WeatherExplorerModel(WeatherApiClient api)
     {
         City = city;
         Report = null;
+        Forecast = null;
+
         Report = await api.GetWeatherAsync(city.Name, city.CountryCode, cancellationToken);
+
+        try
+        {
+            Forecast = await api.GetForecastAsync(city.Name, city.CountryCode, cancellationToken);
+        }
+        catch (WeatherApiException)
+        {
+            // ADR-0017 D5: the forecast is additive - a forecast failure must not blank current conditions.
+            Forecast = null;
+        }
     }
 }

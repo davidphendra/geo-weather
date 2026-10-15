@@ -1,4 +1,5 @@
 using Weather.Modules.Weather.Application.WeatherReports.GetCurrentWeather;
+using Weather.Modules.Weather.Application.WeatherReports.GetWeatherForecast;
 
 namespace Weather.Modules.Weather.Application.Contracts;
 
@@ -6,6 +7,11 @@ namespace Weather.Modules.Weather.Application.Contracts;
 public interface IWeatherService
 {
     Task<WeatherReportDto> GetCurrentWeatherAsync(
+        string cityName,
+        string? countryCode,
+        CancellationToken cancellationToken);
+
+    Task<WeatherForecastDto> GetForecastAsync(
         string cityName,
         string? countryCode,
         CancellationToken cancellationToken);
