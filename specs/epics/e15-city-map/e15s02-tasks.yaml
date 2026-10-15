@@ -1,6 +1,6 @@
 story_id: e15s02
 title: StationMap component + lazy Leaflet CDN + OpenStreetMap tiles
-status: failing
+status: passing
 bcps: 6
 module: M2
 standards: docs/engineering/csharp-standards.md
@@ -12,7 +12,7 @@ tasks:
       yields a truthy HasCoordinates (no 0,0 default).
     verify: "dotnet test src/Tests/Weather.WebUI.UnitTests --filter \"Category=WeatherApiClient|Category=WeatherExplorerModel\""
     risk: P1
-    status: failing
+    status: passing
     allure: { severity: high, categories: ["Weather", "Map", "unit"] }
   - id: 2
     description: >
@@ -22,7 +22,7 @@ tasks:
       layer, default marker, text-only click popup, setView on change, map.remove on dispose).
     verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes"
     risk: P0
-    status: failing
+    status: passing
     allure: { severity: critical, categories: ["Weather", "Map", "unit"] }
   - id: 3
     description: >
@@ -30,7 +30,7 @@ tasks:
       wwwroot/app.css.
     verify: "bash scripts/check-tailwind-css.sh"
     risk: P1
-    status: failing
+    status: passing
     allure: { severity: high, categories: ["Weather", "Map", "Standards"] }
   - id: 4
     description: >
@@ -38,5 +38,5 @@ tasks:
       fabricated data.
     verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln"
     risk: P0
-    status: failing
+    status: passing
     allure: { severity: critical, categories: ["Weather", "Map", "Standards"] }
