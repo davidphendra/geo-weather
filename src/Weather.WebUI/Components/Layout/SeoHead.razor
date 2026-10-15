@@ -1,0 +1,33 @@
+@inject NavigationManager Navigation
+
+<PageTitle>@Title</PageTitle>
+
+<HeadContent>
+    <meta name="description" content="@Description"/>
+    <meta name="robots" content="@(Indexable ? "index, follow" : "noindex, nofollow")"/>
+    <link rel="canonical" href="@CanonicalUrl"/>
+    <meta property="og:title" content="@Title"/>
+    <meta property="og:description" content="@Description"/>
+    <meta property="og:url" content="@CanonicalUrl"/>
+    <meta name="twitter:title" content="@Title"/>
+    <meta name="twitter:description" content="@Description"/>
+</HeadContent>
+
+@code {
+    /// <summary>Page title. Rendered through <see cref="PageTitle"/> so it owns the document title.</summary>
+    [Parameter]
+    [EditorRequired]
+    public string Title { get; set; } = "GeoWeather";
+
+    /// <summary>Page-level summary used by search engines and social previews.</summary>
+    [Parameter]
+    [EditorRequired]
+    public string Description { get; set; } = string.Empty;
+
+    /// <summary>Set to <c>false</c> for error and not-found routes so crawlers skip them.</summary>
+    [Parameter]
+    public bool Indexable { get; set; } = true;
+
+    // Query strings never identify distinct content here, so the canonical URL drops them.
+    private string CanonicalUrl => Navigation.Uri.Split('?', 2)[0];
+}

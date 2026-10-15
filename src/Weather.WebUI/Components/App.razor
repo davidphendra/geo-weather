@@ -5,6 +5,35 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <base href="/"/>
+
+    <!-- Site identity and browser chrome. Page-specific metadata is emitted by <SeoHead/>. -->
+    <meta name="theme-color" content="#131b2e"/>
+    <meta name="color-scheme" content="light"/>
+    <meta name="application-name" content="GeoWeather"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <meta name="referrer" content="strict-origin-when-cross-origin"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-title" content="GeoWeather"/>
+
+    <!-- Open Graph: site-wide defaults; title, description and url are set per page. -->
+    <meta property="og:type" content="website"/>
+    <meta property="og:site_name" content="GeoWeather"/>
+    <meta property="og:locale" content="en_US"/>
+    <meta property="og:image" content="@SocialImageUrl"/>
+    <meta property="og:image:width" content="1200"/>
+    <meta property="og:image:height" content="630"/>
+    <meta property="og:image:alt" content="GeoWeather — current weather explorer"/>
+
+    <!-- Twitter/X card: site-wide defaults; title and description are set per page. -->
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta name="twitter:image" content="@SocialImageUrl"/>
+    <meta name="twitter:image:alt" content="GeoWeather — current weather explorer"/>
+
+    <!-- Icons and installability. -->
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon.png"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png"/>
+    <link rel="manifest" href="/manifest.webmanifest"/>
+
     <ResourcePreloader/>
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -13,7 +42,10 @@
     <link rel="stylesheet" href="@Assets["app.css"]"/>
     <link rel="stylesheet" href="@Assets["Weather.WebUI.styles.css"]"/>
     <ImportMap nonce="@Nonce"/>
-    <link rel="icon" type="image/png" href="favicon.png"/>
+
+    <!-- schema.org structured data; nonce-stamped so it satisfies the Content-Security-Policy. -->
+    <script type="application/ld+json" nonce="@Nonce">@((MarkupString)StructuredData)</script>
+
     <HeadOutlet/>
 </head>
 
@@ -30,4 +62,23 @@
     private HttpContext? HttpContext { get; set; }
 
     private string? Nonce => HttpContext?.Items[CspMiddleware.NonceItemKey] as string;
+
+    // Absolute origin of the current request, so crawlers always receive absolute social URLs.
+    private string Origin => HttpContext is null
+        ? string.Empty
+        : $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}";
+
+    private string SocialImageUrl => $"{Origin}/img/social-card-1200x630.png";
+
+    private string StructuredData => $$"""
+        {
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          "name": "GeoWeather",
+          "url": "{{Origin}}/",
+          "applicationCategory": "WeatherApplication",
+          "operatingSystem": "Web",
+          "description": "Explore current weather by country and city, and save favorite locations and weather notes."
+        }
+        """;
 }
