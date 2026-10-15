@@ -17,18 +17,19 @@ internally Onion-layered and CQRS. See ADR-0005 (module slicing) and ADR-0006 (d
                     └───────┬────────┘       │           │      │
                             │ CityAddedIntegrationEvent   │      │
                             │        │                   │      │
-                            │        ▼                   ▼      ▼
-                            │  ┌────────────┐      ┌───────────┐
-                            │  │ M3 Favorites│     │ M4 Notes  │
-                            │  │ favorites.db│     │ notes.db  │
-                            │  └────────────┘      └───────────┘
+                            │        ▼
+                            │  ┌──────────────────────┐
+                            │  │ M3 Journal           │
+                            │  │ journal.db           │
+                            │  │ (favorites + notes)  │
+                            │  └──────────────────────┘
                             │
                     ┌───────▼────────┐
                     │ M2 Weather     │   independent — provider geocodes q={city},{country}
                     │ (core, no data)│   no module edge
                     └────────────────┘
 
-Async edges only:  M1 → M3, M1 → M4   (via Events Bus + Outbox). No direct cross-module calls.
+Async edges only:  M1 → M3   (via Events Bus + Outbox). No direct cross-module calls.
 ```
 
 ## Module APIs (used only by the API host)
@@ -41,8 +42,9 @@ public interface IGeographyService {
 public interface IWeatherService {
     Task<WeatherReportDto> GetCurrentWeatherAsync(string cityName, string? countryCode, CancellationToken ct);
 }
-public interface IFavoritesModule {
-    Task<Guid> AddFavoriteAsync(string cityName, string countryCode, CancellationToken ct);
+public interface IFavoritesService {
+    Task<FavoriteCityDto> AddFavoriteAsync(string cityName, string countryCode, CancellationToken ct);
+    Task<IReadOnlyList<FavoriteCityDto>> GetFavoritesAsync(CancellationToken ct);
 }
 public interface INotesModule {
     Task<Guid> AddNoteAsync(string cityName, string countryCode, string note, decimal? temperatureCelsius, CancellationToken ct);
@@ -64,34 +66,28 @@ public interface INotesModule {
 - Infrastructure: `OpenWeatherMapService` (typed client), `WeatherService`. No DbContext.
 - Endpoint: `GET /api/weather/{cityName}?countryCode=` → full metric payload; `404` unknown city; `502` provider down.
 
-### M3 Favorites
-- Domain: `FavoriteCities.FavoriteCity` (aggregate, unique per city), `Cities.City` (local projection).
-- Application: `FavoriteCities/AddFavoriteCity`, `Cities/CityAddedIntegrationEventHandler`, `Contracts/IFavoritesModule`, `Configuration`.
-- Infrastructure: `FavoritesContext` (`favorites.db`, tables `FavoriteCities`, `CityProjections`), `FavoritesModule`, `Outbox`.
-- Endpoint: `POST /api/cities/favorites` → `201` + id; `409` duplicate; `400` unknown city.
-
-### M4 Notes
-- Domain: `Notes.WeatherNote` (aggregate), `Cities.City` (local projection).
-- Application: `Notes/AddWeatherNote`, `Cities/CityAddedIntegrationEventHandler`, `Contracts/INotesModule`, `Configuration`.
-- Infrastructure: `NotesContext` (`notes.db`, tables `WeatherNotes`, `CityProjections`), `NotesModule`. Pure consumer — no Outbox, publishes nothing.
-- Endpoint: `POST /api/weather/notes` → `201` + `Location` + resource; `422` validation; `404` unknown city.
+### M3 Journal (merged favorites + notes)
+- Domain: `FavoriteCities.FavoriteCity` (aggregate, unique per city), `Notes.WeatherNote` (aggregate), `Cities.City` (one local projection).
+- Application: `FavoriteCities/AddFavoriteCity`, `FavoriteCities/GetFavorites`, `Notes/AddWeatherNote`, `Cities/CityAddedIntegrationEventHandler`, `Contracts/{IFavoritesService, INotesModule}`, `Configuration`.
+- Infrastructure: `JournalContext` (`journal.db`, tables `FavoriteCities`, `WeatherNotes`, `CityProjections`), `FavoritesService`, `JournalModule`, `Outbox`.
+- Endpoints: `POST/GET /api/cities/favorites` → `201` + id / `200`; `409` duplicate; `404` unknown city. `POST /api/weather/notes` → `201` + `Location` + resource; `422` validation; `404` unknown city.
 
 ## Cross-module flow (write side)
 
 ```
-POST /api/weather/notes
-  API host ──INotesModule.AddNoteAsync──► Notes module
-      Application: AddWeatherNoteCommand → validate note (422); resolve city from local CityProjections (404)
-      Domain: WeatherNote.Create(...)
-      Infrastructure: NotesContext.SaveChanges
-  ◄── 201 Created + Location + WeatherNoteDto
+POST /api/weather/notes  (and POST /api/cities/favorites)
+  API host ──INotesModule.AddNoteAsync / IFavoritesService.AddFavoriteAsync──► Journal module
+      Application: AddWeatherNoteCommand / AddFavoriteCityCommand → validate (422); resolve city from local CityProjections (404)
+      Domain: WeatherNote.Create(...) / FavoriteCity.Create(...)
+      Infrastructure: JournalContext.SaveChanges
+  ◄── 201 Created + Location + resource
 ```
 
 ```
 Startup / seed
   Geography seeds Countries+Cities → writes CityAddedIntegrationEvent to Geography Outbox
-  ── background ── Outbox → EventsBus → Favorites handler + Notes handler
-      each upserts its local CityProjections row
+  ── background ── Outbox → EventsBus → Journal handler
+      upserts its single local CityProjections row
 ```
 
 ## API contract (planned)
@@ -101,8 +97,8 @@ Startup / seed
 | GET | `/api/countries` | Geography |
 | GET | `/api/countries/{countryCode}/cities` | Geography |
 | GET | `/api/weather/{cityName}?countryCode=` | Weather |
-| POST | `/api/weather/notes` | Notes |
-| POST | `/api/cities/favorites` | Favorites |
+| POST | `/api/weather/notes` | Journal (notes) |
+| POST | `/api/cities/favorites` | Journal (favorites) |
 
 Weather `200` body:
 ```json

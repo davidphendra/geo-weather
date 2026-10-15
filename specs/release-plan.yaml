@@ -12,9 +12,9 @@ release:
 modules:
   - { id: M1, name: Geography, kind: supporting, owns_data: true,  db: geography.db, publishes: [CityAddedIntegrationEvent] }
   - { id: M2, name: Weather,   kind: core,       owns_data: false, db: null,         publishes: [] }
-  - { id: M3, name: Favorites, kind: supporting, owns_data: true,  db: favorites.db, publishes: [], consumes: [CityAddedIntegrationEvent] }
-  - { id: M4, name: Notes,     kind: supporting, owns_data: true,  db: notes.db,     publishes: [], consumes: [CityAddedIntegrationEvent] }
-  # async edges only: M1 -> M3, M1 -> M4. Weather is independent (provider geocodes by name).
+  - { id: M3, name: Journal,   kind: supporting, owns_data: true,  db: journal.db,   publishes: [], consumes: [CityAddedIntegrationEvent] }
+  # async edges only: M1 -> M3. Weather is independent (provider geocodes by name).
+  # Journal is the merged Favorites + Notes context (ADR-0016).
 
 epics:
   # WSJF order (highest first). score = (BV + TC + RR) / JobSize
@@ -63,13 +63,22 @@ epics:
     wsjf: 6.0
     bcps: 8
     capsule_dir: epics/e04-favorites
-    note: "Event-driven (ADR-0010) - own schema, CityId-keyed favorites, GET list, 409 duplicate, global, RFC 9457 errors. Prerequisites: e09 (response contract), e01s01/e01s02 (EventsBus/Outbox) + e02s03."
+    status: merged_into_e13
+    note: "Event-driven (ADR-0010) - own schema, CityId-keyed favorites, GET list, 409 duplicate, global, RFC 9457 errors. Prerequisites: e09 (response contract), e01s01/e01s02 (EventsBus/Outbox) + e02s03. MERGED into e13 (Journal) per ADR-0016; historical record retained."
   - id: e05
     title: Notes Module
     wsjf: 5.5
     bcps: 8
     capsule_dir: epics/e05-notes
-    note: Own schema; consumes CityAddedIntegrationEvent into a local City projection.
+    status: merged_into_e13
+    note: Own schema; consumes CityAddedIntegrationEvent into a local City projection. MERGED into e13 (Journal) per ADR-0016; historical record retained.
+  - id: e13
+    title: Merge Favorites and Notes into the Journal module
+    wsjf: 6.5
+    bcps: 12
+    status: done
+    capsule_dir: epics/e13-journal
+    note: "Merge the Favorites and Notes bounded contexts into one Journal module (ADR-0016): one JournalContext/journal.db, one City projection/handler, routes unchanged, two contracts kept, notes.*/favorites.* instruments kept. Plan: specs/IMPACT-merge-notes-into-favorites.md."
   - id: e07
     title: Architecture & Offline Test Gates
     wsjf: 5.0

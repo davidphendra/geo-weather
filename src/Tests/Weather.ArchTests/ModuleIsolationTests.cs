@@ -1,22 +1,25 @@
 using System.Reflection;
 
-using Weather.Modules.Notes.Application.Contracts;
+using Weather.Modules.Journal.Application.Contracts;
 
 namespace Weather.ArchTests;
 
-/// <summary>Notes may reference another module only through its IntegrationEvents assembly (ADR-0005/0006).</summary>
+/// <summary>
+/// The Journal module (merged Favorites + Notes) may reference another module only through its
+/// IntegrationEvents assembly (ADR-0005/0006).
+/// </summary>
 [Trait("Category", "ModuleIsolation")]
 public sealed class ModuleIsolationTests
 {
     [Fact]
-    public void NotesReferencesOnlyGeographyIntegrationEvents()
+    public void JournalReferencesOnlyGeographyIntegrationEvents()
     {
-        Assembly notes = typeof(INotesModule).Assembly;
+        Assembly journal = typeof(IFavoritesService).Assembly;
 
-        string[] forbidden = notes.GetReferencedAssemblies()
+        string[] forbidden = journal.GetReferencedAssemblies()
             .Select(reference => reference.Name ?? string.Empty)
             .Where(name => name.StartsWith("Weather.Modules.", StringComparison.Ordinal))
-            .Where(name => !name.StartsWith("Weather.Modules.Notes.", StringComparison.Ordinal))
+            .Where(name => !name.StartsWith("Weather.Modules.Journal.", StringComparison.Ordinal))
             .Where(name => !name.Equals("Weather.Modules.Geography.IntegrationEvents", StringComparison.Ordinal))
             .ToArray();
 

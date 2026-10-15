@@ -17,8 +17,7 @@ public sealed class ObservabilityBoundaryTests
             typeof(Weather.BuildingBlocks.Domain.DomainException).Assembly,
             typeof(Weather.Modules.Geography.Domain.GeographyDomainException).Assembly,
             typeof(Weather.Modules.Weather.Domain.WeatherDomainException).Assembly,
-            typeof(Weather.Modules.Favorites.Domain.FavoritesDomainException).Assembly,
-            typeof(Weather.Modules.Notes.Domain.NotesDomainException).Assembly,
+            typeof(Weather.Modules.Journal.Domain.JournalDomainException).Assembly,
         ];
 
         foreach (Assembly domain in domains)
@@ -39,8 +38,7 @@ public sealed class ObservabilityBoundaryTests
         [
             typeof(Weather.Modules.Geography.Application.Contracts.IGeographyService).Assembly,
             typeof(Weather.Modules.Weather.Application.Contracts.IWeatherService).Assembly,
-            typeof(Weather.Modules.Favorites.Application.Contracts.IFavoritesService).Assembly,
-            typeof(Weather.Modules.Notes.Application.Contracts.INotesModule).Assembly,
+            typeof(Weather.Modules.Journal.Application.Contracts.IFavoritesService).Assembly,
         ];
 
         foreach (Assembly module in modules)

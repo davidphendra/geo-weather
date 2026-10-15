@@ -62,10 +62,9 @@ Each API endpoint area (`Weather.WebUI.Api.Modules.<Module>`) must not depend on
 | SC-e01s02-P0-01 | A module cannot depend on another module except IntegrationEvents | P0 |
 | SC-e01s02-P0-02 | Domain has no dependency on Application/Infrastructure | P0 |
 | SC-e02s03-P0-01 | Seeded city writes `CityAddedIntegrationEvent` to the outbox | P0 |
-| SC-e04s02-P0-01 | Favorites handler upserts its City projection on the event | P0 |
-| SC-e05s02-P0-01 | Notes handler upserts its City projection on the event | P0 |
-| SC-e04s01-P0-01 | POST favorite persists in `FavoritesContext` and returns id | P0 |
-| SC-e05s01-P0-01 | POST note persists in `NotesContext` and returns id | P0 |
+| SC-e04s02-P0-01 | Journal handler upserts the single City projection on the event | P0 |
+| SC-e04s01-P0-01 | POST favorite persists in `JournalContext` and returns id | P0 |
+| SC-e05s01-P0-01 | POST note persists in `JournalContext` and returns id | P0 |
 | SC-e02s01-P1-01 | GET countries uses AsNoTracking | P1 |
 | SC-e06s01-P1-01 | Country selection loads its cities | P1 |
 

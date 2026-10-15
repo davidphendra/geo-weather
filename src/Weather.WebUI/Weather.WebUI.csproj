@@ -14,10 +14,8 @@
         <ProjectReference Include="..\Modules\Geography\Weather.Modules.Geography.Infrastructure\Weather.Modules.Geography.Infrastructure.csproj" />
         <ProjectReference Include="..\Modules\Weather\Weather.Modules.Weather.Application\Weather.Modules.Weather.Application.csproj" />
         <ProjectReference Include="..\Modules\Weather\Weather.Modules.Weather.Infrastructure\Weather.Modules.Weather.Infrastructure.csproj" />
-        <ProjectReference Include="..\Modules\Favorites\Weather.Modules.Favorites.Application\Weather.Modules.Favorites.Application.csproj" />
-        <ProjectReference Include="..\Modules\Favorites\Weather.Modules.Favorites.Infrastructure\Weather.Modules.Favorites.Infrastructure.csproj" />
-        <ProjectReference Include="..\Modules\Notes\Weather.Modules.Notes.Application\Weather.Modules.Notes.Application.csproj" />
-        <ProjectReference Include="..\Modules\Notes\Weather.Modules.Notes.Infrastructure\Weather.Modules.Notes.Infrastructure.csproj" />
+        <ProjectReference Include="..\Modules\Journal\Weather.Modules.Journal.Application\Weather.Modules.Journal.Application.csproj" />
+        <ProjectReference Include="..\Modules\Journal\Weather.Modules.Journal.Infrastructure\Weather.Modules.Journal.Infrastructure.csproj" />
         <ProjectReference Include="..\BuildingBlocks\Weather.BuildingBlocks.Infrastructure\Weather.BuildingBlocks.Infrastructure.csproj" />
         <ProjectReference Include="..\BuildingBlocks\Weather.BuildingBlocks.Application\Weather.BuildingBlocks.Application.csproj" />
     </ItemGroup>

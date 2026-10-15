@@ -4,8 +4,7 @@
 # <module-id> <name> <namespace-root> <owns-data> <published-contract-assembly> <allowed-deps>
 M1 Geography  Weather.Modules.Geography  yes  Weather.Modules.Geography.IntegrationEvents  BuildingBlocks.Domain, BuildingBlocks.Application
 M2 Weather    Weather.Modules.Weather    no   Weather.Modules.Weather.IntegrationEvents    BuildingBlocks.Domain, BuildingBlocks.Application
-M3 Favorites  Weather.Modules.Favorites  yes  Weather.Modules.Favorites.IntegrationEvents  BuildingBlocks.Domain, BuildingBlocks.Application
-M4 Notes      Weather.Modules.Notes      yes  Weather.Modules.Notes.IntegrationEvents      BuildingBlocks.Domain, BuildingBlocks.Application
+M3 Journal    Weather.Modules.Journal    yes  Weather.Modules.Journal.IntegrationEvents    BuildingBlocks.Domain, BuildingBlocks.Application
 
 # Rule: a module may reference another module ONLY via its *.IntegrationEvents assembly.
 # Rule: modules communicate only asynchronously via the Events Bus (no direct cross-module method calls).
@@ -13,10 +12,8 @@ M4 Notes      Weather.Modules.Notes      yes  Weather.Modules.Notes.IntegrationE
 # Schemas / data ownership (one SQLite file per persisting module)
 # M1 Geography -> GeographyContext  db: geography.db   tables: Countries, Cities
 # M2 Weather   -> (none)            external OpenWeatherMap only
-# M3 Favorites -> FavoritesContext  db: favorites.db   tables: FavoriteCities, CityProjections
-# M4 Notes     -> NotesContext      db: notes.db       tables: WeatherNotes,  CityProjections
+# M3 Journal   -> JournalContext    db: journal.db     tables: FavoriteCities, WeatherNotes, CityProjections
 
 # Async integration edges
 # M1 -> M3  CityAddedIntegrationEvent
-# M1 -> M4  CityAddedIntegrationEvent
 # M2 -> (none)  Weather resolves the city via the provider (q={city},{country}); no module edge

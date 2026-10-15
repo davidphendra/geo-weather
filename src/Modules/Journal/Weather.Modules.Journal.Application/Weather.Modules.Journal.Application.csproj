@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Weather.Modules.Journal.Domain\Weather.Modules.Journal.Domain.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Weather.BuildingBlocks.Application\Weather.BuildingBlocks.Application.csproj" />
+    <ProjectReference Include="..\..\Geography\Weather.Modules.Geography.IntegrationEvents\Weather.Modules.Geography.IntegrationEvents.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Geography\Weather.Modules.Geography.IntegrationEvents\Weather.Modules.Geography.IntegrationEvents.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Weather.BuildingBlocks.Application\Weather.BuildingBlocks.Application.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MediatR" />
+    <PackageReference Include="FluentValidation" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Weather.Modules.Journal.Infrastructure" />
+    <InternalsVisibleTo Include="Weather.Modules.Journal.Tests" />
+  </ItemGroup>
+</Project>

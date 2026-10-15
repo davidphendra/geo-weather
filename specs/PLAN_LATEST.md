@@ -1,5 +1,9 @@
 # Weather App — Implementation Plan (Modular Monolith · CQRS · Onion-per-module)
 
+> **NOTE (ADR-0016):** Favorites (e04) and Notes (e05) have since been merged into one **Journal** module
+> (`Weather.Modules.Journal.*`, `journal.db`). This document predates that merge; treat its Favorites/Notes
+> module split as historical. Current module map: `specs/tech-architecture/modules.map`.
+
 Status: **PLANNING COMPLETE — immediate work is e09 API Response Contract, then e04 Favorites.**
 Model: `kgrzybek/modular-monolith-with-ddd` — a module = a bounded context = its own assembly set + own
 composition root + own schema; modules integrate **only** asynchronously via integration events.

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -22,8 +22,7 @@
     <ProjectReference Include="..\..\Weather.WebUI\Weather.WebUI.csproj" />
     <ProjectReference Include="..\..\Modules\Geography\Weather.Modules.Geography.Infrastructure\Weather.Modules.Geography.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Modules\Weather\Weather.Modules.Weather.Infrastructure\Weather.Modules.Weather.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\Modules\Favorites\Weather.Modules.Favorites.Infrastructure\Weather.Modules.Favorites.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\Modules\Notes\Weather.Modules.Notes.Infrastructure\Weather.Modules.Notes.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Journal\Weather.Modules.Journal.Infrastructure\Weather.Modules.Journal.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

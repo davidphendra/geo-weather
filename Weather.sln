@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -19,23 +19,23 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weather.BuildingBlocks.Infr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{EC447DCF-ABFA-6E24-52A5-D7FD48A5C558}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Favorites", "Favorites", "{4F43CFE1-0B6A-E010-978F-8535D91792BE}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Journal", "Journal", "{4F43CFE1-0B6A-E010-978F-8535D91792BE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{11A4A5C6-6C61-8305-FAA9-7B26A8677846}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weather.Modules.Favorites.Tests", "src\Modules\Favorites\Tests\Weather.Modules.Favorites.Tests\Weather.Modules.Favorites.Tests.csproj", "{42B071CE-EBFF-4666-A295-9B9A6AF8F0FE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weather.Modules.Journal.Tests", "src\Modules\Journal\Tests\Weather.Modules.Journal.Tests\Weather.Modules.Journal.Tests.csproj", "{42B071CE-EBFF-4666-A295-9B9A6AF8F0FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weather.Modules.Favorites.Domain", "src\Modules\Favorites\Weather.Modules.Favorites.Domain\Weather.Modules.Favorites.Domain.csproj", "{CC8D4EE5-D359-4689-9B09-67E4F3441E3B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weather.Modules.Journal.Domain", "src\Modules\Journal\Weather.Modules.Journal.Domain\Weather.Modules.Journal.Domain.csproj", "{CC8D4EE5-D359-4689-9B09-67E4F3441E3B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weather.Modules.Favorites.Application", "src\Modules\Favorites\Weather.Modules.Favorites.Application\Weather.Modules.Favorites.Application.csproj", "{F5253ABD-B9A9-402D-A858-77482E0D599B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weather.Modules.Journal.Application", "src\Modules\Journal\Weather.Modules.Journal.Application\Weather.Modules.Journal.Application.csproj", "{F5253ABD-B9A9-402D-A858-77482E0D599B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Geography", "Geography", "{B9D3644B-B2BF-F4FF-3C34-F65E988D1829}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weather.Modules.Geography.IntegrationEvents", "src\Modules\Geography\Weather.Modules.Geography.IntegrationEvents\Weather.Modules.Geography.IntegrationEvents.csproj", "{8992CB37-471C-4638-96AC-6672E8D366E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weather.Modules.Favorites.Infrastructure", "src\Modules\Favorites\Weather.Modules.Favorites.Infrastructure\Weather.Modules.Favorites.Infrastructure.csproj", "{386D7DCD-5653-426D-B411-2631DA520B07}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weather.Modules.Journal.Infrastructure", "src\Modules\Journal\Weather.Modules.Journal.Infrastructure\Weather.Modules.Journal.Infrastructure.csproj", "{386D7DCD-5653-426D-B411-2631DA520B07}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weather.Modules.Favorites.IntegrationEvents", "src\Modules\Favorites\Weather.Modules.Favorites.IntegrationEvents\Weather.Modules.Favorites.IntegrationEvents.csproj", "{63005CFB-FEC0-47EB-8982-738A307C670C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weather.Modules.Journal.IntegrationEvents", "src\Modules\Journal\Weather.Modules.Journal.IntegrationEvents\Weather.Modules.Journal.IntegrationEvents.csproj", "{63005CFB-FEC0-47EB-8982-738A307C670C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{714C700B-B1E2-B938-771F-3F6D53444D28}"
 EndProject
@@ -46,20 +46,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weather.Modules.Geography.Application", "src\Modules\Geography\Weather.Modules.Geography.Application\Weather.Modules.Geography.Application.csproj", "{F5CD39AB-DF88-414F-AE5C-5A44A0C98B59}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weather.Modules.Geography.Infrastructure", "src\Modules\Geography\Weather.Modules.Geography.Infrastructure\Weather.Modules.Geography.Infrastructure.csproj", "{C6D7CC21-3ED1-4D5C-B722-A90CE188E2E7}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notes", "Notes", "{3A371114-0357-C99C-83E4-6460BEE3239F}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{02C043CA-9AB8-8C49-A765-FC5FEA483783}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weather.Modules.Notes.Tests", "src\Modules\Notes\Tests\Weather.Modules.Notes.Tests\Weather.Modules.Notes.Tests.csproj", "{F93F987C-8A87-4802-91E2-8FD5785DEBCA}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weather.Modules.Notes.Domain", "src\Modules\Notes\Weather.Modules.Notes.Domain\Weather.Modules.Notes.Domain.csproj", "{0F421B3D-837B-4D20-801C-5421D0B90626}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weather.Modules.Notes.Application", "src\Modules\Notes\Weather.Modules.Notes.Application\Weather.Modules.Notes.Application.csproj", "{EFB5549F-FCD8-47ED-B72C-76DFBD55A743}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weather.Modules.Notes.Infrastructure", "src\Modules\Notes\Weather.Modules.Notes.Infrastructure\Weather.Modules.Notes.Infrastructure.csproj", "{D47BCCA9-DE0E-41D8-8606-1D01968CD3CF}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weather.Modules.Notes.IntegrationEvents", "src\Modules\Notes\Weather.Modules.Notes.IntegrationEvents\Weather.Modules.Notes.IntegrationEvents.csproj", "{695FDBF0-08F0-4BCE-ADF4-97D8A2195E52}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Weather", "Weather", "{FCB5C00D-E9A9-0305-9855-ABBCE767DABD}"
 EndProject
@@ -263,66 +249,6 @@ Global
 		{C6D7CC21-3ED1-4D5C-B722-A90CE188E2E7}.Release|x64.Build.0 = Release|Any CPU
 		{C6D7CC21-3ED1-4D5C-B722-A90CE188E2E7}.Release|x86.ActiveCfg = Release|Any CPU
 		{C6D7CC21-3ED1-4D5C-B722-A90CE188E2E7}.Release|x86.Build.0 = Release|Any CPU
-		{F93F987C-8A87-4802-91E2-8FD5785DEBCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F93F987C-8A87-4802-91E2-8FD5785DEBCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F93F987C-8A87-4802-91E2-8FD5785DEBCA}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{F93F987C-8A87-4802-91E2-8FD5785DEBCA}.Debug|x64.Build.0 = Debug|Any CPU
-		{F93F987C-8A87-4802-91E2-8FD5785DEBCA}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{F93F987C-8A87-4802-91E2-8FD5785DEBCA}.Debug|x86.Build.0 = Debug|Any CPU
-		{F93F987C-8A87-4802-91E2-8FD5785DEBCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F93F987C-8A87-4802-91E2-8FD5785DEBCA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F93F987C-8A87-4802-91E2-8FD5785DEBCA}.Release|x64.ActiveCfg = Release|Any CPU
-		{F93F987C-8A87-4802-91E2-8FD5785DEBCA}.Release|x64.Build.0 = Release|Any CPU
-		{F93F987C-8A87-4802-91E2-8FD5785DEBCA}.Release|x86.ActiveCfg = Release|Any CPU
-		{F93F987C-8A87-4802-91E2-8FD5785DEBCA}.Release|x86.Build.0 = Release|Any CPU
-		{0F421B3D-837B-4D20-801C-5421D0B90626}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0F421B3D-837B-4D20-801C-5421D0B90626}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0F421B3D-837B-4D20-801C-5421D0B90626}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{0F421B3D-837B-4D20-801C-5421D0B90626}.Debug|x64.Build.0 = Debug|Any CPU
-		{0F421B3D-837B-4D20-801C-5421D0B90626}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{0F421B3D-837B-4D20-801C-5421D0B90626}.Debug|x86.Build.0 = Debug|Any CPU
-		{0F421B3D-837B-4D20-801C-5421D0B90626}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0F421B3D-837B-4D20-801C-5421D0B90626}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0F421B3D-837B-4D20-801C-5421D0B90626}.Release|x64.ActiveCfg = Release|Any CPU
-		{0F421B3D-837B-4D20-801C-5421D0B90626}.Release|x64.Build.0 = Release|Any CPU
-		{0F421B3D-837B-4D20-801C-5421D0B90626}.Release|x86.ActiveCfg = Release|Any CPU
-		{0F421B3D-837B-4D20-801C-5421D0B90626}.Release|x86.Build.0 = Release|Any CPU
-		{EFB5549F-FCD8-47ED-B72C-76DFBD55A743}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EFB5549F-FCD8-47ED-B72C-76DFBD55A743}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EFB5549F-FCD8-47ED-B72C-76DFBD55A743}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{EFB5549F-FCD8-47ED-B72C-76DFBD55A743}.Debug|x64.Build.0 = Debug|Any CPU
-		{EFB5549F-FCD8-47ED-B72C-76DFBD55A743}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{EFB5549F-FCD8-47ED-B72C-76DFBD55A743}.Debug|x86.Build.0 = Debug|Any CPU
-		{EFB5549F-FCD8-47ED-B72C-76DFBD55A743}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EFB5549F-FCD8-47ED-B72C-76DFBD55A743}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EFB5549F-FCD8-47ED-B72C-76DFBD55A743}.Release|x64.ActiveCfg = Release|Any CPU
-		{EFB5549F-FCD8-47ED-B72C-76DFBD55A743}.Release|x64.Build.0 = Release|Any CPU
-		{EFB5549F-FCD8-47ED-B72C-76DFBD55A743}.Release|x86.ActiveCfg = Release|Any CPU
-		{EFB5549F-FCD8-47ED-B72C-76DFBD55A743}.Release|x86.Build.0 = Release|Any CPU
-		{D47BCCA9-DE0E-41D8-8606-1D01968CD3CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D47BCCA9-DE0E-41D8-8606-1D01968CD3CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D47BCCA9-DE0E-41D8-8606-1D01968CD3CF}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{D47BCCA9-DE0E-41D8-8606-1D01968CD3CF}.Debug|x64.Build.0 = Debug|Any CPU
-		{D47BCCA9-DE0E-41D8-8606-1D01968CD3CF}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{D47BCCA9-DE0E-41D8-8606-1D01968CD3CF}.Debug|x86.Build.0 = Debug|Any CPU
-		{D47BCCA9-DE0E-41D8-8606-1D01968CD3CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D47BCCA9-DE0E-41D8-8606-1D01968CD3CF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D47BCCA9-DE0E-41D8-8606-1D01968CD3CF}.Release|x64.ActiveCfg = Release|Any CPU
-		{D47BCCA9-DE0E-41D8-8606-1D01968CD3CF}.Release|x64.Build.0 = Release|Any CPU
-		{D47BCCA9-DE0E-41D8-8606-1D01968CD3CF}.Release|x86.ActiveCfg = Release|Any CPU
-		{D47BCCA9-DE0E-41D8-8606-1D01968CD3CF}.Release|x86.Build.0 = Release|Any CPU
-		{695FDBF0-08F0-4BCE-ADF4-97D8A2195E52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{695FDBF0-08F0-4BCE-ADF4-97D8A2195E52}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{695FDBF0-08F0-4BCE-ADF4-97D8A2195E52}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{695FDBF0-08F0-4BCE-ADF4-97D8A2195E52}.Debug|x64.Build.0 = Debug|Any CPU
-		{695FDBF0-08F0-4BCE-ADF4-97D8A2195E52}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{695FDBF0-08F0-4BCE-ADF4-97D8A2195E52}.Debug|x86.Build.0 = Debug|Any CPU
-		{695FDBF0-08F0-4BCE-ADF4-97D8A2195E52}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{695FDBF0-08F0-4BCE-ADF4-97D8A2195E52}.Release|Any CPU.Build.0 = Release|Any CPU
-		{695FDBF0-08F0-4BCE-ADF4-97D8A2195E52}.Release|x64.ActiveCfg = Release|Any CPU
-		{695FDBF0-08F0-4BCE-ADF4-97D8A2195E52}.Release|x64.Build.0 = Release|Any CPU
-		{695FDBF0-08F0-4BCE-ADF4-97D8A2195E52}.Release|x86.ActiveCfg = Release|Any CPU
-		{695FDBF0-08F0-4BCE-ADF4-97D8A2195E52}.Release|x86.Build.0 = Release|Any CPU
 		{1676660B-9CF5-4BD7-A03B-ED87070DEE6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1676660B-9CF5-4BD7-A03B-ED87070DEE6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1676660B-9CF5-4BD7-A03B-ED87070DEE6C}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -457,13 +383,6 @@ Global
 		{CD291D39-7545-4C6A-8C36-5D87E3EBAE65} = {B9D3644B-B2BF-F4FF-3C34-F65E988D1829}
 		{F5CD39AB-DF88-414F-AE5C-5A44A0C98B59} = {B9D3644B-B2BF-F4FF-3C34-F65E988D1829}
 		{C6D7CC21-3ED1-4D5C-B722-A90CE188E2E7} = {B9D3644B-B2BF-F4FF-3C34-F65E988D1829}
-		{3A371114-0357-C99C-83E4-6460BEE3239F} = {EC447DCF-ABFA-6E24-52A5-D7FD48A5C558}
-		{02C043CA-9AB8-8C49-A765-FC5FEA483783} = {3A371114-0357-C99C-83E4-6460BEE3239F}
-		{F93F987C-8A87-4802-91E2-8FD5785DEBCA} = {02C043CA-9AB8-8C49-A765-FC5FEA483783}
-		{0F421B3D-837B-4D20-801C-5421D0B90626} = {3A371114-0357-C99C-83E4-6460BEE3239F}
-		{EFB5549F-FCD8-47ED-B72C-76DFBD55A743} = {3A371114-0357-C99C-83E4-6460BEE3239F}
-		{D47BCCA9-DE0E-41D8-8606-1D01968CD3CF} = {3A371114-0357-C99C-83E4-6460BEE3239F}
-		{695FDBF0-08F0-4BCE-ADF4-97D8A2195E52} = {3A371114-0357-C99C-83E4-6460BEE3239F}
 		{FCB5C00D-E9A9-0305-9855-ABBCE767DABD} = {EC447DCF-ABFA-6E24-52A5-D7FD48A5C558}
 		{4A98E1F9-1419-BCDE-682C-1AA0281AE680} = {FCB5C00D-E9A9-0305-9855-ABBCE767DABD}
 		{1676660B-9CF5-4BD7-A03B-ED87070DEE6C} = {4A98E1F9-1419-BCDE-682C-1AA0281AE680}

@@ -2,8 +2,10 @@ id: e05
 title: Notes Module
 wsjf: 5.5
 total_bcps: 8
-status: done
-module: M4
+status: merged_into_e13
+superseded_by: e13
+note_merge: Historical record. Notes was merged with Favorites into the Journal module (M3) per ADR-0016; e05s02's multi-subscriber AC is intentionally no longer demonstrated.
+module: M4  # historical; the merged module is M3 Journal
 prerequisites: [e09, e02s03, e05s01]
 publishes: []
 note: >

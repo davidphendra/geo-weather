@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -27,14 +27,10 @@
     <ProjectReference Include="..\..\Modules\Weather\Weather.Modules.Weather.Application\Weather.Modules.Weather.Application.csproj" />
     <ProjectReference Include="..\..\Modules\Weather\Weather.Modules.Weather.Infrastructure\Weather.Modules.Weather.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Modules\Weather\Weather.Modules.Weather.IntegrationEvents\Weather.Modules.Weather.IntegrationEvents.csproj" />
-    <ProjectReference Include="..\..\Modules\Favorites\Weather.Modules.Favorites.Domain\Weather.Modules.Favorites.Domain.csproj" />
-    <ProjectReference Include="..\..\Modules\Favorites\Weather.Modules.Favorites.Application\Weather.Modules.Favorites.Application.csproj" />
-    <ProjectReference Include="..\..\Modules\Favorites\Weather.Modules.Favorites.Infrastructure\Weather.Modules.Favorites.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\Modules\Favorites\Weather.Modules.Favorites.IntegrationEvents\Weather.Modules.Favorites.IntegrationEvents.csproj" />
-    <ProjectReference Include="..\..\Modules\Notes\Weather.Modules.Notes.Domain\Weather.Modules.Notes.Domain.csproj" />
-    <ProjectReference Include="..\..\Modules\Notes\Weather.Modules.Notes.Application\Weather.Modules.Notes.Application.csproj" />
-    <ProjectReference Include="..\..\Modules\Notes\Weather.Modules.Notes.Infrastructure\Weather.Modules.Notes.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\Modules\Notes\Weather.Modules.Notes.IntegrationEvents\Weather.Modules.Notes.IntegrationEvents.csproj" />
+    <ProjectReference Include="..\..\Modules\Journal\Weather.Modules.Journal.Domain\Weather.Modules.Journal.Domain.csproj" />
+    <ProjectReference Include="..\..\Modules\Journal\Weather.Modules.Journal.Application\Weather.Modules.Journal.Application.csproj" />
+    <ProjectReference Include="..\..\Modules\Journal\Weather.Modules.Journal.Infrastructure\Weather.Modules.Journal.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Journal\Weather.Modules.Journal.IntegrationEvents\Weather.Modules.Journal.IntegrationEvents.csproj" />
     <ProjectReference Include="..\..\Weather.WebUI\Weather.WebUI.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\Weather.BuildingBlocks.Domain\Weather.BuildingBlocks.Domain.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\Weather.BuildingBlocks.Application\Weather.BuildingBlocks.Application.csproj" />

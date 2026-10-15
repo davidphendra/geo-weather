@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 
 using NSubstitute;
 
-using Weather.Modules.Favorites.Application.Contracts;
-using Weather.Modules.Favorites.Application.FavoriteCities.GetFavorites;
-using Weather.WebUI.Api.Modules.Favorites;
+using Weather.Modules.Journal.Application.Contracts;
+using Weather.Modules.Journal.Application.FavoriteCities.GetFavorites;
+using Weather.WebUI.Api.Modules.Journal;
 
 namespace Weather.WebUI.UnitTests.Controllers;
 

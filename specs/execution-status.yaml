@@ -20,8 +20,9 @@ stories:
   e03s04: { status: done }
   e04s01: { status: done }
   e04s02: { status: done }
-  e05s01: { status: todo }
-  e05s02: { status: todo }
+  e05s01: { status: done, note: "merged into e13 Journal (ADR-0016)" }
+  e05s02: { status: done, note: "merged into e13 Journal (ADR-0016)" }
+  e13s01: { status: done, note: "Favorites + Notes merged into Journal" }
   e06s01: { status: done }
   e06s02: { status: done }
   e06s03: { status: done }

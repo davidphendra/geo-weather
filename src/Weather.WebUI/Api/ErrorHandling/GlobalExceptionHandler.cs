@@ -1,7 +1,7 @@
 using FluentValidation;
 
-using global::Weather.Modules.Favorites.Application.Abstractions;
 using global::Weather.Modules.Geography.Application.Abstractions;
+using global::Weather.Modules.Journal.Application.Abstractions;
 using global::Weather.Modules.Weather.Application.Abstractions;
 
 using Microsoft.AspNetCore.Diagnostics;
@@ -73,8 +73,7 @@ internal sealed class GlobalExceptionHandler(
             "One or more fields are invalid.",
             [.. validation.Errors.Select(failure => new FieldError(failure.PropertyName, failure.ErrorCode, failure.ErrorMessage))]),
 
-        CountryNotFoundException or WeatherNotFoundException or CityNotFoundException
-            or global::Weather.Modules.Notes.Application.Abstractions.CityNotFoundException => new Problem(
+        CountryNotFoundException or WeatherNotFoundException or CityNotFoundException => new Problem(
             StatusCodes.Status404NotFound,
             ApiErrorCodes.ResourceNotFound,
             ApiProblemTypes.ResourceNotFound,

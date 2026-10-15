@@ -62,10 +62,11 @@ architecture:
   modules:
     - { id: M1, name: Geography, assemblies: 4, dbcontext: GeographyContext, db: geography.db, publishes: [CityAddedIntegrationEvent] }
     - { id: M2, name: Weather,   assemblies: 4, dbcontext: null,              db: null,         consumes: [] }
-    - { id: M3, name: Favorites, assemblies: 4, dbcontext: FavoritesContext,  db: favorites.db, consumes: [CityAddedIntegrationEvent] }
-    - { id: M4, name: Notes,     assemblies: 4, dbcontext: NotesContext,      db: notes.db,     consumes: [CityAddedIntegrationEvent] }
+    - { id: M3, name: Journal,   assemblies: 4, dbcontext: JournalContext,    db: journal.db,   consumes: [CityAddedIntegrationEvent], note: "merged Favorites+Notes (ADR-0016)" }
   building_blocks: [Domain, Application, Infrastructure]
-  async_edges: ["M1->M3", "M1->M4"]
+  async_edges: ["M1->M3"]
+  adr_0016: "Merge Favorites and Notes into the Journal module"
+  available_contracts: ["IFavoritesService", "INotesModule"]
   integration_style: "async integration events + in-memory Events Bus + Outbox"
   data_isolation: "one SQLite file per persisting module (effectively level 3)"
   enforcement: ["compiler (assembly-per-module)", "NetArchTest: ModuleTests + LayersTests + ApiTests"]
@@ -90,6 +91,7 @@ decisions:
   - { id: ADR-0013, title: "SQLite data files live in App_Data, outside the web root", status: proposed }
   - { id: ADR-0014, title: "OpenTelemetry observability with Azure Monitor (Microsoft OpenTelemetry Distro; shared instruments in BuildingBlocks; EF skipped; 100% dev / 10% prod traces)", status: accepted }
   - { id: ADR-0015, title: "Explicit configurable retry resilience for the OpenWeatherMap client (OpenWeather:Resilience; no circuit breaker/rate limiter)", status: accepted }
+  - { id: ADR-0016, title: "Merge Favorites and Notes into the Journal module (one JournalContext/journal.db; routes unchanged; two contracts kept)", status: accepted }
 
 risks:
   - id: R1

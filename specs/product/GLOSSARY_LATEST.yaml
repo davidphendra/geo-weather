@@ -19,12 +19,14 @@ terms:
     definition: Bounded context owning the country and city catalog.
   - term: Weather
     definition: Core bounded context owning current-conditions retrieval, the weather domain model, temperature conversion, and dew point. Persists nothing.
+  - term: Journal
+    definition: Bounded context owning a user's saved cities (favorites) and user-authored weather observations (notes). Formed by merging the former Favorites and Notes contexts (ADR-0016).
   - term: Favorites
-    definition: Bounded context owning a user's saved cities.
+    definition: The saved-cities aggregate/API area inside the Journal module. No longer a standalone bounded context.
   - term: Notes
-    definition: Bounded context owning user-authored weather observations.
+    definition: The weather-observation aggregate/API area inside the Journal module. No longer a standalone bounded context.
   - term: City projection
-    definition: A read model inside Favorites/Notes holding just the city data they need, kept current by CityAddedIntegrationEvent.
+    definition: The single read model inside the Journal module holding just the city data it needs, kept current by CityAddedIntegrationEvent.
   - term: Country
     definition: A reference-data entity identified by an ISO-3166 alpha-2 code (e.g. "GB") with a display name.
   - term: City
@@ -40,9 +42,9 @@ terms:
   - term: WindInfo
     definition: Wind speed (m/s) and direction (degrees) with an optional cardinal direction.
   - term: WeatherNote
-    definition: A user-authored note attached to a city, owned by the Notes module.
+    definition: A user-authored note attached to a city, owned by the Journal module (notes area).
   - term: FavoriteCity
-    definition: A city a user saved, owned by the Favorites module; unique per city.
+    definition: A city a user saved, owned by the Journal module (favorites area); unique per city.
   - term: Query
     definition: A read-side MediatR request that returns DTOs and never mutates state.
   - term: Command

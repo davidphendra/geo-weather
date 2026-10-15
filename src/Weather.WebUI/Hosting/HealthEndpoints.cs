@@ -1,8 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 
-using Weather.Modules.Favorites.Infrastructure;
 using Weather.Modules.Geography.Infrastructure;
-using Weather.Modules.Notes.Infrastructure;
+using Weather.Modules.Journal.Infrastructure;
 
 namespace Weather.WebUI.Hosting;
 
@@ -23,8 +22,7 @@ internal static class HealthEndpoints
 
             bool ready =
                 await CanConnectAsync(scope.ServiceProvider.GetRequiredService<GeographyContext>(), cancellationToken)
-                && await CanConnectAsync(scope.ServiceProvider.GetRequiredService<FavoritesContext>(), cancellationToken)
-                && await CanConnectAsync(scope.ServiceProvider.GetRequiredService<NotesContext>(), cancellationToken);
+                && await CanConnectAsync(scope.ServiceProvider.GetRequiredService<JournalContext>(), cancellationToken);
 
             return ready
                 ? Results.Ok(new HealthStatus("ready"))

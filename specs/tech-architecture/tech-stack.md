@@ -21,8 +21,7 @@ Module determination and rationale: `specs/adr/0005-modular-monolith-and-modules
 |--------|------|----------|---------|-----------|----------|
 | **Geography** | Supporting | `geography.db` | `GeographyContext` | `CityAddedIntegrationEvent` | — |
 | **Weather** | **Core** | none (external) | — | — | — |
-| **Favorites** | Supporting | `favorites.db` | `FavoritesContext` | — | `CityAddedIntegrationEvent` |
-| **Notes** | Supporting | `notes.db` | `NotesContext` | — | `CityAddedIntegrationEvent` |
+| **Journal** | Supporting | `journal.db` | `JournalContext` | — | `CityAddedIntegrationEvent` |
 
 Rejected contexts: UserAccess (no auth), Alerts/Notifications, Forecast/History. See ADR-0005.
 
@@ -48,12 +47,12 @@ Modules/
     ...Application/   Contracts/IWeatherService, WeatherReports/GetCurrentWeather, Abstractions/IWeatherProvider
     ...Infrastructure/ OpenWeatherMapService, WeatherService
     ...IntegrationEvents/
-  Weather.Modules.Favorites/
-    ...Domain/        FavoriteCities/ (FavoriteCity), Cities/ (local City projection)
-    ...Application/   Contracts/IFavoritesModule, FavoriteCities/AddFavoriteCity, Cities/
-    ...Infrastructure/ FavoritesContext, FavoritesModule, Outbox/, Configuration/
-    ...IntegrationEvents/ CityAddedIntegrationEventHandler (lives in Application/Infrastructure)
-  Weather.Modules.Notes/  (mirror of Favorites for WeatherNote)
+  Weather.Modules.Journal/
+    ...Domain/        FavoriteCities/ (FavoriteCity), Notes/ (WeatherNote), Cities/ (local City projection)
+    ...Application/   Contracts/{IFavoritesService, INotesModule}, FavoriteCities/AddFavoriteCity,
+                      Notes/AddWeatherNote, Cities/ (CityAddedIntegrationEventHandler)
+    ...Infrastructure/ JournalContext, FavoritesService, JournalModule, Database/, Configuration/
+    ...IntegrationEvents/ (empty; consumer only)
 Weather.WebUI/          single host (ADR-0012); Components/ (Blazor UI) + Api/Modules/<Module>/*Controller.cs;
                         Program initializes modules
 

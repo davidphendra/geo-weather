@@ -33,8 +33,7 @@ public sealed class DatabaseConfigurationTests
             await factory.CreateClient().GetAsync("/api/countries");
 
             Assert.True(File.Exists(Path.Combine(dataDirectory, "geography.db")));
-            Assert.True(File.Exists(Path.Combine(dataDirectory, "favorites.db")));
-            Assert.True(File.Exists(Path.Combine(dataDirectory, "notes.db")));
+            Assert.True(File.Exists(Path.Combine(dataDirectory, "journal.db")));
         }
         finally
         {
@@ -58,7 +57,7 @@ public sealed class DatabaseConfigurationTests
 
             Assert.True(File.Exists(geographyOverride));
             Assert.False(File.Exists(Path.Combine(dataDirectory, "geography.db")));
-            Assert.True(File.Exists(Path.Combine(dataDirectory, "favorites.db")));
+            Assert.True(File.Exists(Path.Combine(dataDirectory, "journal.db")));
         }
         finally
         {
@@ -73,20 +72,20 @@ public sealed class DatabaseConfigurationTests
     public async Task ConnectionStringDirectory_IsCreatedWhenMissing()
     {
         string parentDirectory = Path.Combine(Path.GetTempPath(), $"weather-nested-{Guid.NewGuid():N}");
-        string favoritesDirectory = Path.Combine(parentDirectory, "data");
-        string favoritesDatabase = Path.Combine(favoritesDirectory, "favorites.db");
-        Environment.SetEnvironmentVariable("ConnectionStrings__Favorites", $"Data Source={favoritesDatabase}");
+        string journalDirectory = Path.Combine(parentDirectory, "data");
+        string journalDatabase = Path.Combine(journalDirectory, "journal.db");
+        Environment.SetEnvironmentVariable("ConnectionStrings__Journal", $"Data Source={journalDatabase}");
 
         try
         {
             using DefaultDatabaseHostFactory factory = new();
             await factory.CreateClient().GetAsync("/api/countries");
 
-            Assert.True(File.Exists(favoritesDatabase));
+            Assert.True(File.Exists(journalDatabase));
         }
         finally
         {
-            Environment.SetEnvironmentVariable("ConnectionStrings__Favorites", null);
+            Environment.SetEnvironmentVariable("ConnectionStrings__Journal", null);
             DeleteDirectory(parentDirectory);
         }
     }

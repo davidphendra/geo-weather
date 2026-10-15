@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 using Weather.IntegrationTests.Support;
-using Weather.Modules.Notes.Infrastructure;
+using Weather.Modules.Journal.Infrastructure;
 
 namespace Weather.IntegrationTests.Http;
 
@@ -48,7 +48,7 @@ public sealed class NotesErrorsTests(WeatherHostFactory factory) : IClassFixture
     private async Task<int> CountNotesAsync()
     {
         using IServiceScope scope = factory.Services.CreateScope();
-        NotesContext context = scope.ServiceProvider.GetRequiredService<NotesContext>();
+        JournalContext context = scope.ServiceProvider.GetRequiredService<JournalContext>();
 
         return await context.WeatherNotes.AsNoTracking().CountAsync();
     }

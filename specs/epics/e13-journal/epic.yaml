@@ -1,0 +1,33 @@
+id: e13
+title: Merge Favorites and Notes into the Journal module
+wsjf: 6.5
+total_bcps: 12
+status: done
+module: M3
+kind: supporting
+owns_data: true
+persistence:
+  provider: EF Core SQLite
+  database: journal.db
+  context: JournalContext
+  schema: EF Core migrations
+publishes: []
+consumes:
+  - CityAddedIntegrationEvent
+contracts:
+  - IFavoritesService
+  - INotesModule
+note: >
+  Merged the Favorites (e04) and Notes (e05) bounded contexts into one Journal module (ADR-0016): a single
+  JournalContext over journal.db owning FavoriteCities, WeatherNotes, and one CityProjections table; one
+  CityAddedIntegrationEventHandler; REST routes unchanged (ADR-0011); two controller classes; two public
+  contracts retained; notes.*/favorites.* instruments retained. Loses the multi-subscriber demonstration (D6).
+  Plan: specs/IMPACT-merge-notes-into-favorites.md.
+stories:
+  - id: e13s01
+    title: Merge Favorites and Notes into the Journal module
+    bcps: 12
+    status: done
+    spec: e13s01-merge-notes-into-favorites.md
+    tasks: e13s01-tasks.yaml
+    delta: CHANGED

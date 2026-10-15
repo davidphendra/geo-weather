@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Weather.Modules.Journal.Application\Weather.Modules.Journal.Application.csproj" />
+    <ProjectReference Include="..\Weather.Modules.Journal.Domain\Weather.Modules.Journal.Domain.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Weather.BuildingBlocks.Infrastructure\Weather.BuildingBlocks.Infrastructure.csproj" />
+    <ProjectReference Include="..\Weather.Modules.Journal.IntegrationEvents\Weather.Modules.Journal.IntegrationEvents.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Weather.Modules.Journal.Application\Weather.Modules.Journal.Application.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Weather.BuildingBlocks.Infrastructure\Weather.BuildingBlocks.Infrastructure.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
+    <PackageReference Include="MediatR" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Weather.Modules.Journal.Tests" />
+  </ItemGroup>
+</Project>

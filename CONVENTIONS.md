@@ -68,8 +68,10 @@ data. Reference model: `kgrzybek/modular-monolith-with-ddd`.
 |--------|-----------|-----------|---------|-----------|----------|
 | M1 Geography | `Weather.Modules.Geography.*` | `geography.db` | `GeographyContext` | `CityAddedIntegrationEvent` | — |
 | M2 Weather | `Weather.Modules.Weather.*` | (none) | — | — | — |
-| M3 Favorites | `Weather.Modules.Favorites.*` | `favorites.db` | `FavoritesContext` | — | `CityAddedIntegrationEvent` |
-| M4 Notes | `Weather.Modules.Notes.*` | `notes.db` | `NotesContext` | — | `CityAddedIntegrationEvent` |
+| M3 Journal | `Weather.Modules.Journal.*` | `journal.db` | `JournalContext` | — | `CityAddedIntegrationEvent` |
+
+`Journal` is the merged Favorites + Notes bounded context (ADR-0016): it owns `FavoriteCities`, `WeatherNotes`,
+and one `CityProjections` table, and exposes `IFavoritesService` + `INotesModule`.
 
 Each module has `Domain`, `Application`, `Infrastructure`, `IntegrationEvents` assemblies. `BuildingBlocks`
 (`Weather.BuildingBlocks.{Domain,Application,Infrastructure}`) hold shared primitives.
@@ -78,7 +80,7 @@ Boundary rules — a violation is a build-breaking defect:
 
 - A module MUST reference another module ONLY through that module's `IntegrationEvents` assembly.
 - Modules MUST communicate only asynchronously via the Events Bus. Direct cross-module calls are forbidden.
-- Permitted cross-module flows: Geography → Favorites and Geography → Notes (`CityAddedIntegrationEvent`). Weather is independent.
+- Permitted cross-module flows: Geography → Journal (`CityAddedIntegrationEvent`). Weather is independent.
 - Each module owns its data: own `DbContext`, own SQLite file, no cross-module joins or foreign keys.
 - Cross-module reference is forbidden in the host too: each API area talks to one module only.
 - Modules are initialized by the host via `Add<Module>Module()` + `Initialize(...)`.
@@ -105,12 +107,15 @@ Boundary rules — a violation is a build-breaking defect:
 - Commands return the created resource identifier (`Guid`).
 - Cross-cutting concerns live in MediatR `IPipelineBehavior` (validation, logging), not in handlers.
 - Validation lives in FluentValidation `AbstractValidator<TRequest>` next to the request.
-- Each module exposes exactly one `I<Module>Service` public contract (typed methods), e.g. `IGeographyService`.
+- Each module exposes its public contract(s) as typed methods, e.g. `IGeographyService`. Prefer one
+  `I<Module>Service` per module; a module that owns multiple aggregates/API areas MAY expose one contract per
+  aggregate (ADR-0016: Journal keeps `IFavoritesService` + `INotesModule`).
 
 ## Naming Conventions
 
 - Projects: `Weather.BuildingBlocks.<Layer>`, `Weather.Modules.<Module>.<Layer>`, `Weather.WebUI` (host: Blazor UI + REST API).
-- Modules: `Geography`, `Weather`, `Favorites`, `Notes` (bounded-context names, never technical names).
+- Modules: `Geography`, `Weather`, `Journal` (bounded-context names, never technical names). Journal is the
+  merged Favorites + Notes context (ADR-0016).
 - Folders mirror layers/features; files are one-type-per-file.
 - Interfaces: `IWeatherProvider`, `ICityRepository`, `IDateTimeProvider`.
 - Async methods end in `Async`; take a `CancellationToken`.
@@ -121,7 +126,7 @@ Boundary rules — a violation is a build-breaking defect:
 - Every read query uses `.AsNoTracking()`.
 - EF Core entity configuration lives in `IEntityTypeConfiguration<T>` classes, one per entity.
 - Domain entities have no EF attributes. Infrastructure maps them fluently.
-- Persistence is SQLite, one file per persisting module (`geography.db`, `favorites.db`, `notes.db`) under the configured `Database:DataDirectory` (default `App_Data/`), outside `wwwroot` (ADR-0013).
+- Persistence is SQLite, one file per persisting module (`geography.db`, `journal.db`) under the configured `Database:DataDirectory` (default `App_Data/`), outside `wwwroot` (ADR-0013).
 - Tests use the EF Core InMemory provider or SQLite `:memory:` per module.
 - Each persisting module owns a `DbContext`; migrations are per-context.
 - A module may store only a **local projection** of another module's reference data; it must not query another module's tables.

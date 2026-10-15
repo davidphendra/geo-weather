@@ -5,8 +5,8 @@ core_value: >
 
 summary: >
   This initiative delivers a production-grade ASP.NET Core Web API plus a lightweight Blazor
-  WebUI client. The backend is a modular monolith: one deployable unit divided into four bounded
-  contexts — Geography, Weather, Favorites, Notes — each implemented as a full assembly set
+  WebUI client. The backend is a modular monolith: one deployable unit divided into three bounded
+  contexts — Geography, Weather, Journal (merged Favorites + Notes, ADR-0016) — each implemented as a full assembly set
   (Domain / Application / Infrastructure / IntegrationEvents) with its own composition root and
   its own data schema, following kgrzybek/modular-monolith-with-ddd. Each module is internally
   Onion-layered and uses CQRS via MediatR. Modules communicate only asynchronously through an
@@ -30,11 +30,11 @@ in_scope:
     description: Weather module — weather domain (F->C conversion, dew point), OpenWeatherMap IWeatherProvider, GET /api/weather/{cityName}.
     maps_to: e03
   - id: S4
-    description: Favorites module — save favorite cities, own schema, consumes CityAddedIntegrationEvent into a local City projection.
-    maps_to: e04
+    description: Journal module — save favorite cities and weather notes in one bounded context; own schema (journal.db), consumes CityAddedIntegrationEvent into a single local City projection.
+    maps_to: e13
   - id: S5
-    description: Notes module — save weather notes, own schema, consumes CityAddedIntegrationEvent into a local City projection.
-    maps_to: e05
+    description: (merged into S4 / Journal — former standalone Notes module; ADR-0016).
+    maps_to: e13
   - id: S6
     description: Blazor WebUI — country dropdown, city dropdown, weather render, and a save action with feedback.
     maps_to: e06
@@ -80,7 +80,7 @@ constraints:
   resources: Single developer with an AI agent.
   decisions_to_confirm:
     - Module slicing: adopt the reference module-per-assembly structure (recommended) vs keep modules as folders inside shared layer projects.
-    - Module set: four bounded contexts — Geography, Weather, Favorites, Notes (recommended) vs merging Favorites+Notes into one WeatherJournal context.
+    - Module set: RESOLVED (ADR-0016) — three bounded contexts: Geography, Weather, Journal (Favorites + Notes merged).
     - Granularity fallback: one assembly per module with Domain/Application/Infrastructure as folders + a separate IntegrationEvents assembly (fewer projects) vs the reference's four assemblies per module.
     - Test granularity: LOCKED — 7 test projects (one per module with UnitTests/IntegrationTests/ArchTests folders + Weather.ArchTests + Weather.IntegrationTests + Weather.BuildingBlocks.Tests).
     - Front-end: keep the existing Blazor WebUI (recommended) vs replace with plain JS/React.

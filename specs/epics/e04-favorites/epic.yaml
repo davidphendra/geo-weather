@@ -2,7 +2,9 @@ id: e04
 title: Favorites Module
 wsjf: 6.0
 total_bcps: 8
-status: done
+status: merged_into_e13
+superseded_by: e13
+note_merge: Historical record. Favorites was merged with Notes into the Journal module (M3) per ADR-0016.
 module: M3
 kind: supporting
 owns_data: true

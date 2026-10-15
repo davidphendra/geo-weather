@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 
 using NSubstitute;
 
-using Weather.Modules.Notes.Application.Contracts;
-using Weather.Modules.Notes.Application.Notes;
-using Weather.WebUI.Api.Modules.Notes;
+using Weather.Modules.Journal.Application.Contracts;
+using Weather.Modules.Journal.Application.Notes;
+using Weather.WebUI.Api.Modules.Journal;
 
 namespace Weather.WebUI.UnitTests.Controllers;
 

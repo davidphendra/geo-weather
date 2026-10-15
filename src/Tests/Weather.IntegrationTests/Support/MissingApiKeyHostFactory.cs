@@ -21,8 +21,7 @@ public sealed class MissingApiKeyHostFactory : WebApplicationFactory<Program>
         builder.UseEnvironment("Development");
 
         string geography = Path.Combine(Path.GetTempPath(), $"geography-{Guid.NewGuid():N}.db");
-        string favorites = Path.Combine(Path.GetTempPath(), $"favorites-{Guid.NewGuid():N}.db");
-        string notes = Path.Combine(Path.GetTempPath(), $"notes-{Guid.NewGuid():N}.db");
+        string journal = Path.Combine(Path.GetTempPath(), $"journal-{Guid.NewGuid():N}.db");
 
         builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
             new Dictionary<string, string?>
@@ -31,8 +30,7 @@ public sealed class MissingApiKeyHostFactory : WebApplicationFactory<Program>
                 // Deliberately no OpenWeather:ApiKey.
                 ["Observability:Enabled"] = "false",
                 ["ConnectionStrings:Geography"] = $"Data Source={geography}",
-                ["ConnectionStrings:Favorites"] = $"Data Source={favorites}",
-                ["ConnectionStrings:Notes"] = $"Data Source={notes}",
+                ["ConnectionStrings:Journal"] = $"Data Source={journal}",
             }));
 
         builder.ConfigureServices(services => services

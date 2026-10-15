@@ -1,0 +1,143 @@
+story_id: e13s01
+title: Merge Favorites and Notes into the Journal module
+status: done
+bcps: 12
+module: M3
+standards: docs/engineering/csharp-standards.md
+prerequisites: [e04s01, e04s02, e05s01, e05s02, e09s01, e10s01, e11s01, e12s03]
+plan: specs/IMPACT-merge-notes-into-favorites.md
+adr: specs/adr/0016-merge-favorites-and-notes-into-journal.md
+tasks:
+  - id: 1
+    phase: governance
+    description: "Write ADR-0016 (merge Favorites + Notes into Journal; amends ADR-0005/0006; records D2b retire-files, D4 contract deviation, D6 multi-subscriber trade-off)."
+    verify: "test -f specs/adr/0016-merge-favorites-and-notes-into-journal.md"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Journal", "ADR"] }
+  - id: 2
+    phase: governance
+    description: "Update SCOPE/GLOSSARY/CONVENTIONS/modules.map/release-plan/state/execution-status/AGENTS for the three-module set."
+    verify: "grep -q Journal CONVENTIONS.md && grep -q Journal specs/tech-architecture/modules.map"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Journal", "Docs"] }
+  - id: 3
+    phase: baseline
+    description: "Record the green Preflight baseline on the starting branch."
+    verify: "dotnet build Weather.sln --warnaserror && dotnet test Weather.sln"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Journal", "Gate"] }
+  - id: 4
+    phase: baseline
+    description: "Rewrite ModuleIsolationTests for the Journal boundary rule."
+    verify: "dotnet test src/Tests/Weather.ArchTests --filter Category=ModuleIsolation"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Journal", "arch"] }
+  - id: 5
+    phase: rename
+    description: "Rename the four Favorites assemblies/namespaces to Weather.Modules.Journal.*; JournalContext/JournalModuleExtensions/JournalDomainException; update Weather.sln and all ProjectReferences."
+    verify: "dotnet build Weather.sln --warnaserror"
+    risk: P0
+    status: passing
+    allure: { severity: blocker, categories: ["Journal", "refactor"] }
+  - id: 6
+    phase: absorb
+    description: "Move WeatherNote/WeatherNoteId into Journal.Domain/Notes; fold NotesDomainException into JournalDomainException."
+    verify: "dotnet test src/Modules/Journal/Tests/Weather.Modules.Journal.Tests --filter Category=WeatherNote"
+    risk: P0
+    status: passing
+    allure: { severity: blocker, categories: ["Journal", "unit"] }
+  - id: 7
+    phase: absorb
+    description: "Collapse to one City projection and one CityAddedIntegrationEventHandler (coordinate retained)."
+    verify: "dotnet test src/Modules/Journal/Tests/Weather.Modules.Journal.Tests --filter Category=CityAddedHandler"
+    risk: P0
+    status: passing
+    allure: { severity: blocker, categories: ["Journal", "unit"] }
+  - id: 8
+    phase: absorb
+    description: "Move Notes application types into Journal.Application; keep IFavoritesService and INotesModule; drop the duplicate CityNotFoundException."
+    verify: "dotnet test src/Modules/Journal/Tests/Weather.Modules.Journal.Tests --filter Category=AddNoteHandler"
+    risk: P0
+    status: passing
+    allure: { severity: blocker, categories: ["Journal", "unit"] }
+  - id: 9
+    phase: absorb
+    description: "Add WeatherNotes DbSet + config to JournalContext; rebaseline CreateJournalSchema; move WeatherNoteRepository; seed both gauges; remove NotesContext."
+    verify: "dotnet test src/Modules/Journal/Tests/Weather.Modules.Journal.Tests --filter Category=FavoritesMigrations"
+    risk: P0
+    status: passing
+    allure: { severity: blocker, categories: ["Journal", "integration"] }
+  - id: 10
+    phase: absorb
+    description: "Register everything in AddJournalModule; remove AddNotesModule."
+    verify: "dotnet build src/Modules/Journal/Weather.Modules.Journal.Infrastructure/Weather.Modules.Journal.Infrastructure.csproj --warnaserror"
+    risk: P0
+    status: passing
+    allure: { severity: blocker, categories: ["Journal", "integration"] }
+  - id: 11
+    phase: host
+    description: "Host wiring: AddJournalModule only; health probes JournalContext; journal.db config; single CityNotFoundException arm; controllers relocated to Api/Modules/Journal."
+    verify: "dotnet build src/Weather.WebUI/Weather.WebUI.csproj --warnaserror"
+    risk: P0
+    status: passing
+    allure: { severity: blocker, categories: ["Journal", "host"] }
+  - id: 12
+    phase: tests
+    description: "Merge Notes tests into the Journal test project; drop duplicate projection/handler tests."
+    verify: "dotnet test src/Modules/Journal/Tests/Weather.Modules.Journal.Tests"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Journal", "unit"] }
+  - id: 13
+    phase: tests
+    description: "Update ArchTests (observability + isolation + csproj)."
+    verify: "dotnet test src/Tests/Weather.ArchTests"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Journal", "arch"] }
+  - id: 14
+    phase: tests
+    description: "Update IntegrationTests for journal.db and rewrite the multi-subscriber test as JournalProjectionTests."
+    verify: "dotnet test src/Tests/Weather.IntegrationTests"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Journal", "integration"] }
+  - id: 15
+    phase: tests
+    description: "Update WebUI UnitTests controller/namespace references."
+    verify: "dotnet test src/Tests/Weather.WebUI.UnitTests"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["Journal", "unit"] }
+  - id: 16
+    phase: tests
+    description: "Add gap coverage: merged-context persistence, unchanged REST surface, /health/ready."
+    verify: "dotnet test Weather.sln"
+    risk: P1
+    status: passing
+    allure: { severity: high, categories: ["Journal", "integration"] }
+  - id: 17
+    phase: solution
+    description: "Remove the Notes projects from Weather.sln; keep the Journal solution folder."
+    verify: "dotnet sln Weather.sln list"
+    risk: P0
+    status: passing
+    allure: { severity: blocker, categories: ["Journal", "build"] }
+  - id: 18
+    phase: docs
+    description: "Update OBSERVABILITY_PLAN, docs/operations/observability.md and the workbook for module=Journal (instruments kept); sweep remaining specs/docs references."
+    verify: "! grep -rq 'Weather.Modules.Notes' specs docs"
+    risk: P2
+    status: passing
+    allure: { severity: normal, categories: ["Journal", "docs"] }
+  - id: 19
+    phase: verify
+    description: "Full Preflight + manual smoke of the REST surface and health endpoint."
+    verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln"
+    risk: P0
+    status: passing
+    allure: { severity: blocker, categories: ["Journal", "Gate"] }

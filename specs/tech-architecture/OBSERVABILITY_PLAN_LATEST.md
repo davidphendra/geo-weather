@@ -19,7 +19,7 @@ Give an operations team a single OpenTelemetry pipeline that answers two classes
 - How many weather lookups happen, and what share succeed vs. 404 vs. provider error?
 - How many favorites and notes are created, and what share fail validation or duplicate?
 - Which countries are explored most (bounded attributes only)?
-- Are integration events (Geography → Favorites/Notes projections) flowing?
+- Are integration events (Geography → Journal projection) flowing?
 
 User-facing surfaces (host `Weather.WebUI`, single process per ADR-0012):
 
@@ -28,9 +28,9 @@ User-facing surfaces (host `Weather.WebUI`, single process per ADR-0012):
 | `GET /api/countries` | Geography | Browse catalogue |
 | `GET /api/countries/{countryCode}/cities` | Geography | Select a city |
 | `GET /api/weather/{cityName}` | Weather | Read current weather |
-| `POST /api/weather/notes` | Notes | Save a weather note |
-| `POST /api/cities/favorites` | Favorites | Save a favorite city |
-| `GET /api/cities/favorites` | Favorites | List favorites |
+| `POST /api/weather/notes` | Journal (notes) | Save a weather note |
+| `POST /api/cities/favorites` | Journal (favorites) | Save a favorite city |
+| `GET /api/cities/favorites` | Journal (favorites) | List favorites |
 | Blazor routes (`/`, `/favorites`) | WebUI | UI usage |
 
 ### Non-goals
@@ -132,12 +132,12 @@ Covers OWM (`OpenWeatherMapService`) and the Blazor `WeatherApiClient` outbound 
 | `weather.city.not_found` | Counter | {request} | geo.country_code | `GetCurrentWeatherQueryHandler` | Catalogue coverage gap |
 | `geography.country.list_requests` | Counter | {request} | geo.has_search (bool) | Geography service | Catalogue usage |
 | `geography.city.list_requests` | Counter | {request} | geo.country_code | Geography service | Which countries are explored |
-| `favorites.operations` | Counter | {operation} | operation = add \| list; favorites.outcome = created \| duplicate \| city_not_found \| invalid \| success | Favorites service | Save funnel + failure mix |
-| `favorites.duration` | Histogram | ms | operation, favorites.outcome | Favorites service | Write/read latency |
-| `favorites.saved.count` | ObservableGauge | {favorite} | — | FavoritesContext | Business KPI: saved favorites |
-| `notes.operations` | Counter | {operation} | notes.outcome = created \| city_not_found \| invalid | Notes service | Note-writing funnel |
-| `notes.duration` | Histogram | ms | notes.outcome | Notes service | Write latency |
-| `notes.saved.count` | ObservableGauge | {note} | — | NotesContext | Business KPI: saved notes |
+| `favorites.operations` | Counter | {operation} | operation = add \| list; favorites.outcome = created \| duplicate \| city_not_found \| invalid \| success | Journal favorites service | Save funnel + failure mix |
+| `favorites.duration` | Histogram | ms | operation, favorites.outcome | Journal favorites service | Write/read latency |
+| `favorites.saved.count` | ObservableGauge | {favorite} | — | JournalContext | Business KPI: saved favorites |
+| `notes.operations` | Counter | {operation} | notes.outcome = created \| city_not_found \| invalid | Journal notes service | Note-writing funnel |
+| `notes.duration` | Histogram | ms | notes.outcome | Journal notes service | Write latency |
+| `notes.saved.count` | ObservableGauge | {note} | — | JournalContext | Business KPI: saved notes |
 | `api.errors` | Counter | {error} | error.code (six stable codes), http.response.status_code, http.request.method, http.route | `GlobalExceptionHandler` + malformed-request path | Error taxonomy over time |
 
 **Derived indicators (dashboards, not instruments):** lookup→favorite conversion
@@ -227,7 +227,7 @@ Distro package + `ObservabilityOptions` (Enabled, ExportTarget, sampling) bound/
 instrumentation; log enrichment (`trace_id`/`span_id`); MeterListener assertions.
 
 ### e12s03 — Business metrics (BCP 6, P0)
-Weather, Geography, Favorites, Notes metrics; `favorites.saved.count` / `notes.saved.count` gauges;
+Weather, Geography, Journal (favorites + notes) metrics; `favorites.saved.count` / `notes.saved.count` gauges;
 `api.errors`; business-path assertions.
 
 ### e12s04 — Operations: dashboards, alerts, runbook (BCP 5, P1)
