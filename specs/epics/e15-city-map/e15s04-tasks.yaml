@@ -1,6 +1,6 @@
 story_id: e15s04
 title: Page wiring + StationHeroCard coordinate switch
-status: failing
+status: passing
 bcps: 3
 module: M2
 standards: docs/engineering/csharp-standards.md
@@ -11,7 +11,7 @@ tasks:
       ForecastStrip.
     verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=WeatherExplorerPage"
     risk: P1
-    status: failing
+    status: passing
     allure: { severity: high, categories: ["Weather", "Map", "integration"] }
   - id: 2
     description: >
@@ -19,7 +19,7 @@ tasks:
       City.Latitude/City.Longitude when the report has no coordinates, so the card and map share one source.
     verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=WeatherExplorerPage"
     risk: P1
-    status: failing
+    status: passing
     allure: { severity: high, categories: ["Weather", "Map", "integration"] }
   - id: 3
     description: >
@@ -27,12 +27,12 @@ tasks:
       UI design component inventory to list StationMap.
     verify: "dotnet test src/Tests/Weather.IntegrationTests --filter Category=WeatherExplorerPage"
     risk: P2
-    status: failing
+    status: passing
     allure: { severity: normal, categories: ["Weather", "Map", "integration"] }
   - id: 4
     description: >
       Story gate: full repo preflight plus the layout and Tailwind CSS drift guards.
     verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln && bash scripts/check-layout.sh && bash scripts/check-tailwind-css.sh"
     risk: P0
-    status: failing
+    status: passing
     allure: { severity: critical, categories: ["Weather", "Map", "Standards"] }
