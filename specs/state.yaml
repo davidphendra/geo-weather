@@ -1,15 +1,15 @@
 session:
   workflow_mode: solo-git
-  updated_at: "2025-10-13T00:00:00Z"
+  updated_at: "2026-10-15T00:00:00Z"
 
 project_cycle:
-  current_phase: 3               # PLAN complete; BUILD not started
-  completed_phases: [1, 2]
+  current_phase: 4               # BUILD + VERIFY complete for e14; ready to release
+  completed_phases: [1, 2, 3]
   mode: standard
 
 active_epic: e14
-active_story: e14s01
-active_flow: plan-work
+active_story: e14s04
+active_flow: verify-work
 
 epic_cycle:
   step: null
@@ -18,15 +18,16 @@ epic_cycle:
   fast_mode: false
 
 handoff:
-  next_skill: kickoff-branch
+  next_skill: release-branch
   context: >
-    PLANNED (not built): e14 Five-Day Forecast, all 4 stories planned into specs/epics/e14-forecast/ with
-    tasks. Populates the empty ForecastStrip. Forecast domain aggregation, IWeatherProvider.GetForecastAsync
-    (GET /data/2.5/forecast, units=imperial), GET /api/weather/{cityName}/forecast, and the WebUI strip.
-    Design/decisions: specs/adr/0017-five-day-forecast.md (D1-D6 CONFIRMED: city-local days, first 5 days,
-    separate endpoint, extend IWeatherProvider, graceful partial failure, weather.forecast.* metrics). SCOPE S9 added;
-    e14 registered in release-plan.yaml; weather.forecast.* metrics added to the observability catalog.
-    PRIOR: COMPLETED: e03s04 Configurable retry resilience for the OpenWeatherMap client (6/6 tasks passing).
+    COMPLETED: e14 Five-Day Forecast (4/4 stories, 19/19 tasks passing) on feature/e14-forecast. The empty
+    ForecastStrip now renders five daily cards from real OpenWeather data: Forecast domain (ForecastInterval ->
+    DailyForecast -> WeatherForecast, city-local daily aggregation), IWeatherProvider.GetForecastAsync
+    (GET /data/2.5/forecast, units=imperial, shared key handler + resilience), GetWeatherForecast query +
+    GET /api/weather/{cityName}/forecast, and the WebUI ForecastDayCard/ForecastStrip. ADR-0017 (D1-D6).
+    Evidence: specs/verifications/e14.md. Preflight green: build 0 warnings, format clean, 378 tests
+    (Weather module 93 -> 138); style parity 7/7 green; check-layout + check-tailwind-css green.
+    Prior: COMPLETED: e03s04 Configurable retry resilience for the OpenWeatherMap client (6/6 tasks passing).
     Replaced AddStandardResilienceHandler with an explicit AddResilienceHandler pipeline (total timeout ->
     retry -> attempt timeout) bound and validated from OpenWeather:Resilience (MaxRetryAttempts 3 = retries
     after the first attempt; RetryBaseDelaySeconds 1; AttemptTimeoutSeconds 10; TotalTimeoutSeconds 30;

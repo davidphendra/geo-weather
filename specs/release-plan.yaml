@@ -119,7 +119,7 @@ epics:
     wsjf: 8.0
     bcps: 18
     capsule_dir: epics/e14-forecast
-    status: planned
+    status: done
     note: >
       Populate the empty 5-day forecast section. Adds a Forecast domain (ForecastInterval -> DailyForecast ->
       WeatherForecast, city-local daily aggregation), IWeatherProvider.GetForecastAsync against
