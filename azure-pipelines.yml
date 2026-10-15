@@ -8,6 +8,11 @@
 #       No Node/npm step exists: because wwwroot/app.css is committed, CI never invokes the Tailwind
 #       toolchain, so there is no npm cache to restore or save (a cache path nobody writes to makes
 #       the Cache@2 save step fail with "tar: Cannot open: No such file or directory").
+#       The NuGet cache points at $(NUGET_PACKAGES), an explicit path the restore step also writes to,
+#       rather than $(UserProfile): that name is Windows-only, so on the Linux agent it stayed
+#       unexpanded and the save step tarred a non-existent path (same tar failure). Because
+#       NUGET_PACKAGES is a NuGet environment variable, the cache path and the restore folder are the
+#       same directory by construction, and the first run (a miss) still saves.
 #       Nerdbank.GitVersioning stamps a semantic version (version.json SSOT) and sets the run
 #       number to it; the version guard fails the build if no version could be derived.
 # CD  — runs only on main, after CI, with no approval gate (automatic deployment). It zip-deploys
@@ -57,6 +62,13 @@ variables:
   - name: dotnetSdkVersion
     value: '10.0.x'
 
+  # NuGet global-packages folder. Pinned so the Cache@2 path and `dotnet restore` cannot drift apart:
+  # NUGET_PACKAGES is a documented NuGet env var, and pipeline variables become environment variables,
+  # so restore installs here and the post-job cache save always has a real directory to archive.
+  # Do NOT switch this to $(UserProfile): it is Windows-only and undefined on ubuntu-latest.
+  - name: NUGET_PACKAGES
+    value: '$(Pipeline.Workspace)/.nuget/packages'
+
   # --- Agent image: CI default; the Deploy stage overrides it from the variable group ---
   - name: vmImage
     value: 'ubuntu-latest'
@@ -86,7 +98,7 @@ stages:
               key: 'nuget | "$(Agent.OS)" | **/Directory.Packages.props, **/*.csproj'
               restoreKeys: |
                 nuget | "$(Agent.OS)"
-              path: '$(UserProfile)/.nuget/packages'
+              path: '$(NUGET_PACKAGES)'
 
           - script: dotnet restore $(solution)
             displayName: 'dotnet restore'
