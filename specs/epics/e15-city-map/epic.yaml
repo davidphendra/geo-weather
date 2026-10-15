@@ -1,0 +1,45 @@
+id: e15
+title: City Map on the Weather Page
+wsjf: 6.0
+total_bcps: 16
+status: planned
+module: M2
+kind: core
+owns_data: false
+change_request: ADDED
+note: >
+  Draw the selected city on an interactive Leaflet map beneath the five-day forecast. Surfaces the
+  OpenWeather `coord` block (currently discarded) as a domain Coordinates value object on WeatherReport
+  and flat latitude/longitude on WeatherReportDto; adds the WebUI StationMap component that lazily
+  loads Leaflet 1.9.4 from unpkg (SRI-pinned) and renders OpenStreetMap standard tiles; switches
+  StationHeroCard to the report coordinates with a City fallback; and whitelists the unpkg + tile
+  origins in the CSP. Design: specs/adr/0018-city-map-leaflet.md (D1-D10 confirmed).
+stories:
+  - id: e15s01
+    title: Report coordinates (Coordinates value object -> OpenWeather coord -> WeatherReportDto)
+    bcps: 5
+    status: planned
+    spec: e15s01-report-coordinates.md
+    tasks: e15s01-tasks.yaml
+    delta: ADDED
+  - id: e15s02
+    title: StationMap component + lazy Leaflet CDN + OpenStreetMap tiles
+    bcps: 6
+    status: planned
+    spec: e15s02-station-map.md
+    tasks: e15s02-tasks.yaml
+    delta: ADDED
+  - id: e15s03
+    title: CSP origins for unpkg + OpenStreetMap tiles
+    bcps: 2
+    status: planned
+    spec: e15s03-csp-origins.md
+    tasks: e15s03-tasks.yaml
+    delta: MODIFIED
+  - id: e15s04
+    title: Page wiring + StationHeroCard coordinate switch
+    bcps: 3
+    status: planned
+    spec: e15s04-page-wiring.md
+    tasks: e15s04-tasks.yaml
+    delta: MODIFIED
