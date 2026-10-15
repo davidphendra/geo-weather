@@ -24,6 +24,8 @@ public sealed class WeatherReportDtoMapperTests
 
         Assert.Equal("London", dto.Location.City);
         Assert.Equal("GB", dto.Location.Country);
+        Assert.Equal(51.5074m, dto.Latitude);
+        Assert.Equal(-0.1278m, dto.Longitude);
         Assert.Equal(10m, dto.Temperature.Celsius);
         Assert.Equal(80, dto.RelativeHumidityPercent);
         Assert.Equal("SW", dto.Wind.Cardinal);

@@ -13,6 +13,8 @@ public sealed class WeatherControllerTests
 {
     private static WeatherReportDto Report() => new(
         new LocationDto("London", "GB"),
+        51.5074m,
+        -0.1278m,
         DateTimeOffset.UnixEpoch,
         new TemperatureDto(10m, 50m),
         new TemperatureDto(8m, 46.4m),
