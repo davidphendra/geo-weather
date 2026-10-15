@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Weather.IntegrationTests.Support;
 
-public sealed class WeatherHostFactory : WebApplicationFactory<Program>
+public class WeatherHostFactory : WebApplicationFactory<Program>
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {

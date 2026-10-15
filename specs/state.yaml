@@ -7,8 +7,8 @@ project_cycle:
   completed_phases: [1, 2, 3]
   mode: standard
 
-active_epic: e15
-active_story: e15s04
+active_epic: e16
+active_story: e16s03
 active_flow: release-branch
 
 epic_cycle:
@@ -20,7 +20,29 @@ epic_cycle:
 handoff:
   next_skill: survey-context
   context: >
-    RELEASED: e15 City Map on the Weather Page merged to main from feature/e15-city-map (4/4 stories,
+    RELEASED: e16 Application & Artifact SemVer merged to main from branch e16-app-versioning
+    (3/3 stories, 17/17 tasks passing; ADR-0019). Preflight green at merge: build 0 warnings,
+    format clean, 412 tests (+15; categories AppVersion/VersionEndpoint/AppFooter/StartupLog/HostMeters),
+    layout/publish-data/Tailwind guards green. Design ADR-0019, plan VERSIONING_PLAN_LATEST.md, evidence
+    specs/verifications/e16.md. Nerdbank.GitVersioning 3.10.94 + version.json ("0.1-alpha") stamps
+    AssemblyVersion=major.minor / FileVersion=full / InformationalVersion=semver+commit; pipeline does a
+    full clone, NBGV sets Build.BuildNumber to the version, a post-publish guard rejects 0.0.0, artifact is
+    webapp-$(Build.BuildNumber) with build-info.json. Runtime surfaces: footer (version before copyright,
+    .NET line removed), console startup line, GET /version, OTel resource service.version (metrics+traces),
+    and the host-local geoweather.build.info gauge. Known limitation: distro logging resource is separate,
+    so logs use the SDK-default service.name (documented). Open human steps: Azure pipeline dry-run; optional
+    v-tag release (D9). PRIOR: IMPLEMENTED (not released): e16 Application & Artifact SemVer on branch e16-app-versioning.
+    All 3 stories / 17 tasks passing; design ADR-0019, plan VERSIONING_PLAN_LATEST.md,
+    evidence specs/verifications/e16.md. Nerdbank.GitVersioning 3.10.94 + repo-root version.json
+    ("0.1-alpha") stamps AssemblyVersion=major.minor, FileVersion=full, InformationalVersion=semver+commit;
+    Azure pipeline does a full clone (fetchDepth: 0), NBGV sets Build.BuildNumber to the version, a
+    post-publish guard (scripts/check-version.sh) rejects 0.0.0, and the artifact is webapp-$(Build.BuildNumber)
+    with build-info.json inside. Runtime surfaces: footer (version before copyright, .NET line removed),
+    console startup line (StartupVersionLogger), GET /version, OTel resource service.version (metrics+traces)
+    and the host-local geoweather.build.info gauge. Preflight green: 0 warnings, format clean, 412 tests
+    (+15; categories AppVersion/VersionEndpoint/AppFooter/StartupLog/HostMeters). Known limitation: the
+    distro's logging resource is separate, so logs use the SDK-default service.name (documented in e16.md).
+    Next: verify-work, then release-branch. Pipeline dry-run is a human step. PRIOR: RELEASED: e15 City Map on the Weather Page merged to main from feature/e15-city-map (4/4 stories,
     18/18 tasks passing; ADR-0018). Preflight green at merge: build 0 warnings, format clean, 397 tests
     (Weather module 138 -> 150). No coverage/security-review tooling is configured in this repo; commit
     hygiene (Conventional Commits, no AI attribution) and the layout/Tailwind guards are green.

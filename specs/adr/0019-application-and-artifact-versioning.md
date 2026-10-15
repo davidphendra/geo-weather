@@ -77,8 +77,10 @@ it at every layer from build to runtime.
 
 5. **Telemetry correlation (D4/D10).** The OpenTelemetry resource gains `service.name = "GeoWeather"` and
    `service.version = <informational version>`, alongside the existing `deployment.environment`. Because a
-   resource attribute is attached to every signal, this alone makes logs, traces, metrics, and the
-   Application Map filterable by version. In addition, the host emits an explicit
+   resource attribute is attached to every metric and trace, this alone makes metrics, traces, and the
+   Application Map filterable by version. (The Microsoft OpenTelemetry distro configures its logging
+   resource separately, so logs carry the version through the structured startup line rather than the
+   resource.) In addition, the host emits an explicit
    **`geoweather.build.info`** ObservableGauge (value `1`, attributes `version` and `commit`) from a
    host-local `GeoWeather.Host` meter. It answers "which versions are live and how many instances of
    each", supports rollout/canary monitoring and version-drift alerts, and does not depend on resource

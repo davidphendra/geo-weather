@@ -12,7 +12,7 @@
 
 ## 1. Summary
 Put the version into telemetry two ways: (1) as the OpenTelemetry **resource** attributes `service.name` and
-`service.version`, which automatically tag every metric, trace, and log; and (2) as an explicit
+`service.version`, which automatically tag every metric and trace; and (2) as an explicit
 **`geoweather.build.info`** ObservableGauge (value `1`, attributes `version` and `commit`) on a host-local
 meter, so the version is a queryable, groupable metric. Document the filter in the observability runbook and
 optionally add a version parameter to the workbook. Depends on D4/D10.

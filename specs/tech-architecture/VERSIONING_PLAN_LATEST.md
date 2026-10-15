@@ -139,7 +139,7 @@ deploy-time version injection breaks reproducibility; `AssemblyVersion` displaye
 ### 4.3 Observability (e16s03)
 
 The version is surfaced **twice** in telemetry: once as the OpenTelemetry **resource attribute**
-(`service.version`, automatically attached to every metric/trace/log) and once as an explicit
+(`service.version`, automatically attached to every metric and trace) and once as an explicit
 **build-info metric** anyone can group by.
 
 | File | Change |

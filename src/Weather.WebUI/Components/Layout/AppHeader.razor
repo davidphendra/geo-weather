@@ -15,8 +15,7 @@
 </header>
 
 @code {
-    private static readonly string Version =
-        typeof(AppHeader).Assembly.GetName().Version?.ToString(3) ?? "0.0.0";
+    private static readonly string Version = AppVersion.Current.Version;
 
     private static readonly string Framework = $".NET {Environment.Version.Major}";
 }

@@ -8,6 +8,7 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 
 using Weather.WebUI.Hosting;
+using Weather.WebUI.Services;
 
 namespace Weather.WebUI.UnitTests.Observability;
 
@@ -30,6 +31,21 @@ public sealed class ObservabilityWiringTests
 
         Assert.NotNull(provider.GetService<MeterProvider>());
         Assert.NotNull(provider.GetService<TracerProvider>());
+    }
+
+    [Fact]
+    public void Resource_carries_service_identity_and_version()
+    {
+        IHostEnvironment environment = Substitute.For<IHostEnvironment>();
+        environment.EnvironmentName.Returns("Production");
+
+        Dictionary<string, object> attributes =
+            ObservabilityServiceCollectionExtensions.ResourceAttributes(environment);
+
+        Assert.Equal("GeoWeather", attributes["service.name"]);
+        Assert.Equal(AppVersion.Current.InformationalVersion, attributes["service.version"]);
+        Assert.Equal("Production", attributes["deployment.environment"]);
+        Assert.Equal("azure", attributes["cloud.provider"]);
     }
 
     private static ServiceProvider Build(bool enabled)

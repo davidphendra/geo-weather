@@ -1,6 +1,6 @@
 story_id: e16s02
 title: Runtime version surface (AppVersion, footer, /version, startup log)
-status: planned
+status: passing
 bcps: 5
 module: host
 standards: docs/engineering/csharp-standards.md
@@ -15,7 +15,7 @@ tasks:
       the fallback, and assert the source is InformationalVersion not GetName().Version.
     verify: "dotnet test Weather.sln --filter Category=AppVersion"
     risk: P0
-    status: planned
+    status: passing
     allure: { severity: critical, categories: ["Versioning", "Runtime", "unit"] }
   - id: 2
     description: >
@@ -24,7 +24,7 @@ tasks:
       metadata per ADR-0011. Integration-test GET /version -> 200 application/json with non-empty fields.
     verify: "dotnet test Weather.sln --filter Category=VersionEndpoint"
     risk: P0
-    status: planned
+    status: passing
     allure: { severity: critical, categories: ["Versioning", "Runtime", "integration"] }
   - id: 3
     description: >
@@ -35,7 +35,7 @@ tasks:
       the copyright and no longer contains the .NET framework string; run the Tailwind drift guard.
     verify: "dotnet test Weather.sln --filter Category=AppFooter"
     risk: P0
-    status: planned
+    status: passing
     allure: { severity: critical, categories: ["Versioning", "Runtime", "unit"] }
   - id: 4
     description: >
@@ -45,12 +45,12 @@ tasks:
       record carries Version and Commit and no secret/connection string.
     verify: "dotnet test Weather.sln --filter Category=StartupLog"
     risk: P1
-    status: planned
+    status: passing
     allure: { severity: high, categories: ["Versioning", "Runtime", "unit"] }
   - id: 5
     description: >
       Story gate: full repo preflight green and the Tailwind drift guard green (footer class change).
     verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln && bash scripts/check-tailwind-css.sh"
     risk: P0
-    status: planned
+    status: passing
     allure: { severity: critical, categories: ["Versioning", "Standards"] }

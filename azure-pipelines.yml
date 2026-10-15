@@ -3,6 +3,8 @@
 # CI  — runs on pull requests and main: restore, build (warnings as errors), format check,
 #       Tailwind CSS drift guard, and all offline tests (unit + architecture + in-process
 #       integration). The Playwright browser e2e harness is intentionally NOT run here.
+#       Nerdbank.GitVersioning stamps a semantic version (version.json SSOT) and sets the run
+#       number to it; the version guard fails the build if no version could be derived.
 # CD  — runs only on main, after CI, and is gated by an Azure DevOps Environment approval
 #       (no automatic deployment). It zip-deploys the published WebUI to Azure App Service (Linux).
 #
@@ -43,7 +45,9 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'
         steps:
+          # Full history is required by Nerdbank.GitVersioning; a shallow clone yields version 0.0.0.
           - checkout: self
+            fetchDepth: 0
 
           - task: UseDotNet@2
             displayName: 'Install .NET SDK $(dotnetSdkVersion)'
@@ -116,11 +120,14 @@ stages:
               --output $(Build.ArtifactStagingDirectory)/webapp
             displayName: 'dotnet publish WebUI'
 
+          - script: bash scripts/check-version.sh "$(Build.ArtifactStagingDirectory)/webapp/build-info.json"
+            displayName: 'Version guard (fail if no semantic version)'
+
           - task: PublishPipelineArtifact@1
-            displayName: 'Publish webapp artifact'
+            displayName: 'Publish versioned webapp artifact'
             inputs:
               targetPath: '$(Build.ArtifactStagingDirectory)/webapp'
-              artifact: 'webapp'
+              artifact: 'webapp-$(Build.BuildNumber)'
 
   - stage: Deploy
     displayName: 'CD — deploy to App Service (approval required)'
@@ -138,8 +145,8 @@ stages:
             deploy:
               steps:
                 - download: current
-                  displayName: 'Download webapp artifact'
-                  artifact: 'webapp'
+                  displayName: 'Download versioned webapp artifact'
+                  artifact: 'webapp-$(Build.BuildNumber)'
 
                 - task: AzureWebApp@1
                   displayName: 'Zip deploy to App Service (Linux)'
@@ -147,6 +154,6 @@ stages:
                     azureSubscription: '$(azureServiceConnection)'
                     appType: 'webAppLinux'
                     appName: '$(webAppName)'
-                    package: '$(Pipeline.Workspace)/webapp'
+                    package: '$(Pipeline.Workspace)/webapp-$(Build.BuildNumber)'
                     runtimeStack: '$(dotnetRuntimeStack)'
                     deploymentMethod: 'zipDeploy'

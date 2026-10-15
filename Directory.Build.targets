@@ -1,0 +1,16 @@
+<Project>
+
+  <!--
+    Semantic versioning belongs to every project through Directory.Build.props (Nerdbank.GitVersioning).
+    This target fails the build when no real version could be derived (git missing or a shallow clone):
+    NBGV falls back to 0.0.0 in that case, and an artifact with a bogus version must never ship.
+    The condition is safe when NBGV is absent: an empty BuildVersionSimple does not start with "0.0.0".
+  -->
+  <Target Name="RequireSemanticVersion"
+          BeforeTargets="CoreCompile"
+          Condition="$(BuildVersionSimple.StartsWith('0.0.0'))">
+    <Error Code="WX0001"
+           Text="No semantic version could be derived (computed '$(BuildVersionSimple)'). Ensure a full git clone: the .git folder must be present and the checkout must not be shallow." />
+  </Target>
+
+</Project>

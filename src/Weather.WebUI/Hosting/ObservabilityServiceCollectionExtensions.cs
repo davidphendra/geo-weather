@@ -7,6 +7,8 @@ using OpenTelemetry.Trace;
 
 using Weather.BuildingBlocks.Application.Telemetry;
 using Weather.WebUI.Configuration;
+using Weather.WebUI.Services;
+using Weather.WebUI.Telemetry;
 
 namespace Weather.WebUI.Hosting;
 
@@ -37,6 +39,9 @@ internal static class ObservabilityServiceCollectionExtensions
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
+        // Ensure the host build-info gauge is defined before the SDK subscribes to the meter.
+        HostMeters.Initialize();
+
         services.AddOpenTelemetry()
             .UseMicrosoftOpenTelemetry(distro =>
             {
@@ -53,6 +58,7 @@ internal static class ObservabilityServiceCollectionExtensions
             })
             .WithMetrics(metrics => metrics
                 .AddMeter(WeatherMeters.MeterName)
+                .AddMeter(HostMeters.MeterName)
                 .AddRuntimeInstrumentation()
                 .ConfigureResource(resource => resource.AddAttributes(ResourceAttributes(environment))))
             .WithTracing(tracing => tracing
@@ -62,9 +68,20 @@ internal static class ObservabilityServiceCollectionExtensions
         return services;
     }
 
-    private static Dictionary<string, object> ResourceAttributes(IHostEnvironment environment) => new()
+    /// <summary>
+    /// Resource attributes attached to every signal. <c>service.version</c> (OpenTelemetry Stable,
+    /// Recommended) is the stamped informational version, so telemetry is filterable by build.
+    /// </summary>
+    internal static Dictionary<string, object> ResourceAttributes(IHostEnvironment environment)
     {
-        ["deployment.environment"] = environment.EnvironmentName,
-        ["cloud.provider"] = "azure",
-    };
+        ArgumentNullException.ThrowIfNull(environment);
+
+        return new Dictionary<string, object>
+        {
+            ["service.name"] = "GeoWeather",
+            ["service.version"] = AppVersion.Current.InformationalVersion,
+            ["deployment.environment"] = environment.EnvironmentName,
+            ["cloud.provider"] = "azure",
+        };
+    }
 }

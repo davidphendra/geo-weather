@@ -1,6 +1,6 @@
 story_id: e16s01
 title: Version stamping, artifact identity, and CI (NBGV + run number + build-info.json)
-status: planned
+status: passing
 bcps: 6
 module: host
 standards: docs/engineering/csharp-standards.md
@@ -16,7 +16,7 @@ tasks:
       dotnet format --verify-no-changes and --warnaserror stay green with the generated ThisAssembly sources.
     verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes"
     risk: P0
-    status: planned
+    status: passing
     allure: { severity: critical, categories: ["Versioning", "Build", "unit"] }
   - id: 2
     description: >
@@ -25,7 +25,7 @@ tasks:
       fails fast and locally instead of silently stamping a bogus version.
     verify: "dotnet build Weather.sln --warnaserror"
     risk: P0
-    status: planned
+    status: passing
     allure: { severity: critical, categories: ["Versioning", "Build", "unit"] }
   - id: 3
     description: >
@@ -35,7 +35,7 @@ tasks:
       out of the source tree (output only).
     verify: "dotnet publish src/Weather.WebUI -o /tmp/weather-publish && cat /tmp/weather-publish/build-info.json"
     risk: P1
-    status: planned
+    status: passing
     allure: { severity: high, categories: ["Versioning", "Build", "unit"] }
   - id: 4
     description: >
@@ -44,7 +44,7 @@ tasks:
       pipeline-side guard; the build-side guard is task 2.
     verify: "bash scripts/check-version.sh /tmp/weather-publish/build-info.json"
     risk: P0
-    status: planned
+    status: passing
     allure: { severity: critical, categories: ["Versioning", "CI", "unit"] }
   - id: 5
     description: >
@@ -54,7 +54,7 @@ tasks:
       step order.
     verify: "python3 -c \"import yaml; yaml.safe_load(open('azure-pipelines.yml'))\""
     risk: P0
-    status: planned
+    status: passing
     allure: { severity: critical, categories: ["Versioning", "CI", "integration"] }
   - id: 6
     description: >
@@ -67,7 +67,7 @@ tasks:
       carry the version).
     verify: "python3 -c \"import yaml; yaml.safe_load(open('azure-pipelines.yml'))\""
     risk: P0
-    status: planned
+    status: passing
     allure: { severity: critical, categories: ["Versioning", "CI", "integration"] }
   - id: 7
     description: >
@@ -76,5 +76,5 @@ tasks:
       pipeline YAML names the artifact with $(Build.BuildNumber) in both stages.
     verify: "dotnet build Weather.sln --warnaserror && dotnet format Weather.sln --verify-no-changes && dotnet test Weather.sln"
     risk: P0
-    status: planned
+    status: passing
     allure: { severity: critical, categories: ["Versioning", "Standards"] }

@@ -50,4 +50,21 @@
         <Exec Command="npm run build:css" WorkingDirectory="$(MSBuildProjectDirectory)" />
     </Target>
 
+    <!--
+      Self-describing manifest for the deployed artifact (e16s01). Written into the publish folder so
+      operators can identify a build without running it. Properties are supplied by Nerdbank.GitVersioning.
+    -->
+    <Target Name="WriteBuildInfo" AfterTargets="Publish">
+        <ItemGroup>
+            <_BuildInfoLine Include="{" />
+            <_BuildInfoLine Include="  &quot;version&quot;: &quot;$(AssemblyInformationalVersion.Split('+')[0])&quot;," />
+            <_BuildInfoLine Include="  &quot;informationalVersion&quot;: &quot;$(AssemblyInformationalVersion)&quot;," />
+            <_BuildInfoLine Include="  &quot;commit&quot;: &quot;$(GitCommitId)&quot;," />
+            <_BuildInfoLine Include="  &quot;publicRelease&quot;: &quot;$([System.String]::Copy('$(PublicRelease)').ToLowerInvariant())&quot;," />
+            <_BuildInfoLine Include="  &quot;builtAtUtc&quot;: &quot;$([System.DateTime]::UtcNow.ToString('o'))&quot;" />
+            <_BuildInfoLine Include="}" />
+        </ItemGroup>
+        <WriteLinesToFile File="$(PublishDir)build-info.json" Lines="@(_BuildInfoLine)" Overwrite="true" />
+    </Target>
+
 </Project>

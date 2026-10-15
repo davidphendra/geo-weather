@@ -6,4 +6,12 @@
     <AnalysisLevel>latest</AnalysisLevel>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
+
+  <!--
+    Semantic versioning from git (single source of truth: version.json at the repo root).
+    PrivateAssets=all: build-time only, no runtime dependency, never flows to consumers.
+  -->
+  <ItemGroup>
+    <PackageReference Include="Nerdbank.GitVersioning" PrivateAssets="all" />
+  </ItemGroup>
 </Project>

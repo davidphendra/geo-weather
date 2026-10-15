@@ -22,21 +22,21 @@ stories:
   - id: e16s01
     title: Version stamping, artifact identity, and CI (NBGV + run number + build-info.json)
     bcps: 6
-    status: planned
+    status: done
     spec: e16s01-version-stamping.md
     tasks: e16s01-tasks.yaml
     delta: ADDED
   - id: e16s02
     title: Runtime version surface (AppVersion, footer, /version, console startup line)
     bcps: 5
-    status: planned
+    status: done
     spec: e16s02-runtime-surface.md
     tasks: e16s02-tasks.yaml
     delta: ADDED
   - id: e16s03
     title: Telemetry correlation (OTel service.version + geoweather.build.info metric)
     bcps: 4
-    status: planned
+    status: done
     spec: e16s03-telemetry-correlation.md
     tasks: e16s03-tasks.yaml
     delta: MODIFIED

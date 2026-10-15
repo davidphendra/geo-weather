@@ -157,8 +157,9 @@ they live in `Weather.WebUI` on a **host-local meter** (`GeoWeather.Host`) — t
 | `geoweather.build.info` | ObservableGauge | `1` | `version` (`0.1.24-alpha`), `commit` (short) | Host startup (`AppVersion`) | Which versions are live; instances per version; did a deployment change? |
 
 In addition, the OpenTelemetry **resource** carries `service.name = GeoWeather` and
-`service.version = <informational version>`, so every metric, trace, and log is automatically tagged with the
-version (no per-request attribute needed). The gauge is the explicitly queryable/aggregatable form.
+`service.version = <informational version>`, so every metric and trace is automatically tagged with the
+version (the distro configures its logging resource separately; logs carry the version through the
+structured startup line). The gauge is the explicitly queryable/aggregatable form.
 
 Cardinality: `version`/`commit` change only on deploy, so the series count is a function of deployments, not
 traffic. Never add per-request values here.
